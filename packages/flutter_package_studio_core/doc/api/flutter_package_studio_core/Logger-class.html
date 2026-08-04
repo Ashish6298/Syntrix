@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the Logger class from the flutter_package_studio_core library, for the Dart programming language.">
+  <title>Logger class - flutter_package_studio_core library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">flutter_package_studio_core</a></li>
+    <li><a href="../flutter_package_studio_core/">flutter_package_studio_core.dart</a></li>
+    <li class="self-crumb">Logger class</li>
+  </ol>
+  <div class="self-name">Logger</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="flutter_package_studio_core&#47;flutter_package_studio_core-library-sidebar.html"
+    data-below-sidebar="flutter_package_studio_core&#47;Logger-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">Logger</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>The core class to trigger log events.</p>
+</section>
+
+
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="Logger.new" class="callable">
+          <span class="name"><a href="../flutter_package_studio_core/Logger/Logger.html">Logger</a></span><span class="signature">(<span class="parameter" id="-param-name"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span>, {</span><span class="parameter" id="-param-level"><span class="type-annotation"><a href="../flutter_package_studio_core/LogLevel.html">LogLevel</a></span> <span class="parameter-name">level</span> = <span class="default-value">LogLevel.info</span></span>})</span>
+        </dt>
+        <dd>
+          Creates a new <a href="../flutter_package_studio_core/Logger-class.html">Logger</a> instance with the given <code>name</code> and optional <code>level</code> (defaults to <a href="../flutter_package_studio_core/LogLevel.html">LogLevel.info</a>).
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="level" class="property">
+  <span class="name"><a href="../flutter_package_studio_core/Logger/level.html">level</a></span>
+  <span class="signature">&#8596; <a href="../flutter_package_studio_core/LogLevel.html">LogLevel</a></span>
+  
+
+</dt>
+<dd>
+  Current log filter level. Records below this level will be discarded.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="name" class="property">
+  <span class="name"><a href="../flutter_package_studio_core/Logger/name.html">name</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  Name of this logger.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="critical" class="callable">
+  <span class="name"><a href="../flutter_package_studio_core/Logger/critical.html">critical</a></span><span class="signature">(<wbr><span class="parameter" id="critical-param-message"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">message</span>, [</span><span class="parameter" id="critical-param-error"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">error</span>, </span><span class="parameter" id="critical-param-stackTrace"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/StackTrace-class.html">StackTrace</a>?</span> <span class="parameter-name">stackTrace</span></span>])
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Logs a message at <a href="../flutter_package_studio_core/LogLevel.html">LogLevel.critical</a> with optional error and stack trace.
+  
+
+</dd>
+
+        <dt id="debug" class="callable">
+  <span class="name"><a href="../flutter_package_studio_core/Logger/debug.html">debug</a></span><span class="signature">(<wbr><span class="parameter" id="debug-param-message"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">message</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Logs a message at <a href="../flutter_package_studio_core/LogLevel.html">LogLevel.debug</a>.
+  
+
+</dd>
+
+        <dt id="error" class="callable">
+  <span class="name"><a href="../flutter_package_studio_core/Logger/error.html">error</a></span><span class="signature">(<wbr><span class="parameter" id="error-param-message"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">message</span>, [</span><span class="parameter" id="error-param-error"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">error</span>, </span><span class="parameter" id="error-param-stackTrace"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/StackTrace-class.html">StackTrace</a>?</span> <span class="parameter-name">stackTrace</span></span>])
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Logs a message at <a href="../flutter_package_studio_core/LogLevel.html">LogLevel.error</a> with optional error and stack trace.
+  
+
+</dd>
+
+        <dt id="info" class="callable">
+  <span class="name"><a href="../flutter_package_studio_core/Logger/info.html">info</a></span><span class="signature">(<wbr><span class="parameter" id="info-param-message"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">message</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Logs a message at <a href="../flutter_package_studio_core/LogLevel.html">LogLevel.info</a>.
+  
+
+</dd>
+
+        <dt id="log" class="callable">
+  <span class="name"><a href="../flutter_package_studio_core/Logger/log.html">log</a></span><span class="signature">(<wbr><span class="parameter" id="log-param-logLevel"><span class="type-annotation"><a href="../flutter_package_studio_core/LogLevel.html">LogLevel</a></span> <span class="parameter-name">logLevel</span>, </span><span class="parameter" id="log-param-message"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">message</span>, [</span><span class="parameter" id="log-param-error"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">error</span>, </span><span class="parameter" id="log-param-stackTrace"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/StackTrace-class.html">StackTrace</a>?</span> <span class="parameter-name">stackTrace</span></span>])
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Logs a message at <a href="../flutter_package_studio_core/Logger/level.html">level</a>, with optional error and stack trace.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="trace" class="callable">
+  <span class="name"><a href="../flutter_package_studio_core/Logger/trace.html">trace</a></span><span class="signature">(<wbr><span class="parameter" id="trace-param-message"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">message</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Logs a message at <a href="../flutter_package_studio_core/LogLevel.html">LogLevel.trace</a>.
+  
+
+</dd>
+
+        <dt id="warning" class="callable">
+  <span class="name"><a href="../flutter_package_studio_core/Logger/warning.html">warning</a></span><span class="signature">(<wbr><span class="parameter" id="warning-param-message"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">message</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Logs a message at <a href="../flutter_package_studio_core/LogLevel.html">LogLevel.warning</a>.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">
+        <dt id="addHandler" class="callable">
+  <span class="name"><a href="../flutter_package_studio_core/Logger/addHandler.html">addHandler</a></span><span class="signature">(<wbr><span class="parameter" id="addHandler-param-handler"><span class="type-annotation"><a href="../flutter_package_studio_core/LogHandler-class.html">LogHandler</a></span> <span class="parameter-name">handler</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds a global <a href="../flutter_package_studio_core/LogHandler-class.html">LogHandler</a> to receive log events.
+  
+
+</dd>
+
+        <dt id="clearHandlers" class="callable">
+  <span class="name"><a href="../flutter_package_studio_core/Logger/clearHandlers.html">clearHandlers</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Removes all global handlers.
+  
+
+</dd>
+
+        <dt id="removeHandler" class="callable">
+  <span class="name"><a href="../flutter_package_studio_core/Logger/removeHandler.html">removeHandler</a></span><span class="signature">(<wbr><span class="parameter" id="removeHandler-param-handler"><span class="type-annotation"><a href="../flutter_package_studio_core/LogHandler-class.html">LogHandler</a></span> <span class="parameter-name">handler</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Removes a specific global <a href="../flutter_package_studio_core/LogHandler-class.html">LogHandler</a>.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">flutter_package_studio_core</a></li>
+    <li><a href="../flutter_package_studio_core/">flutter_package_studio_core</a></li>
+    <li class="self-crumb">Logger class</li>
+</ol>
+
+    <h5>flutter_package_studio_core library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    flutter_package_studio_core
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

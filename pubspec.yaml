@@ -1,0 +1,8 @@
+name: flutter_package_studio_workspace
+version: 1.0.0
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+workspace:
+  - packages/flutter_package_studio_core
+  - packages/flutter_package_studio_cli

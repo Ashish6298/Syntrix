@@ -1,0 +1,28 @@
+# Dart/Flutter standard ignores
+.dart_tool/
+.packages
+pubspec.lock
+
+# Build & Test outputs
+build/
+coverage/
+coverage.lcov
+doc/api/
+
+# Local configurations & developer overrides
+local_config.yaml
+fps.yaml
+.fps/
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS-specific files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,17 @@
+name: flutter_package_studio_core
+description: Core architectural library for Flutter Package Studio containing DI, logging, configuration, validation, utilities, and errors.
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  path: ^1.9.0
+  yaml: ^3.1.2
+  meta: ^1.11.0
+
+dev_dependencies:
+  test: ^1.24.0
+  mocktail: ^1.0.3

@@ -1,0 +1,17 @@
+name: flutter_package_studio_cli
+description: CLI application for Flutter Package Studio.
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  args: ^2.4.2
+  flutter_package_studio_core:
+    path: ../flutter_package_studio_core
+
+dev_dependencies:
+  test: ^1.24.0
+  mocktail: ^1.0.3
