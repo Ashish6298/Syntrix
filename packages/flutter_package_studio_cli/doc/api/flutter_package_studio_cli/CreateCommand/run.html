@@ -79,7 +79,217 @@
   <pre class="language-dart"><code class="language-dart">@override
 Future&lt;int&gt; run() async {
   logger.info(&#39;Executing package creation...&#39;);
-  return 0;
+
+  final nameArg = argResults?[&#39;name&#39;] as String?;
+  final isInteractive = argResults?[&#39;interactive&#39;] as bool? ?? true;
+  final isDryRun = argResults?[&#39;dry-run&#39;] as bool? ?? false;
+  final overwritePolicyStr = argResults?[&#39;overwrite&#39;] as String? ?? &#39;fail&#39;;
+
+  final container = DependencyContainer();
+  final terminal = container.isRegistered&lt;TerminalUtils&gt;()
+      ? container.resolve&lt;TerminalUtils&gt;()
+      : const SystemTerminalUtils();
+  final fileUtils = container.isRegistered&lt;FileUtils&gt;()
+      ? container.resolve&lt;FileUtils&gt;()
+      : const SystemFileUtils();
+
+  &#47;&#47; Registry setup
+  final registry = container.isRegistered&lt;TemplateRegistry&gt;()
+      ? container.resolve&lt;TemplateRegistry&gt;()
+      : TemplateRegistry();
+  BuiltinTemplates.registerDefaultTemplates(registry);
+
+  WizardContext wizardContext = WizardContext(
+    packageName: nameArg ?? &#39;&#39;,
+    orgName: argResults?[&#39;org&#39;] as String? ?? &#39;com.example&#39;,
+    templateSelection:
+        argResults?[&#39;template&#39;] as String? ?? &#39;flutter_package&#39;,
+    outputDirectory: argResults?[&#39;output&#39;] as String? ?? &#39;.&#39;,
+  );
+
+  if (isInteractive &amp;&amp; (nameArg == null || nameArg.isEmpty)) {
+    final engine = WizardEngine(
+      renderer: WizardRenderer.fromTerminal(terminal),
+    );
+    final flow = WizardFlow.standard(fileUtils: fileUtils);
+    final session = WizardSession(
+      sessionId: &#39;session_${DateTime.now().millisecondsSinceEpoch}&#39;,
+      context: wizardContext,
+    );
+
+    final result = await engine.run(flow: flow, session: session);
+    if (result is WizardSuccess) {
+      wizardContext = result.context;
+    } else if (result is WizardCancelled) {
+      logger.warning(result.message);
+      return 0;
+    } else if (result is WizardFailure) {
+      logger.error(result.message);
+      return 1;
+    }
+  } else {
+    &#47;&#47; Non-interactive execution validation
+    final validator = const PackageNameValidator();
+    final valRes = validator.validate(wizardContext.packageName);
+    if (!valRes.isValid) {
+      logger.error(valRes.errors.join(&#39;\n&#39;));
+      return 1;
+    }
+  }
+
+  &#47;&#47; Resolve template &amp; execute generator
+  final templateId = wizardContext.templateSelection == &#39;standard&#39; ||
+          wizardContext.templateSelection.isEmpty
+      ? &#39;flutter_package&#39;
+      : wizardContext.templateSelection;
+  final template =
+      registry.get(templateId) ?? registry.get(&#39;flutter_package&#39;);
+
+  if (template == null) {
+    logger.error(&#39;Template with ID &quot;$templateId&quot; could not be resolved.&#39;);
+    return 1;
+  }
+
+  final overwritePolicy = OverwritePolicy.values.firstWhere(
+    (p) =&gt; p.name == overwritePolicyStr.toLowerCase(),
+    orElse: () =&gt; OverwritePolicy.fail,
+  );
+
+  final generator = ProjectGenerator(fileUtils: fileUtils);
+  final templateContext = TemplateContext.fromWizardContext(wizardContext);
+
+  final targetOutputDir = wizardContext.outputDirectory == &#39;.&#39;
+      ? &#39;.&#47;${wizardContext.packageName}&#39;
+      : wizardContext.outputDirectory;
+
+  try {
+    final plan = generator.buildPlan(
+      template: template,
+      context: templateContext,
+      outputDirectory: targetOutputDir,
+      overwritePolicy: overwritePolicy,
+    );
+
+    final result = await generator.execute(plan: plan, dryRun: isDryRun);
+
+    if (!result.isSuccess) {
+      logger.error(&#39;Project generation failed: ${result.errors.join(&#39;, &#39;)}&#39;);
+      return 1;
+    }
+
+    &#47;&#47; Execute repository generation
+    final repoOptions = RepositoryOptions.fromWizardContext(
+      wizardContext,
+      preset: argResults?[&#39;preset&#39;] as String?,
+      license: argResults?[&#39;license&#39;] as String?,
+      gitInit: argResults?[&#39;git&#39;] as bool?,
+      generateCi: argResults?[&#39;ci&#39;] as bool?,
+    );
+
+    final repoGenerator = RepositoryGenerator(
+      fileUtils: fileUtils,
+      logger: logger,
+    );
+
+    final repoPlan = repoGenerator.buildPlan(
+      options: repoOptions,
+      context: templateContext,
+      outputDirectory: targetOutputDir,
+      overwritePolicy: overwritePolicy,
+    );
+
+    final repoResult = await repoGenerator.execute(
+      plan: repoPlan,
+      dryRun: isDryRun,
+    );
+
+    if (!repoResult.isSuccess) {
+      logger.error(&#39;Repository generation failed.&#39;);
+      return 1;
+    }
+
+    &#47;&#47; Execute Example Application Generation if enabled
+    final generateExample = argResults?[&#39;example&#39;] as bool? ?? true;
+    if (generateExample) {
+      final exampleOptions = ExampleOptions.fromWizardContext(
+        wizardContext,
+        exampleDirName: argResults?[&#39;example-dir&#39;] as String?,
+        templateId: argResults?[&#39;example-template&#39;] as String?,
+        overwritePolicy: overwritePolicy,
+      );
+
+      final exampleGenerator = ExampleGenerator(
+        fileUtils: fileUtils,
+        logger: logger,
+      );
+
+      final examplePlan = exampleGenerator.buildPlan(
+        options: exampleOptions,
+        context: templateContext,
+        packageDirectory: targetOutputDir,
+      );
+
+      final exampleResult = await exampleGenerator.execute(
+        plan: examplePlan,
+        dryRun: isDryRun,
+      );
+
+      if (!exampleResult.isSuccess) {
+        final failure = exampleResult as ExampleGenerationFailure;
+        logger.error(
+            &#39;Example application generation failed: ${failure.errors.join(&#39;, &#39;)}&#39;);
+        return 1;
+      }
+    }
+
+    &#47;&#47; Execute GitHub Automation if enabled
+    final enableGitHub = argResults?[&#39;github&#39;] as bool? ?? false;
+    if (enableGitHub) {
+      final githubOptions = GitHubOptions.fromWizardContext(
+        wizardContext,
+        owner: argResults?[&#39;github-owner&#39;] as String?,
+        isPrivate: argResults?[&#39;github-private&#39;] as bool?,
+      );
+
+      final githubGenerator = GitHubRepositoryGenerator(
+        fileUtils: fileUtils,
+        logger: logger,
+      );
+
+      final githubPlan = await githubGenerator.buildPlan(
+        options: githubOptions,
+        context: templateContext,
+        projectDirectory: targetOutputDir,
+      );
+
+      final githubResult = await githubGenerator.execute(
+        plan: githubPlan,
+        options: githubOptions,
+        projectDirectory: targetOutputDir,
+        dryRun: isDryRun,
+      );
+
+      if (!githubResult.isSuccess) {
+        final failure = githubResult as GitHubAutomationFailure;
+        logger
+            .error(&#39;GitHub automation failed: ${failure.errors.join(&#39;, &#39;)}&#39;);
+        return 1;
+      }
+    }
+
+    if (isDryRun) {
+      logger.info(
+          &#39;[DRY RUN] Project, repository, example, and GitHub generation preview complete.&#39;);
+    } else {
+      logger.info(
+          &#39;Project, repository, example, and GitHub automation completed successfully.&#39;);
+    }
+    return 0;
+  } catch (e) {
+    logger.error(
+        &#39;Project, repository, example, or GitHub automation plan failed: $e&#39;);
+    return 1;
+  }
 }</code></pre>
 </section>
 

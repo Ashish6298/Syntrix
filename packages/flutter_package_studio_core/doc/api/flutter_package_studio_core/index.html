@@ -67,6 +67,22 @@
     <section class="summary offset-anchor" id="classes">
       <h2>Classes</h2>
       <dl>
+          <dt id="BuiltinTemplates">
+  <span class="name "><a href="../flutter_package_studio_core/BuiltinTemplates-class.html">BuiltinTemplates</a></span> 
+
+</dt>
+<dd>
+  Provides built-in starter templates for Flutter Package Studio.
+</dd>
+
+          <dt id="CiWorkflowBuilder">
+  <span class="name "><a href="../flutter_package_studio_core/CiWorkflowBuilder-class.html">CiWorkflowBuilder</a></span> 
+
+</dt>
+<dd>
+  Utility for generating CI workflow YAML files.
+</dd>
+
           <dt id="CompositeValidator">
   <span class="name "><a href="../flutter_package_studio_core/CompositeValidator-class.html">CompositeValidator</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
 
@@ -91,6 +107,14 @@
   A standard <a href="../flutter_package_studio_core/LogHandler-class.html">LogHandler</a> that formats and prints logs to stdout/stderr.
 </dd>
 
+          <dt id="DartToolService">
+  <span class="name "><a href="../flutter_package_studio_core/DartToolService-class.html">DartToolService</a></span> 
+
+</dt>
+<dd>
+  Abstract interface for running Dart / Flutter CLI verification tooling safely.
+</dd>
+
           <dt id="DependencyContainer">
   <span class="name "><a href="../flutter_package_studio_core/DependencyContainer-class.html">DependencyContainer</a></span> 
 
@@ -107,6 +131,102 @@
   Validates that a directory path exists and is a directory.
 </dd>
 
+          <dt id="EnvironmentGitHubCredentialProvider">
+  <span class="name "><a href="../flutter_package_studio_core/EnvironmentGitHubCredentialProvider-class.html">EnvironmentGitHubCredentialProvider</a></span> 
+
+</dt>
+<dd>
+  Environment variable-backed implementation (<code>GITHUB_TOKEN</code> or <code>GH_TOKEN</code>).
+</dd>
+
+          <dt id="ExampleAction">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleAction-class.html">ExampleAction</a></span> 
+
+</dt>
+<dd>
+  Represents an individual example application generation action.
+</dd>
+
+          <dt id="ExampleGenerationFailure">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleGenerationFailure-class.html">ExampleGenerationFailure</a></span> 
+
+</dt>
+<dd>
+  Failed example generation result.
+</dd>
+
+          <dt id="ExampleGenerationPlan">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleGenerationPlan-class.html">ExampleGenerationPlan</a></span> 
+
+</dt>
+<dd>
+  Deterministic, inspectable plan for generating an example Flutter application.
+</dd>
+
+          <dt id="ExampleGenerationResult">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleGenerationResult-class.html">ExampleGenerationResult</a></span> 
+
+</dt>
+<dd>
+  Sealed result hierarchy representing outcome of example application generation.
+</dd>
+
+          <dt id="ExampleGenerationSuccess">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleGenerationSuccess-class.html">ExampleGenerationSuccess</a></span> 
+
+</dt>
+<dd>
+  Successful example generation result.
+</dd>
+
+          <dt id="ExampleGenerator">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleGenerator-class.html">ExampleGenerator</a></span> 
+
+</dt>
+<dd>
+  Generator for isolated, runnable Flutter example applications.
+</dd>
+
+          <dt id="ExampleOptions">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleOptions-class.html">ExampleOptions</a></span> 
+
+</dt>
+<dd>
+  Immutable configuration options for generating a Flutter example application.
+</dd>
+
+          <dt id="ExampleProjectValidator">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleProjectValidator-class.html">ExampleProjectValidator</a></span> 
+
+</dt>
+<dd>
+  Inspects a generated or existing Flutter example application and verifies structural integrity.
+</dd>
+
+          <dt id="ExampleTemplate">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleTemplate-class.html">ExampleTemplate</a></span> 
+
+</dt>
+<dd>
+  Represents an example application template style.
+</dd>
+
+          <dt id="ExampleTemplateRegistry">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleTemplateRegistry-class.html">ExampleTemplateRegistry</a></span> 
+
+</dt>
+<dd>
+  Registry for managing available <a href="../flutter_package_studio_core/ExampleTemplate-class.html">ExampleTemplate</a> instances.
+</dd>
+
+          <dt id="ExampleValidationRule">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleValidationRule-class.html">ExampleValidationRule</a></span> 
+
+</dt>
+<dd>
+  Validates existence and local path dependency format in <code>example/</code> directory (<code>EX_001</code>).
+</dd>
+
           <dt id="FileUtils">
   <span class="name "><a href="../flutter_package_studio_core/FileUtils-class.html">FileUtils</a></span> 
 
@@ -115,12 +235,172 @@
   Interface for file system operations, allowing unit tests to use mocks.
 </dd>
 
+          <dt id="FlutterProjectService">
+  <span class="name "><a href="../flutter_package_studio_core/FlutterProjectService-class.html">FlutterProjectService</a></span> 
+
+</dt>
+<dd>
+  Abstract interface for executing Flutter CLI tooling on example applications.
+</dd>
+
           <dt id="FpsConfig">
   <span class="name "><a href="../flutter_package_studio_core/FpsConfig-class.html">FpsConfig</a></span> 
 
 </dt>
 <dd>
   Strongly typed configuration model for Flutter Package Studio.
+</dd>
+
+          <dt id="GenerationAction">
+  <span class="name "><a href="../flutter_package_studio_core/GenerationAction-class.html">GenerationAction</a></span> 
+
+</dt>
+<dd>
+  Individual action entry in a <a href="../flutter_package_studio_core/GenerationPlan-class.html">GenerationPlan</a>.
+</dd>
+
+          <dt id="GenerationPlan">
+  <span class="name "><a href="../flutter_package_studio_core/GenerationPlan-class.html">GenerationPlan</a></span> 
+
+</dt>
+<dd>
+  Inspectable pre-execution plan detailing all filesystem operations.
+</dd>
+
+          <dt id="GenerationResult">
+  <span class="name "><a href="../flutter_package_studio_core/GenerationResult-class.html">GenerationResult</a></span> 
+
+</dt>
+<dd>
+  Detailed result of project generation execution.
+</dd>
+
+          <dt id="GitBranchValidator">
+  <span class="name "><a href="../flutter_package_studio_core/GitBranchValidator-class.html">GitBranchValidator</a></span> 
+
+</dt>
+<dd>
+  Validates that a string is a valid Git branch name.
+</dd>
+
+          <dt id="GitHubAction">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubAction-class.html">GitHubAction</a></span> 
+
+</dt>
+<dd>
+  Individual action entry in a <a href="../flutter_package_studio_core/GitHubRepositoryPlan-class.html">GitHubRepositoryPlan</a>.
+</dd>
+
+          <dt id="GitHubAutomationFailure">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubAutomationFailure-class.html">GitHubAutomationFailure</a></span> 
+
+</dt>
+<dd>
+  Failed GitHub automation result.
+</dd>
+
+          <dt id="GitHubAutomationResult">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubAutomationResult-class.html">GitHubAutomationResult</a></span> 
+
+</dt>
+<dd>
+  Sealed result hierarchy representing outcome of GitHub automation.
+</dd>
+
+          <dt id="GitHubAutomationSuccess">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubAutomationSuccess-class.html">GitHubAutomationSuccess</a></span> 
+
+</dt>
+<dd>
+  Successful GitHub automation result.
+</dd>
+
+          <dt id="GitHubCredentialProvider">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubCredentialProvider-class.html">GitHubCredentialProvider</a></span> 
+
+</dt>
+<dd>
+  Abstract interface for resolving GitHub personal access tokens or credentials securely.
+</dd>
+
+          <dt id="GitHubMetadataBuilder">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubMetadataBuilder-class.html">GitHubMetadataBuilder</a></span> 
+
+</dt>
+<dd>
+  Helper utility for normalizing GitHub topics and repository metadata.
+</dd>
+
+          <dt id="GitHubOptions">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubOptions-class.html">GitHubOptions</a></span> 
+
+</dt>
+<dd>
+  Immutable domain model for GitHub repository creation and remote automation settings.
+</dd>
+
+          <dt id="GitHubRepositoryGenerator">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubRepositoryGenerator-class.html">GitHubRepositoryGenerator</a></span> 
+
+</dt>
+<dd>
+  Orchestrates GitHub remote repository creation, Git remote setup, and initial push.
+</dd>
+
+          <dt id="GitHubRepositoryPlan">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubRepositoryPlan-class.html">GitHubRepositoryPlan</a></span> 
+
+</dt>
+<dd>
+  Deterministic, plan-first model for GitHub remote automation.
+</dd>
+
+          <dt id="GitHubService">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubService-class.html">GitHubService</a></span> 
+
+</dt>
+<dd>
+  Abstract service for interacting with GitHub REST API.
+</dd>
+
+          <dt id="GitignoreBuilder">
+  <span class="name "><a href="../flutter_package_studio_core/GitignoreBuilder-class.html">GitignoreBuilder</a></span> 
+
+</dt>
+<dd>
+  Utility for generating structured .gitignore contents.
+</dd>
+
+          <dt id="GitService">
+  <span class="name "><a href="../flutter_package_studio_core/GitService-class.html">GitService</a></span> 
+
+</dt>
+<dd>
+  Abstract interface for executing local Git commands.
+</dd>
+
+          <dt id="JsonValidationReporter">
+  <span class="name "><a href="../flutter_package_studio_core/JsonValidationReporter-class.html">JsonValidationReporter</a></span> 
+
+</dt>
+<dd>
+  Machine-readable JSON reporter.
+</dd>
+
+          <dt id="LicenseIdentifierValidator">
+  <span class="name "><a href="../flutter_package_studio_core/LicenseIdentifierValidator-class.html">LicenseIdentifierValidator</a></span> 
+
+</dt>
+<dd>
+  Validates that a string is a recognized open-source license identifier.
+</dd>
+
+          <dt id="LicenseProvider">
+  <span class="name "><a href="../flutter_package_studio_core/LicenseProvider-class.html">LicenseProvider</a></span> 
+
+</dt>
+<dd>
+  Provides standardized open-source license templates.
 </dd>
 
           <dt id="Logger">
@@ -147,6 +427,14 @@
   A structured container for a single log message.
 </dd>
 
+          <dt id="MockableGitHubService">
+  <span class="name "><a href="../flutter_package_studio_core/MockableGitHubService-class.html">MockableGitHubService</a></span> 
+
+</dt>
+<dd>
+  Mockable/Fake implementation of <a href="../flutter_package_studio_core/GitHubService-class.html">GitHubService</a> for unit testing without live HTTP calls.
+</dd>
+
           <dt id="PackageNameValidator">
   <span class="name "><a href="../flutter_package_studio_core/PackageNameValidator-class.html">PackageNameValidator</a></span> 
 
@@ -155,12 +443,140 @@
   Validates that a string is a valid Dart/Flutter package name.
 </dd>
 
+          <dt id="PackageStructureRule">
+  <span class="name "><a href="../flutter_package_studio_core/PackageStructureRule-class.html">PackageStructureRule</a></span> 
+
+</dt>
+<dd>
+  Validates package root structure and pubspec existence (<code>STRUCT_001</code>).
+</dd>
+
           <dt id="PlatformUtils">
   <span class="name "><a href="../flutter_package_studio_core/PlatformUtils-class.html">PlatformUtils</a></span> 
 
 </dt>
 <dd>
   Interface for platform-specific queries, enabling unit tests to mock execution environment.
+</dd>
+
+          <dt id="ProjectGenerator">
+  <span class="name "><a href="../flutter_package_studio_core/ProjectGenerator-class.html">ProjectGenerator</a></span> 
+
+</dt>
+<dd>
+  Core project generator constructing and executing <a href="../flutter_package_studio_core/GenerationPlan-class.html">GenerationPlan</a>s.
+</dd>
+
+          <dt id="PubspecValidationRule">
+  <span class="name "><a href="../flutter_package_studio_core/PubspecValidationRule-class.html">PubspecValidationRule</a></span> 
+
+</dt>
+<dd>
+  Validates pubspec name, description, version, and SDK fields (<code>PUBSPEC_001</code>).
+</dd>
+
+          <dt id="RepositoryAction">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryAction-class.html">RepositoryAction</a></span> 
+
+</dt>
+<dd>
+  Represents an individual repository generation action.
+</dd>
+
+          <dt id="RepositoryAssetRule">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryAssetRule-class.html">RepositoryAssetRule</a></span> 
+
+</dt>
+<dd>
+  Validates repository files (.gitignore, README, LICENSE) (<code>REPO_001</code>).
+</dd>
+
+          <dt id="RepositoryFileGenerator">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryFileGenerator-class.html">RepositoryFileGenerator</a></span> 
+
+</dt>
+<dd>
+  Helper generator for standard repository files using <a href="../flutter_package_studio_core/TemplateContext-class.html">TemplateContext</a> and <a href="../flutter_package_studio_core/TemplateRenderer-class.html">TemplateRenderer</a>.
+</dd>
+
+          <dt id="RepositoryGenerationCancelled">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryGenerationCancelled-class.html">RepositoryGenerationCancelled</a></span> 
+
+</dt>
+<dd>
+  Cancelled repository generation result.
+</dd>
+
+          <dt id="RepositoryGenerationFailure">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryGenerationFailure-class.html">RepositoryGenerationFailure</a></span> 
+
+</dt>
+<dd>
+  Failed repository generation result.
+</dd>
+
+          <dt id="RepositoryGenerationPlan">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryGenerationPlan-class.html">RepositoryGenerationPlan</a></span> 
+
+</dt>
+<dd>
+  Deterministic, inspectable plan for repository file generation and initialization.
+</dd>
+
+          <dt id="RepositoryGenerationResult">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryGenerationResult-class.html">RepositoryGenerationResult</a></span> 
+
+</dt>
+<dd>
+  Sealed result hierarchy representing outcome of repository generation.
+</dd>
+
+          <dt id="RepositoryGenerationSuccess">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryGenerationSuccess-class.html">RepositoryGenerationSuccess</a></span> 
+
+</dt>
+<dd>
+  Successful repository generation result.
+</dd>
+
+          <dt id="RepositoryGenerator">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryGenerator-class.html">RepositoryGenerator</a></span> 
+
+</dt>
+<dd>
+  Core Repository Generator responsible for creating repository files and initializing Git.
+</dd>
+
+          <dt id="RepositoryNameValidator">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryNameValidator-class.html">RepositoryNameValidator</a></span> 
+
+</dt>
+<dd>
+  Validates that a string is a valid repository name identifier.
+</dd>
+
+          <dt id="RepositoryOptions">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryOptions-class.html">RepositoryOptions</a></span> 
+
+</dt>
+<dd>
+  Immutable configuration options for repository generation.
+</dd>
+
+          <dt id="RepositoryPreset">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryPreset-class.html">RepositoryPreset</a></span> 
+
+</dt>
+<dd>
+  Predefined repository configuration preset profile.
+</dd>
+
+          <dt id="SecurityValidationRule">
+  <span class="name "><a href="../flutter_package_studio_core/SecurityValidationRule-class.html">SecurityValidationRule</a></span> 
+
+</dt>
+<dd>
+  Detects exposed tokens, secrets, or unsafe path traversal patterns (<code>SEC_001</code>).
 </dd>
 
           <dt id="SemVerValidator">
@@ -179,12 +595,36 @@
   Foundational string utilities for casing conversions and validations.
 </dd>
 
+          <dt id="SystemDartToolService">
+  <span class="name "><a href="../flutter_package_studio_core/SystemDartToolService-class.html">SystemDartToolService</a></span> 
+
+</dt>
+<dd>
+  System process implementation of <a href="../flutter_package_studio_core/DartToolService-class.html">DartToolService</a>.
+</dd>
+
           <dt id="SystemFileUtils">
   <span class="name "><a href="../flutter_package_studio_core/SystemFileUtils-class.html">SystemFileUtils</a></span> 
 
 </dt>
 <dd>
   Production implementation of <a href="../flutter_package_studio_core/FileUtils-class.html">FileUtils</a> delegating to <a href="https://api.flutter.dev/flutter/dart-io/File-class.html">io.File</a> and <a href="https://api.flutter.dev/flutter/dart-io/Directory-class.html">io.Directory</a>.
+</dd>
+
+          <dt id="SystemFlutterProjectService">
+  <span class="name "><a href="../flutter_package_studio_core/SystemFlutterProjectService-class.html">SystemFlutterProjectService</a></span> 
+
+</dt>
+<dd>
+  Production implementation of <a href="../flutter_package_studio_core/FlutterProjectService-class.html">FlutterProjectService</a> executing system <code>flutter</code> CLI.
+</dd>
+
+          <dt id="SystemGitService">
+  <span class="name "><a href="../flutter_package_studio_core/SystemGitService-class.html">SystemGitService</a></span> 
+
+</dt>
+<dd>
+  Production implementation of <a href="../flutter_package_studio_core/GitService-class.html">GitService</a> executing system <code>git</code> CLI process.
 </dd>
 
           <dt id="SystemPlatformUtils">
@@ -203,6 +643,62 @@
   Production implementation of <a href="../flutter_package_studio_core/TerminalUtils-class.html">TerminalUtils</a> delegating to <a href="https://api.flutter.dev/flutter/dart-io/stdout.html">io.stdout</a>.
 </dd>
 
+          <dt id="Template">
+  <span class="name "><a href="../flutter_package_studio_core/Template-class.html">Template</a></span> 
+
+</dt>
+<dd>
+  Represents a loaded template bundle ready for variable resolution and rendering.
+</dd>
+
+          <dt id="TemplateCondition">
+  <span class="name "><a href="../flutter_package_studio_core/TemplateCondition-class.html">TemplateCondition</a></span> 
+
+</dt>
+<dd>
+  Safe evaluator determining whether a conditional template file or directory should be generated.
+</dd>
+
+          <dt id="TemplateContext">
+  <span class="name "><a href="../flutter_package_studio_core/TemplateContext-class.html">TemplateContext</a></span> 
+
+</dt>
+<dd>
+  Normalized context providing template variables for placeholder rendering.
+</dd>
+
+          <dt id="TemplateManifest">
+  <span class="name "><a href="../flutter_package_studio_core/TemplateManifest-class.html">TemplateManifest</a></span> 
+
+</dt>
+<dd>
+  Machine-readable manifest defining template metadata, variables, files, and rules.
+</dd>
+
+          <dt id="TemplateRegistry">
+  <span class="name "><a href="../flutter_package_studio_core/TemplateRegistry-class.html">TemplateRegistry</a></span> 
+
+</dt>
+<dd>
+  Registry responsible for discovering, registering, searching, and retrieving templates.
+</dd>
+
+          <dt id="TemplateRenderer">
+  <span class="name "><a href="../flutter_package_studio_core/TemplateRenderer-class.html">TemplateRenderer</a></span> 
+
+</dt>
+<dd>
+  Deterministic placeholder renderer substituting <code>{{key}}</code> variables in text and file paths.
+</dd>
+
+          <dt id="TemplateVariableDefinition">
+  <span class="name "><a href="../flutter_package_studio_core/TemplateVariableDefinition-class.html">TemplateVariableDefinition</a></span> 
+
+</dt>
+<dd>
+  Represents the definition of a variable expected or used by a template.
+</dd>
+
           <dt id="TerminalUtils">
   <span class="name "><a href="../flutter_package_studio_core/TerminalUtils-class.html">TerminalUtils</a></span> 
 
@@ -211,12 +707,92 @@
   Interface for terminal capability detection.
 </dd>
 
+          <dt id="TextValidationReporter">
+  <span class="name "><a href="../flutter_package_studio_core/TextValidationReporter-class.html">TextValidationReporter</a></span> 
+
+</dt>
+<dd>
+  Plain text / CLI human-readable reporter.
+</dd>
+
+          <dt id="UrlValidator">
+  <span class="name "><a href="../flutter_package_studio_core/UrlValidator-class.html">UrlValidator</a></span> 
+
+</dt>
+<dd>
+  Validates that a string is a valid HTTP/HTTPS URL or empty string.
+</dd>
+
+          <dt id="ValidationEngine">
+  <span class="name "><a href="../flutter_package_studio_core/ValidationEngine-class.html">ValidationEngine</a></span> 
+
+</dt>
+<dd>
+  Central engine for orchestrating non-mutating validation runs.
+</dd>
+
+          <dt id="ValidationIssue">
+  <span class="name "><a href="../flutter_package_studio_core/ValidationIssue-class.html">ValidationIssue</a></span> 
+
+</dt>
+<dd>
+  An individual validation finding/issue produced by a rule.
+</dd>
+
+          <dt id="ValidationReport">
+  <span class="name "><a href="../flutter_package_studio_core/ValidationReport-class.html">ValidationReport</a></span> 
+
+</dt>
+<dd>
+  Comprehensive, immutable report produced by <a href="../flutter_package_studio_core/ValidationEngine-class.html">ValidationEngine</a>.
+</dd>
+
+          <dt id="ValidationReporter">
+  <span class="name "><a href="../flutter_package_studio_core/ValidationReporter-class.html">ValidationReporter</a></span> 
+
+</dt>
+<dd>
+  Abstract reporter interface for rendering <a href="../flutter_package_studio_core/ValidationReport-class.html">ValidationReport</a>s.
+</dd>
+
+          <dt id="ValidationRequest">
+  <span class="name "><a href="../flutter_package_studio_core/ValidationRequest-class.html">ValidationRequest</a></span> 
+
+</dt>
+<dd>
+  Validation request context detailing target directory and profile.
+</dd>
+
           <dt id="ValidationResult">
   <span class="name "><a href="../flutter_package_studio_core/ValidationResult-class.html">ValidationResult</a></span> 
 
 </dt>
 <dd>
   The result of executing a validation operation.
+</dd>
+
+          <dt id="ValidationRule">
+  <span class="name "><a href="../flutter_package_studio_core/ValidationRule-class.html">ValidationRule</a></span> 
+
+</dt>
+<dd>
+  Abstract contract for a single composable validation rule.
+</dd>
+
+          <dt id="ValidationRuleRegistry">
+  <span class="name "><a href="../flutter_package_studio_core/ValidationRuleRegistry-class.html">ValidationRuleRegistry</a></span> 
+
+</dt>
+<dd>
+  Registry managing injectable composable validation rules and profiles.
+</dd>
+
+          <dt id="ValidationSummary">
+  <span class="name "><a href="../flutter_package_studio_core/ValidationSummary-class.html">ValidationSummary</a></span> 
+
+</dt>
+<dd>
+  Summary counts of validation issues.
 </dd>
 
           <dt id="Validator">
@@ -235,18 +811,202 @@
   Version utility class for parsing, validating, and comparing semantic versions (SemVer).
 </dd>
 
+          <dt id="WizardCancelled">
+  <span class="name "><a href="../flutter_package_studio_core/WizardCancelled-class.html">WizardCancelled</a></span> 
+
+</dt>
+<dd>
+  Indicates the wizard was cancelled by user (e.g., Ctrl+C or 'q').
+</dd>
+
+          <dt id="WizardContext">
+  <span class="name "><a href="../flutter_package_studio_core/WizardContext-class.html">WizardContext</a></span> 
+
+</dt>
+<dd>
+  Holds all project creation options collected during a wizard session.
+</dd>
+
+          <dt id="WizardEngine">
+  <span class="name "><a href="../flutter_package_studio_core/WizardEngine-class.html">WizardEngine</a></span> 
+
+</dt>
+<dd>
+  Orchestrates wizard workflow execution, managing steps, retries, navigation, and rendering.
+</dd>
+
+          <dt id="WizardFailure">
+  <span class="name "><a href="../flutter_package_studio_core/WizardFailure-class.html">WizardFailure</a></span> 
+
+</dt>
+<dd>
+  Indicates an unexpected error or unhandled failure occurred.
+</dd>
+
+          <dt id="WizardFlow">
+  <span class="name "><a href="../flutter_package_studio_core/WizardFlow-class.html">WizardFlow</a></span> 
+
+</dt>
+<dd>
+  Defines wizard flows and step sequences.
+</dd>
+
+          <dt id="WizardHistory">
+  <span class="name "><a href="../flutter_package_studio_core/WizardHistory-class.html">WizardHistory</a></span> 
+
+</dt>
+<dd>
+  Tracks wizard navigation history stack for back/undo operations.
+</dd>
+
+          <dt id="WizardHistoryEntry">
+  <span class="name "><a href="../flutter_package_studio_core/WizardHistoryEntry-class.html">WizardHistoryEntry</a></span> 
+
+</dt>
+<dd>
+  Stack-based history tracking answered wizard step IDs and responses for backward navigation.
+</dd>
+
+          <dt id="WizardNavigator">
+  <span class="name "><a href="../flutter_package_studio_core/WizardNavigator-class.html">WizardNavigator</a></span> 
+
+</dt>
+<dd>
+  Navigation engine responsible for evaluating conditions, skipping irrelevant steps, and step indexing.
+</dd>
+
+          <dt id="WizardOption">
+  <span class="name "><a href="../flutter_package_studio_core/WizardOption-class.html">WizardOption</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Represents a single selectable choice in single/multi select questions.
+</dd>
+
+          <dt id="WizardQuestion">
+  <span class="name "><a href="../flutter_package_studio_core/WizardQuestion-class.html">WizardQuestion</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Abstract representation of a wizard question.
+</dd>
+
+          <dt id="WizardRenderer">
+  <span class="name "><a href="../flutter_package_studio_core/WizardRenderer-class.html">WizardRenderer</a></span> 
+
+</dt>
+<dd>
+  Renderer responsible for terminal output formatting, prompt printing, and summary screens.
+</dd>
+
+          <dt id="WizardResult">
+  <span class="name "><a href="../flutter_package_studio_core/WizardResult-class.html">WizardResult</a></span> 
+
+</dt>
+<dd>
+  Sealed-like outcome result of wizard execution.
+</dd>
+
+          <dt id="WizardSession">
+  <span class="name "><a href="../flutter_package_studio_core/WizardSession-class.html">WizardSession</a></span> 
+
+</dt>
+<dd>
+  Manages interactive wizard session state, current step index, and JSON serialization.
+</dd>
+
+          <dt id="WizardStep">
+  <span class="name "><a href="../flutter_package_studio_core/WizardStep-class.html">WizardStep</a></span> 
+
+</dt>
+<dd>
+  Represents a single logical step in the wizard workflow containing one or more questions.
+</dd>
+
+          <dt id="WizardSuccess">
+  <span class="name "><a href="../flutter_package_studio_core/WizardSuccess-class.html">WizardSuccess</a></span> 
+
+</dt>
+<dd>
+  Indicates the wizard completed successfully.
+</dd>
+
+          <dt id="WizardTheme">
+  <span class="name "><a href="../flutter_package_studio_core/WizardTheme-class.html">WizardTheme</a></span> 
+
+</dt>
+<dd>
+  Defines terminal styles, ANSI colors, and glyph fallbacks for the wizard.
+</dd>
+
+          <dt id="WizardValidator">
+  <span class="name "><a href="../flutter_package_studio_core/WizardValidator-class.html">WizardValidator</a></span> 
+
+</dt>
+<dd>
+  Custom validators for numeric ranges, paths, non-empty text, and URL validation.
+</dd>
+
       </dl>
     </section>
 
     <section class="summary offset-anchor" id="enums">
       <h2>Enums</h2>
       <dl>
+          <dt id="ActionType">
+  <span class="name "><a href="../flutter_package_studio_core/ActionType.html">ActionType</a></span> 
+
+</dt>
+<dd>
+  Type of filesystem action in a generation plan.
+</dd>
+
+          <dt id="GitHubActionType">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubActionType.html">GitHubActionType</a></span> 
+
+</dt>
+<dd>
+  Action types in GitHub automation plan.
+</dd>
+
           <dt id="LogLevel">
   <span class="name "><a href="../flutter_package_studio_core/LogLevel.html">LogLevel</a></span> 
 
 </dt>
 <dd>
   Log levels indicating severity.
+</dd>
+
+          <dt id="OverwritePolicy">
+  <span class="name "><a href="../flutter_package_studio_core/OverwritePolicy.html">OverwritePolicy</a></span> 
+
+</dt>
+<dd>
+  Overwrite collision resolution policy for existing files.
+</dd>
+
+          <dt id="ValidationCategory">
+  <span class="name "><a href="../flutter_package_studio_core/ValidationCategory.html">ValidationCategory</a></span> 
+
+</dt>
+<dd>
+  Categories for organizing validation rules.
+</dd>
+
+          <dt id="ValidationSeverity">
+  <span class="name "><a href="../flutter_package_studio_core/ValidationSeverity.html">ValidationSeverity</a></span> 
+
+</dt>
+<dd>
+  Severity levels for validation issues.
+</dd>
+
+          <dt id="WizardQuestionType">
+  <span class="name "><a href="../flutter_package_studio_core/WizardQuestionType.html">WizardQuestionType</a></span> 
+
+</dt>
+<dd>
+  Supported types of wizard questions.
 </dd>
 
       </dl>
@@ -258,6 +1018,25 @@
 
 
 
+    <section class="summary offset-anchor" id="typedefs">
+      <h2>Typedefs</h2>
+      <dl>
+          
+  <dt id="LineReader" class="callable">
+    <span class="name"><a href="../flutter_package_studio_core/LineReader.html">LineReader</a></span><span class="signature">
+      <span class="returntype parameter">= <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>? Function<span class="signature">()</span></span>
+    </span>
+    
+
+  </dt>
+  <dd>
+    Function interface for reading text input lines (supports mocking in unit tests).
+    
+
+  </dd>
+
+      </dl>
+    </section>
 
     <section class="summary offset-anchor" id="exceptions">
       <h2>Exceptions / Errors</h2>
@@ -286,12 +1065,100 @@
   Thrown when a dependency cannot be resolved or registered.
 </dd>
 
+          <dt id="ExampleGenerationException">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleGenerationException-class.html">ExampleGenerationException</a></span> 
+
+</dt>
+<dd>
+  Thrown when example application configuration, planning, or generation fails.
+</dd>
+
+          <dt id="ExampleTemplateException">
+  <span class="name "><a href="../flutter_package_studio_core/ExampleTemplateException-class.html">ExampleTemplateException</a></span> 
+
+</dt>
+<dd>
+  Thrown when example template loading or rendering fails.
+</dd>
+
+          <dt id="GitException">
+  <span class="name "><a href="../flutter_package_studio_core/GitException-class.html">GitException</a></span> 
+
+</dt>
+<dd>
+  Thrown when Git verification, command execution, or initialization fails.
+</dd>
+
+          <dt id="GitHubAuthenticationException">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubAuthenticationException-class.html">GitHubAuthenticationException</a></span> 
+
+</dt>
+<dd>
+  Thrown when GitHub credentials or tokens are missing or invalid.
+</dd>
+
+          <dt id="GitHubAuthorizationException">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubAuthorizationException-class.html">GitHubAuthorizationException</a></span> 
+
+</dt>
+<dd>
+  Thrown when authorization or scope permissions fail on GitHub.
+</dd>
+
+          <dt id="GitHubConfigurationException">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubConfigurationException-class.html">GitHubConfigurationException</a></span> 
+
+</dt>
+<dd>
+  Thrown when GitHub options or configuration is invalid.
+</dd>
+
+          <dt id="GitHubException">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubException-class.html">GitHubException</a></span> 
+
+</dt>
+<dd>
+  Base exception for GitHub API, credential, or remote execution errors.
+</dd>
+
+          <dt id="GitHubNetworkException">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubNetworkException-class.html">GitHubNetworkException</a></span> 
+
+</dt>
+<dd>
+  Thrown when network connectivity to GitHub API fails.
+</dd>
+
+          <dt id="GitHubRepositoryExistsException">
+  <span class="name "><a href="../flutter_package_studio_core/GitHubRepositoryExistsException-class.html">GitHubRepositoryExistsException</a></span> 
+
+</dt>
+<dd>
+  Thrown when a remote GitHub repository already exists on conflict.
+</dd>
+
+          <dt id="LicenseException">
+  <span class="name "><a href="../flutter_package_studio_core/LicenseException-class.html">LicenseException</a></span> 
+
+</dt>
+<dd>
+  Thrown when license resolution or rendering fails.
+</dd>
+
           <dt id="PackageStudioException">
   <span class="name "><a href="../flutter_package_studio_core/PackageStudioException-class.html">PackageStudioException</a></span> 
 
 </dt>
 <dd>
   Base exception class for all errors in the application.
+</dd>
+
+          <dt id="RepositoryException">
+  <span class="name "><a href="../flutter_package_studio_core/RepositoryException-class.html">RepositoryException</a></span> 
+
+</dt>
+<dd>
+  Thrown when repository options resolution or generation fails.
 </dd>
 
           <dt id="StudioFileSystemException">
@@ -302,12 +1169,36 @@
   Thrown when file system or I/O operations fail.
 </dd>
 
+          <dt id="TemplateException">
+  <span class="name "><a href="../flutter_package_studio_core/TemplateException-class.html">TemplateException</a></span> 
+
+</dt>
+<dd>
+  Thrown when template manifest parsing, template loading, placeholder rendering, or generation fails.
+</dd>
+
           <dt id="ValidationException">
   <span class="name "><a href="../flutter_package_studio_core/ValidationException-class.html">ValidationException</a></span> 
 
 </dt>
 <dd>
-  Thrown when validation of parameters, inputs, or models fails.
+  Thrown when input validation fails.
+</dd>
+
+          <dt id="ValidationRuleException">
+  <span class="name "><a href="../flutter_package_studio_core/ValidationRuleException-class.html">ValidationRuleException</a></span> 
+
+</dt>
+<dd>
+  Thrown when a validation rule execution fails unexpectedly.
+</dd>
+
+          <dt id="ValidationToolException">
+  <span class="name "><a href="../flutter_package_studio_core/ValidationToolException-class.html">ValidationToolException</a></span> 
+
+</dt>
+<dd>
+  Thrown when external validation tooling process fails.
 </dd>
 
       </dl>

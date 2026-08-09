@@ -78,8 +78,35 @@
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
 Future&lt;int&gt; run() async {
-  logger.info(&#39;Executing package audit...&#39;);
-  return 0;
+  final targetDir = argResults?[&#39;target&#39;] as String? ?? &#39;.&#39;;
+  final profile = argResults?[&#39;profile&#39;] as String? ?? &#39;standard&#39;;
+  final isJson = argResults?[&#39;json&#39;] as bool? ?? false;
+
+  logger.info(
+      &#39;Executing package audit for &quot;$targetDir&quot; (profile: $profile)...&#39;);
+
+  final engine = ValidationEngine(
+    fileUtils: const SystemFileUtils(),
+    logger: logger,
+  );
+
+  final request = ValidationRequest(
+    targetDirectory: targetDir,
+    profile: profile,
+  );
+
+  final report = await engine.validate(request);
+  final reporter =
+      isJson ? JsonValidationReporter() : TextValidationReporter();
+
+  final output = reporter.render(report);
+  if (isJson) {
+    print(output);
+  } else {
+    logger.info(&#39;\n$output&#39;);
+  }
+
+  return report.isValid ? 0 : 1;
 }</code></pre>
 </section>
 

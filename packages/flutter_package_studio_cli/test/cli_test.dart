@@ -1,3 +1,4 @@
+import 'dart:io' as io;
 import 'package:test/test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
@@ -54,7 +55,17 @@ void main() {
       final registry = CommandRegistry();
       registry.register(CreateCommand());
 
-      final exitCode = await registry.run(['create']);
+      final tempDir = io.Directory.systemTemp.createTempSync('cli_test_1').path;
+      final exitCode = await registry.run([
+        'create',
+        '--name',
+        'test_pkg',
+        '--output',
+        '$tempDir/test_pkg',
+        '--no-interactive',
+        '--dry-run'
+      ]);
+
       expect(exitCode, 0);
     });
 
@@ -88,7 +99,18 @@ void main() {
 
       expect(rootLogger.level, LogLevel.info);
 
-      final exitCode = await registry.run(['-v', 'create']);
+      final tempDir = io.Directory.systemTemp.createTempSync('cli_test_2').path;
+      final exitCode = await registry.run([
+        '-v',
+        'create',
+        '--name',
+        'test_pkg',
+        '--output',
+        '$tempDir/test_pkg',
+        '--no-interactive',
+        '--dry-run'
+      ]);
+
       expect(exitCode, 0);
       expect(rootLogger.level, LogLevel.trace);
     });

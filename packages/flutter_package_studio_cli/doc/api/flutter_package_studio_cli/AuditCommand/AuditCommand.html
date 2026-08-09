@@ -60,6 +60,28 @@
 
 
     
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">AuditCommand() {
+  argParser.addOption(
+    &#39;target&#39;,
+    abbr: &#39;t&#39;,
+    help: &#39;Target package directory to audit.&#39;,
+    defaultsTo: &#39;.&#39;,
+  );
+  argParser.addOption(
+    &#39;profile&#39;,
+    abbr: &#39;p&#39;,
+    help: &#39;Validation profile (basic, standard, strict, release).&#39;,
+    defaultsTo: &#39;standard&#39;,
+  );
+  argParser.addFlag(
+    &#39;json&#39;,
+    defaultsTo: false,
+    help: &#39;Output report in JSON format.&#39;,
+  );
+}</code></pre>
+</section>
 
 
   </div> <!-- /.main-content -->

@@ -1,6 +1,18 @@
 import 'package:flutter_package_studio_core/src/utils/file_utils.dart';
 import 'package:flutter_package_studio_core/src/utils/version_utils.dart';
 
+export 'validation_models.dart';
+export 'validation_rule.dart';
+export 'dart_tool_service.dart';
+export 'validation_registry.dart';
+export 'validation_reporter.dart';
+export 'validation_engine.dart';
+export 'rules/structure_rules.dart';
+export 'rules/pubspec_rules.dart';
+export 'rules/security_rules.dart';
+export 'rules/example_rules.dart';
+export 'rules/repository_rules.dart';
+
 /// The result of executing a validation operation.
 class ValidationResult {
   /// Whether the validation succeeded.
@@ -194,5 +206,116 @@ class DirectoryExistsValidator implements Validator<String> {
       return ValidationResult.failure(['Path "$trimmed" is not a directory.']);
     }
     return ValidationResult.success();
+  }
+}
+
+/// Validates that a string is a valid repository name identifier.
+class RepositoryNameValidator implements Validator<String> {
+  static final RegExp _validRepoRegExp =
+      RegExp(r'^[a-zA-Z0-9_][a-zA-Z0-9_\-\.]*$');
+
+  /// Creates a [RepositoryNameValidator] instance.
+  const RepositoryNameValidator();
+
+  @override
+  ValidationResult validate(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      return ValidationResult.failure(['Repository name cannot be empty.']);
+    }
+
+    if (!_validRepoRegExp.hasMatch(trimmed)) {
+      return ValidationResult.failure([
+        'Repository name "$trimmed" must consist of alphanumeric characters, hyphens, dots, or underscores.'
+      ]);
+    }
+
+    return ValidationResult.success();
+  }
+}
+
+/// Validates that a string is a valid Git branch name.
+class GitBranchValidator implements Validator<String> {
+  static final RegExp _validBranchRegExp =
+      RegExp(r'^(?!/)(?!.*//)(?!.*\.\.)[a-zA-Z0-9_\-\./]+(?<!/)$');
+
+  /// Creates a [GitBranchValidator] instance.
+  const GitBranchValidator();
+
+  @override
+  ValidationResult validate(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      return ValidationResult.failure(['Git branch name cannot be empty.']);
+    }
+
+    if (trimmed.contains(' ') ||
+        trimmed.contains('~') ||
+        trimmed.contains('^') ||
+        trimmed.contains(':') ||
+        trimmed.contains('?')) {
+      return ValidationResult.failure(
+          ['Git branch name "$trimmed" contains invalid characters.']);
+    }
+
+    if (!_validBranchRegExp.hasMatch(trimmed)) {
+      return ValidationResult.failure(
+          ['Git branch name "$trimmed" is invalid.']);
+    }
+
+    return ValidationResult.success();
+  }
+}
+
+/// Validates that a string is a recognized open-source license identifier.
+class LicenseIdentifierValidator implements Validator<String> {
+  static const Set<String> _supportedLicenses = {
+    'mit',
+    'apache-2.0',
+    'bsd-3-clause',
+    'gpl-3.0',
+    'none',
+  };
+
+  /// Creates a [LicenseIdentifierValidator] instance.
+  const LicenseIdentifierValidator();
+
+  @override
+  ValidationResult validate(String value) {
+    final normalized = value.trim().toLowerCase();
+    if (_supportedLicenses.contains(normalized)) {
+      return ValidationResult.success();
+    }
+    return ValidationResult.failure([
+      'Unsupported license "$value". Supported choices are: ${Set.unmodifiable(_supportedLicenses).join(', ')}.'
+    ]);
+  }
+}
+
+/// Validates that a string is a valid HTTP/HTTPS URL or empty string.
+class UrlValidator implements Validator<String> {
+  final bool allowEmpty;
+
+  /// Creates a [UrlValidator] with optional [allowEmpty] flag.
+  const UrlValidator({this.allowEmpty = true});
+
+  @override
+  ValidationResult validate(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      if (allowEmpty) return ValidationResult.success();
+      return ValidationResult.failure(['URL cannot be empty.']);
+    }
+
+    final uri = Uri.tryParse(trimmed);
+    if (uri != null &&
+        uri.hasScheme &&
+        (uri.scheme == 'http' || uri.scheme == 'https') &&
+        uri.hasAuthority) {
+      return ValidationResult.success();
+    }
+
+    return ValidationResult.failure(
+        ['"$trimmed" is not a valid HTTP/HTTPS URL.']);
   }
 }

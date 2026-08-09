@@ -57,9 +57,111 @@
       <span class="name ">CreateCommand</span>(<wbr>)
     </section>
     
+<section class="desc markdown">
+  <p>Creates a <a href="../../flutter_package_studio_cli/CreateCommand-class.html">CreateCommand</a> instance and sets CLI options.</p>
+</section>
 
 
     
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">CreateCommand() {
+  argParser.addOption(
+    &#39;name&#39;,
+    abbr: &#39;n&#39;,
+    help: &#39;The package name identifier.&#39;,
+  );
+  argParser.addOption(
+    &#39;org&#39;,
+    abbr: &#39;o&#39;,
+    help: &#39;The organization reverse domain prefix.&#39;,
+    defaultsTo: &#39;com.example&#39;,
+  );
+  argParser.addOption(
+    &#39;template&#39;,
+    abbr: &#39;t&#39;,
+    help: &#39;Project template archetype.&#39;,
+    defaultsTo: &#39;standard&#39;,
+  );
+  argParser.addOption(
+    &#39;output&#39;,
+    abbr: &#39;d&#39;,
+    help: &#39;Target output directory.&#39;,
+    defaultsTo: &#39;.&#39;,
+  );
+
+  argParser.addFlag(
+    &#39;interactive&#39;,
+    abbr: &#39;i&#39;,
+    defaultsTo: true,
+    help: &#39;Launch interactive project wizard if inputs are unspecified.&#39;,
+  );
+  argParser.addFlag(
+    &#39;dry-run&#39;,
+    negatable: false,
+    help: &#39;Preview project generation without writing files to disk.&#39;,
+  );
+  argParser.addOption(
+    &#39;overwrite&#39;,
+    help: &#39;Overwrite policy for existing files (fail, skip, overwrite).&#39;,
+    defaultsTo: &#39;fail&#39;,
+  );
+  argParser.addOption(
+    &#39;license&#39;,
+    abbr: &#39;l&#39;,
+    help:
+        &#39;Open-source license (MIT, Apache-2.0, BSD-3-Clause, GPL-3.0, none).&#39;,
+    defaultsTo: &#39;MIT&#39;,
+  );
+  argParser.addOption(
+    &#39;preset&#39;,
+    abbr: &#39;p&#39;,
+    help:
+        &#39;Repository profile preset (minimal, standard, open_source, maintainer).&#39;,
+    defaultsTo: &#39;standard&#39;,
+  );
+  argParser.addFlag(
+    &#39;git&#39;,
+    defaultsTo: true,
+    help: &#39;Initialize local Git repository.&#39;,
+  );
+  argParser.addFlag(
+    &#39;ci&#39;,
+    defaultsTo: true,
+    help: &#39;Generate GitHub Actions CI workflow.&#39;,
+  );
+  argParser.addFlag(
+    &#39;example&#39;,
+    defaultsTo: true,
+    help: &#39;Generate runnable isolated Flutter example application.&#39;,
+  );
+  argParser.addOption(
+    &#39;example-template&#39;,
+    help: &#39;Example application template (standard, minimal).&#39;,
+    defaultsTo: &#39;standard&#39;,
+  );
+  argParser.addOption(
+    &#39;example-dir&#39;,
+    help: &#39;Example application directory name.&#39;,
+    defaultsTo: &#39;example&#39;,
+  );
+  argParser.addFlag(
+    &#39;github&#39;,
+    defaultsTo: false,
+    help: &#39;Automate remote GitHub repository creation and remote push.&#39;,
+  );
+  argParser.addOption(
+    &#39;github-owner&#39;,
+    help: &#39;GitHub user or organization owner account.&#39;,
+    defaultsTo: &#39;&#39;,
+  );
+  argParser.addFlag(
+    &#39;github-private&#39;,
+    defaultsTo: false,
+    help: &#39;Make created GitHub repository private.&#39;,
+  );
+}</code></pre>
+</section>
 
 
   </div> <!-- /.main-content -->

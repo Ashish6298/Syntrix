@@ -11,3 +11,8 @@ export 'src/utils/terminal_utils.dart';
 export 'src/utils/string_utils.dart';
 export 'src/utils/version_utils.dart';
 export 'src/utils/file_utils.dart';
+export 'src/wizard/wizard.dart';
+export 'src/template/template.dart';
+export 'src/repository/repository.dart';
+export 'src/example/example.dart';
+export 'src/github/github.dart';

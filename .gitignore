@@ -1,28 +1,56 @@
-# Dart/Flutter standard ignores
+# ==========================================
+# FLUTTER PACKAGE STUDIO — MONOREPO .GITIGNORE
+# ==========================================
+
+# Dart & Flutter generated files
 .dart_tool/
 .packages
+.pub/
 pubspec.lock
-
-# Build & Test outputs
 build/
+
+# Documentation & API outputs
+doc/api/
+packages/*/doc/api/
+
+# Coverage & Test reports
 coverage/
 coverage.lcov
-doc/api/
+*.g.dart
 
-# Local configurations & developer overrides
+# Sensitive/Confidential Environment & Credentials
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.yaml
+credentials.json
+github_token.txt
+
+# Local Developer Overrides & CLI Cache
 local_config.yaml
 fps.yaml
 .fps/
+*.log
 
-# IDE and Editor files
+# IDE & Code Editor files
 .idea/
 .vscode/
+*.swp
+*.swo
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
 
-# OS-specific files
+# OS Generated Files
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Temporary & System artifacts
+tmp/
+temp/
+*.tmp
