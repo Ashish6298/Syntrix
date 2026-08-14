@@ -37,6 +37,7 @@ Future<void> main(List<String> arguments) async {
   registry.register(PublishCommand());
   registry.register(TemplateCommand());
   registry.register(PluginCommand());
+  registry.register(RegistryCommand());
 
   // 5. Run Command
   final exitCode = await registry.run(arguments);

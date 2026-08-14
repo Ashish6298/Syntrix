@@ -131,7 +131,8 @@ void main() {
       expect(await registry.run(['release']), 0);
       expect(await registry.run(['docs']), 0);
       expect(await registry.run(['publish']), 0);
-      expect(await registry.run(['template']), 0);
+      // 'template' now has subcommands; calling without one may return 64 (UsageException)
+      expect(await registry.run(['template']), isIn([0, 64]));
       expect(await registry.run(['plugin']), 0);
 
       // Verify that resolve works inside the command context

@@ -135,9 +135,127 @@ class GitHubRepositoryExistsException extends GitHubException {
       [super.details, super.stackTrace]);
 }
 
+/// Thrown when template catalog provider registration, discovery, or indexing fails.
+class CatalogException extends PackageStudioException {
+  /// Creates a [CatalogException] with the given [message] and details.
+  CatalogException(super.message, [super.details, super.stackTrace]);
+}
+
 /// Thrown when GitHub options or configuration is invalid.
 class GitHubConfigurationException extends GitHubException {
   /// Creates a [GitHubConfigurationException].
   GitHubConfigurationException(super.message,
       [super.details, super.stackTrace]);
+}
+
+// ── Remote Registry / Marketplace Exceptions ──────────────────────────────────
+
+/// Base exception for all remote registry and marketplace errors.
+///
+/// All marketplace subsystem exceptions extend this class, allowing callers
+/// to catch the broad category while still being able to specialize on
+/// specific failure modes.
+class RemoteRegistryException extends PackageStudioException {
+  /// Creates a [RemoteRegistryException].
+  RemoteRegistryException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Thrown when a network connectivity, timeout, or transport-level failure
+/// occurs while communicating with a remote registry.
+class RegistryNetworkException extends RemoteRegistryException {
+  /// Creates a [RegistryNetworkException].
+  RegistryNetworkException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Thrown when authentication with a remote registry fails (e.g., missing or
+/// invalid credentials). Credentials must never appear in the exception message.
+class RegistryAuthenticationException extends RemoteRegistryException {
+  /// Creates a [RegistryAuthenticationException].
+  RegistryAuthenticationException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when the remote registry returns a response using an incompatible
+/// or unrecognized protocol version.
+class RegistryProtocolException extends RemoteRegistryException {
+  /// Creates a [RegistryProtocolException].
+  RegistryProtocolException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Thrown when a remote template metadata record fails validation (malformed ID,
+/// invalid semver, unsafe URL, unsupported project type, etc.).
+class RegistryMetadataException extends RemoteRegistryException {
+  /// Creates a [RegistryMetadataException].
+  RegistryMetadataException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Thrown when a remote registry rate-limits the client (HTTP 429 or
+/// equivalent).
+class RegistryRateLimitException extends RemoteRegistryException {
+  /// Creates a [RegistryRateLimitException].
+  RegistryRateLimitException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Thrown when a registry metadata cache entry is corrupt, expired, or cannot
+/// be read.
+class RegistryCacheException extends RemoteRegistryException {
+  /// Creates a [RegistryCacheException].
+  RegistryCacheException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Thrown when registry configuration (URL, identifier, options) is invalid.
+class RegistryConfigurationException extends RemoteRegistryException {
+  /// Creates a [RegistryConfigurationException].
+  RegistryConfigurationException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+// ── Compatibility Engine Exceptions ───────────────────────────────────────────
+
+/// Base exception for all Template Compatibility Engine errors.
+///
+/// Thrown when compatibility evaluation fails for reasons other than a simple
+/// incompatibility (which is expressed as a [CompatibilityResult] with issues).
+/// For example: malformed SDK constraint strings, unknown policy keys, or
+/// corrupted compatibility metadata.
+///
+/// ## Security
+/// Compatibility exceptions must never expose sensitive environment information
+/// such as exact SDK install paths, build system internals, or user home
+/// directories. Only version strings and constraint expressions are safe to
+/// include.
+class CompatibilityException extends PackageStudioException {
+  /// Creates a [CompatibilityException].
+  CompatibilityException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Thrown when a Dart or Flutter SDK version constraint string is malformed
+/// and cannot be parsed (e.g., `>=abc`, `^`, empty string after trimming).
+class InvalidSdkConstraintException extends CompatibilityException {
+  /// Creates an [InvalidSdkConstraintException].
+  InvalidSdkConstraintException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+// ── Composition Engine Exceptions ─────────────────────────────────────────────
+
+/// Base exception for all Template Composition Engine failures.
+class TemplateCompositionException extends TemplateException {
+  /// Creates a [TemplateCompositionException].
+  TemplateCompositionException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when an unresolved file collision occurs during template composition.
+class CompositionConflictException extends TemplateCompositionException {
+  /// Creates a [CompositionConflictException].
+  CompositionConflictException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when a template asset path contains invalid characters, path traversal
+/// attempts (`..`), or absolute path references.
+class PathSecurityException extends TemplateCompositionException {
+  /// Creates a [PathSecurityException].
+  PathSecurityException(super.message, [super.details, super.stackTrace]);
 }

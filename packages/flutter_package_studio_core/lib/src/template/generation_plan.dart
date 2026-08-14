@@ -33,6 +33,9 @@ class GenerationAction {
   /// Explanation or reason for the action (e.g., skip reason).
   final String? reason;
 
+  /// Source template ID producing this action for provenance auditing.
+  final String? sourceTemplateId;
+
   /// Creates a [GenerationAction] instance.
   const GenerationAction({
     required this.type,
@@ -41,6 +44,7 @@ class GenerationAction {
     this.textContent,
     this.binaryContent,
     this.reason,
+    this.sourceTemplateId,
   });
 
   /// Returns true if this is a binary asset file.

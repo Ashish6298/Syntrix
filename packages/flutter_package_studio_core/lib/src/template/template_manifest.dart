@@ -1,4 +1,5 @@
 import 'package:flutter_package_studio_core/src/error/exceptions.dart';
+import 'package:flutter_package_studio_core/src/template/template_dependency.dart';
 
 /// Represents the definition of a variable expected or used by a template.
 class TemplateVariableDefinition {
@@ -90,6 +91,18 @@ class TemplateManifest {
   /// Optional extra metadata key-values.
   final Map<String, dynamic> extraMetadata;
 
+  /// Optional parent template ID extended by this template.
+  final String? extendsTemplate;
+
+  /// Required template dependencies.
+  final List<TemplateDependency> dependencies;
+
+  /// Capability tags supported by this template.
+  final List<String> capabilities;
+
+  /// Custom classification tags.
+  final List<String> tags;
+
   /// Creates a [TemplateManifest] instance.
   const TemplateManifest({
     required this.id,
@@ -107,6 +120,10 @@ class TemplateManifest {
     this.binaryAssets = const [],
     this.conditions = const {},
     this.extraMetadata = const {},
+    this.extendsTemplate,
+    this.dependencies = const [],
+    this.capabilities = const [],
+    this.tags = const [],
   });
 
   /// Deserializes and validates a [TemplateManifest] from a raw map.

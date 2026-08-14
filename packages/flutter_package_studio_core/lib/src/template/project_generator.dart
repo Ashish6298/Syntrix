@@ -3,6 +3,7 @@ import 'package:flutter_package_studio_core/src/error/exceptions.dart';
 import 'package:flutter_package_studio_core/src/logging/logger.dart';
 import 'package:flutter_package_studio_core/src/template/generation_plan.dart';
 import 'package:flutter_package_studio_core/src/template/generation_result.dart';
+import 'package:flutter_package_studio_core/src/template/resolved_template.dart';
 import 'package:flutter_package_studio_core/src/template/template_condition.dart';
 import 'package:flutter_package_studio_core/src/template/template_context.dart';
 import 'package:flutter_package_studio_core/src/template/template_model.dart';
@@ -34,6 +35,67 @@ class ProjectGenerator {
     TemplateRenderer? renderer,
   })  : _fileUtils = fileUtils,
         _renderer = renderer ?? TemplateRenderer();
+
+  /// Constructs a [GenerationPlan] from a composed [ResolvedTemplate].
+  GenerationPlan buildPlanFromResolved({
+    required ResolvedTemplate resolvedTemplate,
+    required TemplateContext context,
+    required String outputDirectory,
+    OverwritePolicy overwritePolicy = OverwritePolicy.fail,
+  }) {
+    final pkgName = context.get('package_name') as String?;
+    if (pkgName != null && pkgName.isNotEmpty) {
+      final nameRes = PackageNameValidator().validate(pkgName);
+      if (!nameRes.isValid) {
+        throw ValidationException(
+            'Invalid package name: ${nameRes.errors.join(', ')}');
+      }
+    }
+
+    final rootDir = p.normalize(p.absolute(outputDirectory));
+    final actions = <GenerationAction>[];
+
+    // Directories
+    for (final dirPattern in resolvedTemplate.effectiveManifest.directories) {
+      final renderedRel = _renderer.renderPath(dirPattern, context);
+      final absPath = _sanitizePath(rootDir, renderedRel);
+      actions.add(GenerationAction(
+        type: ActionType.createDir,
+        relativePath: renderedRel,
+        absolutePath: absPath,
+        sourceTemplateId: resolvedTemplate.baseTemplate.id,
+      ));
+    }
+
+    // Files with provenance
+    resolvedTemplate.files.forEach((path, contentTemplate) {
+      final renderedRel = _renderer.renderPath(path, context);
+      final absPath = _sanitizePath(rootDir, renderedRel);
+      final sourceId = resolvedTemplate.fileProvenance[path] ??
+          resolvedTemplate.baseTemplate.id;
+
+      final textContent = _renderer.renderText(contentTemplate, context);
+
+      actions.add(GenerationAction(
+        type: _fileUtils.exists(absPath) &&
+                overwritePolicy == OverwritePolicy.overwrite
+            ? ActionType.overwriteFile
+            : ActionType.createFile,
+        relativePath: renderedRel,
+        absolutePath: absPath,
+        textContent: textContent,
+        sourceTemplateId: sourceId,
+      ));
+    });
+
+    return GenerationPlan(
+      targetDirectory: rootDir,
+      templateId: resolvedTemplate.id,
+      actions: actions,
+      conditionResults: const {},
+      variablesUsed: context.toMap(),
+    );
+  }
 
   /// Constructs an in-memory inspectable [GenerationPlan] without mutating the filesystem.
   /// Throws [TemplateException] on path traversal security violations or invalid arguments.

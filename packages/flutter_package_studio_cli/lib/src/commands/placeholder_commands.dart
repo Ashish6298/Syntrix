@@ -1,5 +1,8 @@
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:flutter_package_studio_cli/src/base_command.dart';
+import 'package:flutter_package_studio_cli/src/commands/template_command.dart';
+
+export 'package:flutter_package_studio_cli/src/commands/template_command.dart';
 
 /// Command to create a new production-ready Flutter package.
 class CreateCommand extends FpsCommand {
@@ -436,19 +439,14 @@ class PublishCommand extends FpsCommand {
 }
 
 /// Command to manage workspace templates.
-class TemplateCommand extends FpsCommand {
-  @override
-  final String name = 'template';
-
-  @override
-  final String description = 'Manage custom templates and files.';
-
-  @override
-  Future<int> run() async {
-    logger.info('Managing templates...');
-    return 0;
-  }
-}
+///
+/// Delegates to [TemplateCatalogCommand] which hosts the full `list`, `search`,
+/// and `info` subcommand family.
+///
+/// [TemplateCommand] is kept as a type alias for backward compatibility with
+/// existing code that registers it by name.
+// ignore: camel_case_types
+typedef TemplateCommand = TemplateCatalogCommand;
 
 /// Command to manage CLI plugins.
 class PluginCommand extends FpsCommand {

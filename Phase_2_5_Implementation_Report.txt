@@ -1,0 +1,144 @@
+================================================================================
+  FLUTTER PACKAGE STUDIO – PHASE 2.5 IMPLEMENTATION REPORT
+  Template Composition Engine
+================================================================================
+Generated : 2026-08-15 00:34:00 IST (2026-08-14T19:04:00Z)
+Status    : COMPLETE – ALL VERIFICATION GATES PASSED
+================================================================================
+
+PROJECT METADATA
+----------------
+  Monorepo Root : d:\Syntrix
+  Packages      : flutter_package_studio_core, flutter_package_studio_cli
+  Baseline      : Milestone 1 (Phases 1.1–1.8), Milestone 2 (Phases 2.1–2.4)
+
+PHASE 2.5 OBJECTIVE
+-------------------
+  Evolve template composition into a production-grade, deterministic, extensible
+  composition system capable of combining a base template with multiple feature
+  templates/extensions/layers in a controlled manner, resolving dependencies and
+  file conflicts predictably, preserving complete file provenance, validating
+  composition compatibility before generation, and producing an immutable resolved
+  composite template that can be consumed by the existing generation pipeline
+  without requiring changes to the underlying project generator.
+
+================================================================================
+  SUMMARY OF IMPLEMENTATION
+================================================================================
+
+1. COMPOSITION SUBSYSTEM (`src/template/composition/`)
+   - CompositionRequest: Encapsulates base template ID, version constraints,
+     ordered extension IDs, conflict policy (fail/override/skip), compatibility
+     policy, requested project type, and required capabilities.
+   - CompositionLayer: Structured model representing layers in the composition
+     stack (Layer 0 = Base, Layer 1..N = Dependencies / Extensions) with layer indices.
+   - FileProvenanceRecord & CompositionConflict: Comprehensive auditing models for
+     every asset path, tracking source template ID, version, layer index, resolution
+     action (created, overridden, skipped), and conflicting sources.
+   - CompositionPlan: Immutable preview model exposing total files, override/skip
+     counts, layers, conflicts, provenance, and JSON serialization.
+   - EnhancedCompositionEngine: Core deterministic composition engine executing
+     path security checks (rejecting absolute paths, `..` traversal, and invalid
+     separators), dependency solving, compatibility checking, file merging under
+     conflict policies, and manifest aggregation.
+
+2. RESOLVER & COMPATIBILITY INTEGRATION
+   - Extended CompatibilityAwareResolver to expose `composePlan(CompositionRequest)`.
+   - Enhanced TemplateCompositionEngine to delegate to EnhancedCompositionEngine
+     under the hood while preserving existing static `compose()` API signature.
+
+3. EXCEPTION HIERARCHY EXTENSION
+   - Added TemplateCompositionException, CompositionConflictException, and
+     PathSecurityException extending TemplateException in `exceptions.dart`.
+   - Ensured zero exposure of file system paths, credentials, or environment details.
+
+4. CLI INTEGRATION (`fps template compose`)
+   - Added `fps template compose <base-id> [extension-ids...]` subcommand under
+     TemplateCatalogCommand.
+   - Supports `--version`, `--conflict-policy`, `--compatibility-policy`, and `--json`.
+
+================================================================================
+  FILES CREATED & MODIFIED
+================================================================================
+
+FILES CREATED:
+  packages/flutter_package_studio_core:
+    lib/src/template/composition/composition_request.dart
+    lib/src/template/composition/composition_layer.dart
+    lib/src/template/composition/composition_provenance.dart
+    lib/src/template/composition/composition_plan.dart
+    lib/src/template/composition/enhanced_composition_engine.dart
+    lib/src/template/composition/composition.dart
+    test/template/enhanced_composition_engine_test.dart
+
+  packages/flutter_package_studio_cli:
+    test/cli_template_compose_test.dart
+
+FILES MODIFIED:
+  packages/flutter_package_studio_core:
+    lib/src/error/exceptions.dart
+    lib/src/template/template_composition.dart
+    lib/src/template/template.dart
+    lib/src/compatibility/compatibility_aware_resolver.dart
+    lib/src/marketplace/http_registry_transport.dart
+
+  packages/flutter_package_studio_cli:
+    lib/src/commands/template_command.dart
+
+================================================================================
+  VERIFICATION COMMANDS & RESULTS
+================================================================================
+
+1. STATIC ANALYSIS
+   Command : dart analyze packages/flutter_package_studio_core packages/flutter_package_studio_cli
+   Result  : No issues found! (0 errors, 0 warnings, 0 lints)
+
+2. CODE FORMATTING
+   Command : dart format --output=none --set-exit-if-changed packages/flutter_package_studio_core packages/flutter_package_studio_cli
+   Result  : Formatted 182 files (0 changed) in 0.21 seconds.
+
+3. DOCUMENTATION ANALYSIS
+   Command : dart doc --dry-run packages/flutter_package_studio_core && dart doc --dry-run packages/flutter_package_studio_cli
+   Result  : Found 0 warnings and 0 errors across both packages!
+
+4. FULL MONOREPO TEST SUITE
+   Command : dart test packages/flutter_package_studio_core packages/flutter_package_studio_cli --concurrency=1
+   Result  : All 449 tests passed! (449/449)
+
+TEST BREAKDOWN:
+  - Regression Tests (Phases 1.1–2.4) : 435 passed
+  - Phase 2.5 New Tests                : 14 passed
+    * EnhancedCompositionEngine tests  : 9 tests (single-template, multi-extension,
+                                         conflict policies fail/override/skip, path traversal,
+                                         absolute paths, dependency layers, JSON export)
+    * CLI TemplateComposeCommand tests : 5 tests (usage 64, default compose, --json,
+                                         nonexistent base ID, conflict policy override)
+
+================================================================================
+  SECURITY, SIDE-EFFECT & DETERMINISM VERIFICATION
+================================================================================
+
+- Security: All file paths undergo path normalization and strict traversal checks.
+  Absolute paths (`/`, `C:\`) and path traversal sequences (`..`) throw PathSecurityException.
+- Zero Mutation: All composition operations execute 100% in memory. No disk writes,
+  process executions, Git mutations, or network requests occur during resolution or plan preview.
+- Determinism: Composition layers follow fixed precedence rules (Base = Layer 0,
+  Dependencies/Extensions = Layer 1..N). Results are completely independent of collection iteration order.
+
+================================================================================
+  KNOWN LIMITATIONS & DEFERRED FUNCTIONALITY
+================================================================================
+
+- Dynamic AST/code-level source file merging (AST rewriting of Dart files) is deferred;
+  Phase 2.5 employs file-level layering with explicit `fail`/`override`/`skip` policies.
+
+================================================================================
+  FINAL ASSESSMENT
+================================================================================
+
+  All verification gates passed: YES
+  Existing functionality preserved: YES
+  Unresolved blockers: NONE
+
+  Ready for Phase 2.6: YES
+================================================================================

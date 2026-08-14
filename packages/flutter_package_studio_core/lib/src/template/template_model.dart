@@ -26,4 +26,7 @@ class Template {
 
   /// Project archetype (`flutter_package`, `dart_package`, etc.).
   String get projectType => manifest.projectType;
+
+  /// Semantic version string.
+  String get version => manifest.version;
 }
