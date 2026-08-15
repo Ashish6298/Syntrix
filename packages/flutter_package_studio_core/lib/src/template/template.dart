@@ -25,4 +25,5 @@ export 'hooks/hooks.dart';
 export 'certification/certification.dart';
 export 'testing/testing.dart';
 export 'migration/migration.dart';
+export '../documentation/readme/readme.dart';
 export '../compatibility/compatibility.dart';

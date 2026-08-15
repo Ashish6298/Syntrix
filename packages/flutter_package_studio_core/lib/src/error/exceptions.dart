@@ -444,3 +444,11 @@ class TemplateMigrationRollbackException extends TemplateMigrationException {
   TemplateMigrationRollbackException(super.message,
       [super.details, super.stackTrace]);
 }
+
+// ── Documentation Subsystem Exceptions ────────────────────────────────────────
+
+/// Base exception for all README Generation subsystem failures.
+class ReadmeGenerationException extends PackageStudioException {
+  /// Creates a [ReadmeGenerationException].
+  ReadmeGenerationException(super.message, [super.details, super.stackTrace]);
+}

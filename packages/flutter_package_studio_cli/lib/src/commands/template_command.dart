@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:flutter_package_studio_cli/src/base_command.dart';
 
@@ -1386,20 +1387,122 @@ class TemplateMigrateCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template readme <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template readme <template-id>`
+///
+/// Previews or writes generated README documentation for a template.
+class TemplateReadmeCommand extends FpsCommand {
+  @override
+  final String name = 'readme';
+
+  @override
+  final String description =
+      'Preview or generate professional README documentation for a template.';
+
+  TemplateReadmeCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Output file path when writing to disk.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated README directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output README generation result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final outputPath = argResults?['output'] as String?;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final options = ReadmeGenerationOptions(
+      packageName: tmpl.manifest.name,
+      description: tmpl.manifest.description.isEmpty
+          ? 'Production-ready package generated with Flutter Package Studio.'
+          : tmpl.manifest.description,
+      version: tmpl.version,
+    );
+
+    final generator = ReadmeGenerator();
+    final plan = generator.planReadme(options);
+    final result = generator.generateReadme(plan);
+
+    if (writeDisk) {
+      final targetFile = outputPath ?? 'README.md';
+      final file = File(targetFile);
+      await file.writeAsString(result.markdown);
+      if (!jsonOutput) {
+        print('Successfully wrote README to "$targetFile".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print('Generated README.md Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print(result.markdown);
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
 
   @override
   final String description =
-      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, and migration.';
+      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, migration, and documentation.';
 
   TemplateCatalogCommand() {
     addSubcommand(TemplateListCommand());
@@ -1413,13 +1516,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateCertifyCommand());
     addSubcommand(TemplateTestCommand());
     addSubcommand(TemplateMigrateCommand());
+    addSubcommand(TemplateReadmeCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → migrate');
     print('');
     printUsage();
     return 0;
