@@ -29,4 +29,5 @@ export '../documentation/readme/readme.dart';
 export '../documentation/api/api.dart';
 export '../documentation/architecture/architecture.dart';
 export '../documentation/mermaid/mermaid.dart';
+export '../documentation/examples/examples.dart';
 export '../compatibility/compatibility.dart';

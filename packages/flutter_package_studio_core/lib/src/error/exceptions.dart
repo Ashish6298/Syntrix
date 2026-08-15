@@ -471,3 +471,10 @@ class MermaidGenerationException extends PackageStudioException {
   /// Creates a [MermaidGenerationException].
   MermaidGenerationException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Code Example Generation subsystem failures.
+class CodeExampleGenerationException extends PackageStudioException {
+  /// Creates a [CodeExampleGenerationException].
+  CodeExampleGenerationException(super.message,
+      [super.details, super.stackTrace]);
+}

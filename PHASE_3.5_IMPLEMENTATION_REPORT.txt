@@ -1,0 +1,111 @@
+================================================================================
+  FLUTTER PACKAGE STUDIO – PHASE 3.5 IMPLEMENTATION REPORT
+  Code Example Generator
+================================================================================
+Generated : 2026-08-15 22:36:00 IST (2026-08-15T17:06:00Z)
+Status    : COMPLETE – ALL VERIFICATION GATES PASSED
+================================================================================
+
+PROJECT METADATA
+----------------
+  Monorepo Root : d:\Syntrix
+  Packages      : flutter_package_studio_core, flutter_package_studio_cli
+  Baseline      : Milestone 1 (Phases 1.1–1.8), Milestone 2 (Phases 2.1–2.12), Milestone 3 (Phases 3.1–3.4)
+
+PHASE 3.5 OBJECTIVE
+-------------------
+  Introduce a production-grade, deterministic, plan-first Code Example Generation
+  subsystem capable of automatically generating professional Dart/Flutter code examples
+  (basic usage, initialization, configuration, complete minimal working example)
+  from template metadata and public API information.
+
+================================================================================
+  SUMMARY OF IMPLEMENTATION
+================================================================================
+
+1. CODE EXAMPLE SUBSYSTEM (`src/documentation/examples/`)
+   - CodeExampleType: Supported example types (`basicUsage`, `initialization`, `configuration`, `fullExample`).
+   - CodeExampleSnippet: Structured snippet block containing imports, setup, usage, and comments.
+   - CodeExampleOptions, CodeExamplePlan & CodeExampleResult: Immutable preview plan and
+     rendered Dart source output models with JSON export.
+   - CodeExampleGenerator: Core generator service rendering clean, deterministic Dart source code.
+
+2. EXCEPTION HIERARCHY EXTENSION
+   - Added CodeExampleGenerationException extending PackageStudioException in `exceptions.dart`.
+
+3. CLI INTEGRATION (`fps template examples <template-id>`)
+   - Added `fps template examples <template-id>` subcommand under TemplateCatalogCommand.
+   - Supports `--version`, `--type` (`basic`, `init`, `config`, `full`), `--output`, `--write`, and `--json`.
+
+================================================================================
+  FILES CREATED & MODIFIED
+================================================================================
+
+FILES CREATED:
+  packages/flutter_package_studio_core:
+    lib/src/documentation/examples/example_models.dart
+    lib/src/documentation/examples/example_generator.dart
+    lib/src/documentation/examples/examples.dart
+    test/documentation/code_example_generator_test.dart
+
+  packages/flutter_package_studio_cli:
+    test/cli_template_examples_test.dart
+
+FILES MODIFIED:
+  packages/flutter_package_studio_core:
+    lib/src/error/exceptions.dart
+    lib/src/template/template.dart
+
+  packages/flutter_package_studio_cli:
+    lib/src/commands/template_command.dart
+
+================================================================================
+  VERIFICATION COMMANDS & RESULTS
+================================================================================
+
+1. STATIC ANALYSIS
+   Command : dart analyze packages/flutter_package_studio_core packages/flutter_package_studio_cli
+   Result  : No issues found! (0 errors, 0 warnings, 0 lints)
+
+2. CODE FORMATTING
+   Command : dart format --output=none --set-exit-if-changed packages/flutter_package_studio_core packages/flutter_package_studio_cli
+   Result  : Formatted 282 files (0 changed) in 0.28 seconds.
+
+3. DOCUMENTATION ANALYSIS
+   Command : dart doc --dry-run packages/flutter_package_studio_core && dart doc --dry-run packages/flutter_package_studio_cli
+   Result  : Found 0 warnings and 0 errors across both packages!
+
+4. FULL MONOREPO TEST SUITE
+   Command : dart test packages/flutter_package_studio_core packages/flutter_package_studio_cli --concurrency=1
+   Result  : All 571 tests passed! (571/571)
+
+TEST BREAKDOWN:
+  - Regression Tests (Phases 1.1–3.4) : 564 passed
+  - Phase 3.5 New Tests                : 7 passed
+    * CodeExampleGenerator Unit        : 3 tests (basic usage, full Flutter example, 100% determinism)
+    * CLI TemplateExamplesCommand      : 4 tests (usage 64, default preview mode, JSON result output, nonexistent ID error)
+
+================================================================================
+  SECURITY, SIDE-EFFECT & DETERMINISM VERIFICATION
+================================================================================
+
+- Security: Package names and comments are sanitized via ReadmeSanitizer. Secret tokens and absolute paths are redacted.
+- Determinism: Imports and code blocks are formatted deterministically. Output is 100% byte-identical for identical input.
+- Preview Safety: Default preview mode performs 0 disk writes; filesystem mutation occurs only with explicit `--write`.
+
+================================================================================
+  KNOWN LIMITATIONS & DEFERRED FUNCTIONALITY
+================================================================================
+
+- Phase 3.5 completes Milestone 3 Code Example Generator requirements.
+
+================================================================================
+  FINAL ASSESSMENT
+================================================================================
+
+  All verification gates passed: YES
+  Existing functionality preserved: YES
+  Unresolved blockers: NONE
+
+  Ready for Phase 3.6: YES
+================================================================================

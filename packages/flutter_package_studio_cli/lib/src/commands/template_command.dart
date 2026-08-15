@@ -1739,13 +1739,137 @@ class TemplateMermaidCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template examples <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template examples <template-id>`
+///
+/// Previews or writes generated Dart code examples for a template.
+class TemplateExamplesCommand extends FpsCommand {
+  @override
+  final String name = 'examples';
+
+  @override
+  final String description =
+      'Preview or generate Dart/Flutter code examples for a template.';
+
+  TemplateExamplesCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'type',
+      abbr: 't',
+      help: 'Code example type (basic, init, config, full).',
+      defaultsTo: 'basic',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Output file path when writing to disk.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated code example directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output code example result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final typeStr = argResults?['type'] as String? ?? 'basic';
+    final outputPath = argResults?['output'] as String?;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    CodeExampleType type;
+    switch (typeStr.toLowerCase()) {
+      case 'init':
+        type = CodeExampleType.initialization;
+        break;
+      case 'config':
+        type = CodeExampleType.configuration;
+        break;
+      case 'full':
+        type = CodeExampleType.fullExample;
+        break;
+      case 'basic':
+      default:
+        type = CodeExampleType.basicUsage;
+        break;
+    }
+
+    final tmpl = entry.template;
+    final generator = CodeExampleGenerator();
+    final options = CodeExampleOptions(
+      packageName: tmpl.manifest.name,
+      exampleType: type,
+    );
+
+    final plan = generator.planExample(options);
+    final result = generator.generateExample(plan);
+
+    if (writeDisk) {
+      final targetFile = outputPath ?? 'example/main.dart';
+      final file = File(targetFile);
+      await file.parent.create(recursive: true);
+      await file.writeAsString(result.code);
+      if (!jsonOutput) {
+        print('Successfully wrote code example to "$targetFile".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print('Generated Code Example Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print(result.code);
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -1770,13 +1894,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateApiDocsCommand());
     addSubcommand(TemplateArchitectureCommand());
     addSubcommand(TemplateMermaidCommand());
+    addSubcommand(TemplateExamplesCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → migrate');
     print('');
     printUsage();
     return 0;
