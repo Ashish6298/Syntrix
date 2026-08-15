@@ -458,3 +458,10 @@ class ApiDocGenerationException extends PackageStudioException {
   /// Creates a [ApiDocGenerationException].
   ApiDocGenerationException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Architecture Documentation Generation subsystem failures.
+class ArchitectureDocGenerationException extends PackageStudioException {
+  /// Creates a [ArchitectureDocGenerationException].
+  ArchitectureDocGenerationException(super.message,
+      [super.details, super.stackTrace]);
+}

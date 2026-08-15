@@ -27,4 +27,5 @@ export 'testing/testing.dart';
 export 'migration/migration.dart';
 export '../documentation/readme/readme.dart';
 export '../documentation/api/api.dart';
+export '../documentation/architecture/architecture.dart';
 export '../compatibility/compatibility.dart';

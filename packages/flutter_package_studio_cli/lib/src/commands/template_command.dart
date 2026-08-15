@@ -1583,13 +1583,79 @@ class TemplateApiDocsCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template architecture
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template architecture`
+///
+/// Previews or writes generated system architecture documentation and Mermaid diagrams.
+class TemplateArchitectureCommand extends FpsCommand {
+  @override
+  final String name = 'architecture';
+
+  @override
+  final String description =
+      'Preview or generate system architecture documentation and Mermaid diagrams.';
+
+  TemplateArchitectureCommand() {
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Output file path when writing to disk.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated architecture documentation directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output architecture documentation result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final outputPath = argResults?['output'] as String?;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final generator = ArchitectureDocGenerator();
+    final plan = generator.planArchitectureDoc(const ArchDocOptions());
+    final result = generator.generateArchitectureDoc(plan);
+
+    if (writeDisk) {
+      final targetFile = outputPath ?? 'ARCHITECTURE.md';
+      final file = File(targetFile);
+      await file.writeAsString(result.markdown);
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote architecture documentation to "$targetFile".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print('Generated Architecture Documentation Preview:');
+      print('══════════════════════════════════════════════════════════════');
+      print(result.markdown);
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -1612,13 +1678,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateMigrateCommand());
     addSubcommand(TemplateReadmeCommand());
     addSubcommand(TemplateApiDocsCommand());
+    addSubcommand(TemplateArchitectureCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → migrate');
     print('');
     printUsage();
     return 0;
