@@ -485,3 +485,9 @@ class ScreenshotManagementException extends PackageStudioException {
   ScreenshotManagementException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all GIF Pipeline subsystem failures.
+class GifPipelineException extends PackageStudioException {
+  /// Creates a [GifPipelineException].
+  GifPipelineException(super.message, [super.details, super.stackTrace]);
+}

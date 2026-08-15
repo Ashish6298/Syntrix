@@ -1995,13 +1995,140 @@ class TemplateScreenshotsCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template gifs <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template gifs <template-id>`
+///
+/// Previews or writes generated GIF animation gallery documentation for a template.
+class TemplateGifsCommand extends FpsCommand {
+  @override
+  final String name = 'gifs';
+
+  @override
+  final String description =
+      'Preview or generate GIF animation gallery documentation for a template.';
+
+  TemplateGifsCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'category',
+      abbr: 'c',
+      help: 'Filter category (demo, feature, workflow, onboarding, custom).',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Output file path when writing to disk.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated GIF gallery directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output GIF pipeline result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final categoryStr = argResults?['category'] as String?;
+    final outputPath = argResults?['output'] as String?;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    GifCategory? category;
+    if (categoryStr != null) {
+      switch (categoryStr.toLowerCase()) {
+        case 'feature':
+          category = GifCategory.feature;
+          break;
+        case 'workflow':
+          category = GifCategory.workflow;
+          break;
+        case 'onboarding':
+          category = GifCategory.onboarding;
+          break;
+        case 'custom':
+          category = GifCategory.custom;
+          break;
+        case 'demo':
+        default:
+          category = GifCategory.demo;
+          break;
+      }
+    }
+
+    final tmpl = entry.template;
+    final manager = GifManager();
+    final options = GifOptions(
+      packageName: tmpl.manifest.name,
+      filterCategory: category,
+    );
+
+    final plan = manager.planGifs(options);
+    final result = manager.manageGifs(plan);
+
+    if (writeDisk) {
+      final targetFile = outputPath ?? 'DEMOS.md';
+      final file = File(targetFile);
+      await file.writeAsString(result.markdownManifest);
+      if (!jsonOutput) {
+        print('Successfully wrote GIF gallery to "$targetFile".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print('Generated GIF Gallery Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print(result.markdownManifest);
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -2028,13 +2155,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateMermaidCommand());
     addSubcommand(TemplateExamplesCommand());
     addSubcommand(TemplateScreenshotsCommand());
+    addSubcommand(TemplateGifsCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → migrate');
     print('');
     printUsage();
     return 0;

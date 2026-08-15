@@ -31,4 +31,5 @@ export '../documentation/architecture/architecture.dart';
 export '../documentation/mermaid/mermaid.dart';
 export '../documentation/examples/examples.dart';
 export '../documentation/screenshots/screenshots.dart';
+export '../documentation/gifs/gifs.dart';
 export '../compatibility/compatibility.dart';
