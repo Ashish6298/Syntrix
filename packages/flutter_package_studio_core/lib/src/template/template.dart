@@ -24,7 +24,11 @@ export 'quality/quality.dart';
 export 'hooks/hooks.dart';
 export 'certification/certification.dart';
 export 'testing/testing.dart';
+export '../testing/project/project.dart';
+export '../testing/unit/unit.dart';
+export '../testing/widget/widget.dart';
 export 'migration/migration.dart';
+
 export '../documentation/readme/readme.dart';
 export '../documentation/api/api.dart';
 export '../documentation/architecture/architecture.dart';

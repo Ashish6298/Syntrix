@@ -2228,13 +2228,358 @@ class TemplateWebsiteCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template test-project <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template test-project <template-id>`
+///
+/// Previews or writes generated isolated test project files for a template.
+class TemplateTestProjectCommand extends FpsCommand {
+  @override
+  final String name = 'test-project';
+
+  @override
+  final String description =
+      'Preview or generate an isolated test project structure for a template.';
+
+  TemplateTestProjectCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing project to disk.',
+      defaultsTo: 'test_project',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated test project files directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output test project result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final outputDir = argResults?['output'] as String? ?? 'test_project';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final generator = TestProjectGenerator();
+    final options = TestProjectOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      targetDir: outputDir,
+    );
+
+    final plan = generator.planTestProject(options);
+    final result = generator.generateTestProject(plan, options);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+
+      for (final entry in result.files.entries) {
+        final file = File('${baseDir.path}/${entry.key}');
+        await file.parent.create(recursive: true);
+        await file.writeAsString(entry.value);
+      }
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote test project (${result.files.length} files) to "$outputDir".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print('Generated Test Project Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Target Directory : ${plan.targetDir}');
+      print('Total Files      : ${plan.relativeFilePaths.length}');
+      print('File Paths       : ${plan.relativeFilePaths.join(', ')}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template unit-tests <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template unit-tests <template-id>`
+///
+/// Previews or writes generated unit test source files for a template.
+class TemplateUnitTestsCommand extends FpsCommand {
+  @override
+  final String name = 'unit-tests';
+
+  @override
+  final String description =
+      'Preview or generate unit test suites for a template.';
+
+  TemplateUnitTestsCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing unit tests to disk.',
+      defaultsTo: 'test/unit',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Generation profile (basic, standard, strict, release).',
+      defaultsTo: 'standard',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated unit test files directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output unit test generation result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final outputDir = argResults?['output'] as String? ?? 'test/unit';
+    final profile = argResults?['profile'] as String? ?? 'standard';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final generator = UnitTestGenerator();
+    final options = UnitTestOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      profile: profile,
+    );
+
+    final plan = generator.planUnitTests(options);
+    final result = generator.generateUnitTests(plan, options);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+
+      for (final entry in result.files.entries) {
+        final file =
+            File('${baseDir.path}/${entry.key.replaceFirst('test/unit/', '')}');
+        await file.parent.create(recursive: true);
+        await file.writeAsString(entry.value);
+      }
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote unit tests (${result.files.length} files) to "$outputDir".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print('Generated Unit Test Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Profile     : ${plan.profile}');
+      print('API Targets : ${plan.targets.length}');
+      print(
+          'Targets     : ${plan.targets.map((t) => '${t.kind}:${t.name}').join(', ')}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template widget-tests <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template widget-tests <template-id>`
+///
+/// Previews or writes generated widget test source files for a template.
+class TemplateWidgetTestsCommand extends FpsCommand {
+  @override
+  final String name = 'widget-tests';
+
+  @override
+  final String description =
+      'Preview or generate widget test suites for a template.';
+
+  TemplateWidgetTestsCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing widget tests to disk.',
+      defaultsTo: 'test/widget',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Generation profile (basic, standard, strict, release).',
+      defaultsTo: 'standard',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated widget test files directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output widget test generation result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final outputDir = argResults?['output'] as String? ?? 'test/widget';
+    final profile = argResults?['profile'] as String? ?? 'standard';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final generator = WidgetTestGenerator();
+    final options = WidgetTestOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      profile: profile,
+    );
+
+    final plan = generator.planWidgetTests(options);
+    final result = generator.generateWidgetTests(plan, options);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+
+      for (final entry in result.files.entries) {
+        final file = File(
+            '${baseDir.path}/${entry.key.replaceFirst('test/widget/', '')}');
+        await file.parent.create(recursive: true);
+        await file.writeAsString(entry.value);
+      }
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote widget tests (${result.files.length} files) to "$outputDir".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print('Generated Widget Test Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Profile        : ${plan.profile}');
+      print('Widget Targets : ${plan.targets.length}');
+      print(
+          'Targets        : ${plan.targets.map((t) => '${t.widgetKind}:${t.name}').join(', ')}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -2263,13 +2608,16 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateScreenshotsCommand());
     addSubcommand(TemplateGifsCommand());
     addSubcommand(TemplateWebsiteCommand());
+    addSubcommand(TemplateTestProjectCommand());
+    addSubcommand(TemplateUnitTestsCommand());
+    addSubcommand(TemplateWidgetTestsCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → migrate');
     print('');
     printUsage();
     return 0;

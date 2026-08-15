@@ -498,3 +498,23 @@ class StaticWebsiteGenerationException extends PackageStudioException {
   StaticWebsiteGenerationException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Test Project Generation subsystem failures.
+class TestProjectGenerationException extends PackageStudioException {
+  /// Creates a [TestProjectGenerationException].
+  TestProjectGenerationException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Base exception for all Unit Test Generation subsystem failures.
+class UnitTestGenerationException extends PackageStudioException {
+  /// Creates a [UnitTestGenerationException].
+  UnitTestGenerationException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Base exception for all Widget Test Generation subsystem failures.
+class WidgetTestGenerationException extends PackageStudioException {
+  /// Creates a [WidgetTestGenerationException].
+  WidgetTestGenerationException(super.message,
+      [super.details, super.stackTrace]);
+}
