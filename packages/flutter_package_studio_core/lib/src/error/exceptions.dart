@@ -452,3 +452,9 @@ class ReadmeGenerationException extends PackageStudioException {
   /// Creates a [ReadmeGenerationException].
   ReadmeGenerationException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all API Documentation Generation subsystem failures.
+class ApiDocGenerationException extends PackageStudioException {
+  /// Creates a [ApiDocGenerationException].
+  ApiDocGenerationException(super.message, [super.details, super.stackTrace]);
+}

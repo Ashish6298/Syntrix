@@ -1489,13 +1489,107 @@ class TemplateReadmeCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template api-docs <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template api-docs <template-id>`
+///
+/// Previews or writes generated API reference documentation for a template.
+class TemplateApiDocsCommand extends FpsCommand {
+  @override
+  final String name = 'api-docs';
+
+  @override
+  final String description =
+      'Preview or generate professional API reference documentation for a template.';
+
+  TemplateApiDocsCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Output file path when writing to disk.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated API documentation directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output API documentation result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final outputPath = argResults?['output'] as String?;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final generator = ApiDocGenerator();
+    final plan = generator.planFromTemplate(tmpl);
+    final result = generator.generateApiDoc(plan);
+
+    if (writeDisk) {
+      final targetFile = outputPath ?? 'API.md';
+      final file = File(targetFile);
+      await file.writeAsString(result.markdown);
+      if (!jsonOutput) {
+        print('Successfully wrote API documentation to "$targetFile".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print('Generated API Reference Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print(result.markdown);
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -1517,13 +1611,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateTestCommand());
     addSubcommand(TemplateMigrateCommand());
     addSubcommand(TemplateReadmeCommand());
+    addSubcommand(TemplateApiDocsCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → migrate');
     print('');
     printUsage();
     return 0;
