@@ -1863,13 +1863,145 @@ class TemplateExamplesCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template screenshots <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template screenshots <template-id>`
+///
+/// Previews or writes generated screenshot gallery documentation for a template.
+class TemplateScreenshotsCommand extends FpsCommand {
+  @override
+  final String name = 'screenshots';
+
+  @override
+  final String description =
+      'Preview or generate screenshot gallery documentation for a template.';
+
+  TemplateScreenshotsCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'category',
+      abbr: 'c',
+      help:
+          'Filter category (overview, feature, usage, workflow, platform, custom).',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Output file path when writing to disk.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated screenshot gallery directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output screenshot management result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final categoryStr = argResults?['category'] as String?;
+    final outputPath = argResults?['output'] as String?;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    ScreenshotCategory? category;
+    if (categoryStr != null) {
+      switch (categoryStr.toLowerCase()) {
+        case 'feature':
+          category = ScreenshotCategory.feature;
+          break;
+        case 'usage':
+          category = ScreenshotCategory.usage;
+          break;
+        case 'workflow':
+          category = ScreenshotCategory.workflow;
+          break;
+        case 'platform':
+          category = ScreenshotCategory.platform;
+          break;
+        case 'custom':
+          category = ScreenshotCategory.custom;
+          break;
+        case 'overview':
+        default:
+          category = ScreenshotCategory.overview;
+          break;
+      }
+    }
+
+    final tmpl = entry.template;
+    final manager = ScreenshotManager();
+    final options = ScreenshotOptions(
+      packageName: tmpl.manifest.name,
+      filterCategory: category,
+    );
+
+    final plan = manager.planScreenshots(options);
+    final result = manager.manageScreenshots(plan);
+
+    if (writeDisk) {
+      final targetFile = outputPath ?? 'SCREENSHOTS.md';
+      final file = File(targetFile);
+      await file.writeAsString(result.markdownManifest);
+      if (!jsonOutput) {
+        print('Successfully wrote screenshot gallery to "$targetFile".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Screenshot Gallery Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print(result.markdownManifest);
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -1895,13 +2027,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateArchitectureCommand());
     addSubcommand(TemplateMermaidCommand());
     addSubcommand(TemplateExamplesCommand());
+    addSubcommand(TemplateScreenshotsCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → migrate');
     print('');
     printUsage();
     return 0;

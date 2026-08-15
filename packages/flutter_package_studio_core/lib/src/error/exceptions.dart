@@ -478,3 +478,10 @@ class CodeExampleGenerationException extends PackageStudioException {
   CodeExampleGenerationException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Screenshot Management subsystem failures.
+class ScreenshotManagementException extends PackageStudioException {
+  /// Creates a [ScreenshotManagementException].
+  ScreenshotManagementException(super.message,
+      [super.details, super.stackTrace]);
+}
