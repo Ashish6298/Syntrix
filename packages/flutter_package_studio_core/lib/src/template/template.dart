@@ -30,6 +30,8 @@ export '../testing/widget/widget.dart';
 export '../testing/integration/integration.dart';
 export '../testing/fixtures/fixtures.dart';
 export '../testing/runner/runner.dart';
+export '../testing/coverage/coverage.dart';
+export '../testing/report/report.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';

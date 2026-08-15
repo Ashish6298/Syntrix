@@ -538,3 +538,16 @@ class TestExecutionException extends PackageStudioException {
   /// Creates a [TestExecutionException].
   TestExecutionException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Code Coverage Analysis subsystem failures.
+class CoverageAnalysisException extends PackageStudioException {
+  /// Creates a [CoverageAnalysisException].
+  CoverageAnalysisException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Base exception for all Test Report Generation subsystem failures.
+class TestReportGenerationException extends PackageStudioException {
+  /// Creates a [TestReportGenerationException].
+  TestReportGenerationException(super.message,
+      [super.details, super.stackTrace]);
+}

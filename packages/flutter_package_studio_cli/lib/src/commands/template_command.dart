@@ -2933,13 +2933,273 @@ class TemplateTestRunnerCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template coverage <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template coverage <template-id>`
+///
+/// Previews or writes code coverage analysis for a template.
+class TemplateCoverageCommand extends FpsCommand {
+  @override
+  final String name = 'coverage';
+
+  @override
+  final String description =
+      'Preview or calculate code coverage metrics for a template.';
+
+  TemplateCoverageCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Coverage profile (unit, widget, integration, all).',
+      defaultsTo: 'all',
+    );
+    argParser.addOption(
+      'input',
+      abbr: 'i',
+      help: 'Path to LCOV coverage file.',
+      defaultsTo: 'coverage/lcov.info',
+    );
+    argParser.addOption(
+      'threshold',
+      abbr: 't',
+      help: 'Minimum required line coverage percentage.',
+      defaultsTo: '80.0',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing report to disk.',
+      defaultsTo: 'coverage',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated coverage report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output coverage analysis result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final profile = argResults?['profile'] as String? ?? 'all';
+    final inputPath = argResults?['input'] as String? ?? 'coverage/lcov.info';
+    final thresholdStr = argResults?['threshold'] as String? ?? '80.0';
+    final minThreshold = double.tryParse(thresholdStr) ?? 80.0;
+    final outputDir = argResults?['output'] as String? ?? 'coverage';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final analyzer = CoverageAnalyzer();
+    final options = CoverageOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      profile: profile,
+      inputPath: inputPath,
+      thresholds: CoverageThresholds(minLineCoverage: minThreshold),
+    );
+
+    final plan = analyzer.planCoverageAnalysis(options);
+
+    String lcovContent = '';
+    final inputFile = File(inputPath);
+    if (await inputFile.exists()) {
+      lcovContent = await inputFile.readAsString();
+    }
+
+    final result = analyzer.analyzeCoverage(plan, lcovContent,
+        thresholds: options.thresholds);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final reportFile = File('${baseDir.path}/coverage_report.json');
+      await reportFile.writeAsString(jsonEncode(result.toJson()));
+
+      if (!jsonOutput) {
+        print('Successfully wrote coverage report to "${reportFile.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Code Coverage Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Profile        : ${plan.profile}');
+      print('Input File     : ${plan.inputPath}');
+      print('Overall Line % : ${result.overallPercentage.toStringAsFixed(1)}%');
+      print('Status         : ${result.isPassed ? "PASSED ✓" : "FAILED ✗"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isPassed ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template test-report <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template test-report <template-id>`
+///
+/// Previews or writes aggregated test & coverage reports for a template.
+class TemplateTestReportCommand extends FpsCommand {
+  @override
+  final String name = 'test-report';
+
+  @override
+  final String description =
+      'Preview or generate aggregated test execution & coverage report for a template.';
+
+  TemplateTestReportCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Report profile (unit, widget, integration, all).',
+      defaultsTo: 'all',
+    );
+    argParser.addOption(
+      'execution-report',
+      help: 'Path to optional execution result JSON file.',
+    );
+    argParser.addOption(
+      'coverage-report',
+      help: 'Path to optional coverage result JSON file.',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing report to disk.',
+      defaultsTo: 'doc/reports',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated test report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output test report result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final profile = argResults?['profile'] as String? ?? 'all';
+    final outputDir = argResults?['output'] as String? ?? 'doc/reports';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final generator = TestReportGenerator();
+    final options = ReportOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      profile: profile,
+      outputFormat: jsonOutput ? 'json' : 'markdown',
+    );
+
+    final plan = generator.planTestReport(options);
+    final report = generator.generateReport(plan);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file =
+          File('${baseDir.path}/test_report.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(report.toJson()) : report.toMarkdown());
+
+      if (!jsonOutput) {
+        print('Successfully wrote aggregate test report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(report.toJson()));
+    } else if (!writeDisk) {
+      print('Generated Test Report Plan Preview for "${report.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Profile  : ${plan.profile}');
+      print('Status   : ${report.overallSuccess ? "PASSED ✓" : "FAILED ✗"}');
+      print('Format   : ${plan.outputFormat}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return report.overallSuccess ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -2974,13 +3234,15 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateIntegrationTestsCommand());
     addSubcommand(TemplateFixturesCommand());
     addSubcommand(TemplateTestRunnerCommand());
+    addSubcommand(TemplateCoverageCommand());
+    addSubcommand(TemplateTestReportCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → migrate');
     print('');
     printUsage();
     return 0;
