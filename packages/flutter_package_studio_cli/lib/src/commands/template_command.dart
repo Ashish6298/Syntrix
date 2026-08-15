@@ -1649,13 +1649,103 @@ class TemplateArchitectureCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template mermaid
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template mermaid`
+///
+/// Previews or writes generated Mermaid diagram `.mmd` string source.
+class TemplateMermaidCommand extends FpsCommand {
+  @override
+  final String name = 'mermaid';
+
+  @override
+  final String description =
+      'Preview or generate standalone Mermaid diagram (.mmd) string source.';
+
+  TemplateMermaidCommand() {
+    argParser.addOption(
+      'type',
+      abbr: 't',
+      help: 'Mermaid diagram type (flowchart, sequence).',
+      defaultsTo: 'flowchart',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Output file path when writing to disk.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated Mermaid diagram directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output Mermaid diagram result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final typeStr = argResults?['type'] as String? ?? 'flowchart';
+    final outputPath = argResults?['output'] as String?;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final type = typeStr.toLowerCase() == 'sequence'
+        ? MermaidType.sequenceDiagram
+        : MermaidType.flowchartTD;
+
+    final generator = MermaidDiagramGenerator();
+    final options = MermaidDiagramOptions(
+      title: 'FPS Pipeline Diagram',
+      type: type,
+      nodes: const [
+        MermaidNode(id: 'Discovery', label: 'Template Catalog'),
+        MermaidNode(id: 'Resolver', label: 'Template Resolver'),
+        MermaidNode(id: 'Generator', label: 'Project Generator'),
+      ],
+      edges: const [
+        MermaidEdge(fromId: 'Discovery', toId: 'Resolver'),
+        MermaidEdge(fromId: 'Resolver', toId: 'Generator'),
+      ],
+    );
+
+    final plan = generator.planDiagram(options);
+    final result = generator.generateDiagram(plan);
+
+    if (writeDisk) {
+      final targetFile = outputPath ?? 'diagram.mmd';
+      final file = File(targetFile);
+      await file.writeAsString(result.source);
+      if (!jsonOutput) {
+        print('Successfully wrote Mermaid diagram to "$targetFile".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print('Generated Mermaid Diagram Preview:');
+      print('══════════════════════════════════════════════════════════════');
+      print(result.source);
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -1679,13 +1769,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateReadmeCommand());
     addSubcommand(TemplateApiDocsCommand());
     addSubcommand(TemplateArchitectureCommand());
+    addSubcommand(TemplateMermaidCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → migrate');
     print('');
     printUsage();
     return 0;

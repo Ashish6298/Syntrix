@@ -465,3 +465,9 @@ class ArchitectureDocGenerationException extends PackageStudioException {
   ArchitectureDocGenerationException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Mermaid Diagram Generation subsystem failures.
+class MermaidGenerationException extends PackageStudioException {
+  /// Creates a [MermaidGenerationException].
+  MermaidGenerationException(super.message, [super.details, super.stackTrace]);
+}
