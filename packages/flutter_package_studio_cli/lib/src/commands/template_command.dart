@@ -2122,13 +2122,119 @@ class TemplateGifsCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template website <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template website <template-id>`
+///
+/// Previews or writes generated static documentation website for a template.
+class TemplateWebsiteCommand extends FpsCommand {
+  @override
+  final String name = 'website';
+
+  @override
+  final String description =
+      'Preview or generate a complete static documentation website for a template.';
+
+  TemplateWebsiteCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing site to disk.',
+      defaultsTo: 'doc/site',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated static website files directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output static website result map as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final outputDir = argResults?['output'] as String? ?? 'doc/site';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final generator = StaticWebsiteGenerator();
+    final options = WebsiteOptions(packageName: tmpl.manifest.name);
+
+    final plan = generator.planWebsite(options);
+    final result = generator.generateWebsite(plan);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+
+      for (final entry in result.files.entries) {
+        final file = File('${baseDir.path}/${entry.key}');
+        await file.parent.create(recursive: true);
+        await file.writeAsString(entry.value);
+      }
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote static website (${result.files.length} files) to "$outputDir".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Static Website Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Total Pages : ${plan.pages.length}');
+      print('Routes      : ${plan.pages.map((p) => p.route).join(', ')}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -2156,13 +2262,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateExamplesCommand());
     addSubcommand(TemplateScreenshotsCommand());
     addSubcommand(TemplateGifsCommand());
+    addSubcommand(TemplateWebsiteCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → migrate');
     print('');
     printUsage();
     return 0;

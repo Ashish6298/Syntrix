@@ -491,3 +491,10 @@ class GifPipelineException extends PackageStudioException {
   /// Creates a [GifPipelineException].
   GifPipelineException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Static Website Generation subsystem failures.
+class StaticWebsiteGenerationException extends PackageStudioException {
+  /// Creates a [StaticWebsiteGenerationException].
+  StaticWebsiteGenerationException(super.message,
+      [super.details, super.stackTrace]);
+}
