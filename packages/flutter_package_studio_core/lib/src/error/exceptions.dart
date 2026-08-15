@@ -532,3 +532,9 @@ class TestFixtureGenerationException extends PackageStudioException {
   TestFixtureGenerationException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Test Runner & Execution Engine subsystem failures.
+class TestExecutionException extends PackageStudioException {
+  /// Creates a [TestExecutionException].
+  TestExecutionException(super.message, [super.details, super.stackTrace]);
+}

@@ -2814,6 +2814,125 @@ class TemplateFixturesCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template test-runner <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template test-runner <template-id>`
+///
+/// Previews or executes test suites (unit, widget, integration) for a template.
+class TemplateTestRunnerCommand extends FpsCommand {
+  @override
+  final String name = 'test-runner';
+
+  @override
+  final String description =
+      'Preview or execute test suites (unit, widget, integration) for a template.';
+
+  TemplateTestRunnerCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Test profile to execute (unit, widget, integration, all).',
+      defaultsTo: 'all',
+    );
+    argParser.addOption(
+      'timeout',
+      abbr: 't',
+      help: 'Timeout in seconds for test suite execution.',
+      defaultsTo: '30',
+    );
+    argParser.addFlag(
+      'execute',
+      negatable: false,
+      help: 'Execute planned test suites.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output test execution result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final profile = argResults?['profile'] as String? ?? 'all';
+    final timeoutStr = argResults?['timeout'] as String? ?? '30';
+    final timeoutSeconds = int.tryParse(timeoutStr) ?? 30;
+    final executeFlag = argResults?['execute'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final runner = TestRunner();
+    final options = TestExecutionOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      profile: profile,
+      timeoutSeconds: timeoutSeconds,
+    );
+
+    final plan = runner.planTestExecution(options);
+
+    if (executeFlag) {
+      final result = runner.executeTests(plan, options);
+
+      if (jsonOutput) {
+        print(jsonEncode(result.toJson()));
+      } else {
+        print('Executed Test Suite Results for "${result.packageName}":');
+        print('══════════════════════════════════════════════════════════════');
+        print('Success      : ${result.success}');
+        print('Passed Suites: ${result.passedCount}');
+        print('Failed Suites: ${result.failedCount}');
+        print('Logs         : ${result.logs.join('\n')}');
+        print('══════════════════════════════════════════════════════════════');
+      }
+      return result.success ? 0 : 1;
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(plan.toJson()));
+    } else {
+      print('Generated Test Execution Plan Preview for "${plan.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Profile     : ${plan.profile}');
+      print('Test Suites : ${plan.suites.length}');
+      print(
+          'Suites      : ${plan.suites.map((s) => '${s.type}:${s.name}').join(', ')}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -2854,6 +2973,7 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateWidgetTestsCommand());
     addSubcommand(TemplateIntegrationTestsCommand());
     addSubcommand(TemplateFixturesCommand());
+    addSubcommand(TemplateTestRunnerCommand());
   }
 
   @override
