@@ -2692,13 +2692,135 @@ class TemplateIntegrationTestsCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template fixtures <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template fixtures <template-id>`
+///
+/// Previews or writes generated test fixtures and mocks for a template.
+class TemplateFixturesCommand extends FpsCommand {
+  @override
+  final String name = 'fixtures';
+
+  @override
+  final String description =
+      'Preview or generate test fixtures and mock doubles for a template.';
+
+  TemplateFixturesCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing fixtures to disk.',
+      defaultsTo: 'test',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Generation profile (basic, standard, strict, release).',
+      defaultsTo: 'standard',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated test fixture/mock files directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output test fixture generation result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final outputDir = argResults?['output'] as String? ?? 'test';
+    final profile = argResults?['profile'] as String? ?? 'standard';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final generator = TestFixtureGenerator();
+    final options = FixtureOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      profile: profile,
+    );
+
+    final plan = generator.planFixtures(options);
+    final result = generator.generateFixtures(plan, options);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+
+      for (final entry in result.files.entries) {
+        final file =
+            File('${baseDir.path}/${entry.key.replaceFirst('test/', '')}');
+        await file.parent.create(recursive: true);
+        await file.writeAsString(entry.value);
+      }
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote test fixtures & mocks (${result.files.length} files) to "$outputDir".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Test Fixture & Mock Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Profile          : ${plan.profile}');
+      print('Fixture Targets  : ${plan.fixtureTargets.length}');
+      print('Mock Targets     : ${plan.mockTargets.length}');
+      print(
+          'Fixtures         : ${plan.fixtureTargets.map((f) => f.name).join(', ')}');
+      print(
+          'Mocks            : ${plan.mockTargets.map((m) => m.name).join(', ')}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -2731,13 +2853,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateUnitTestsCommand());
     addSubcommand(TemplateWidgetTestsCommand());
     addSubcommand(TemplateIntegrationTestsCommand());
+    addSubcommand(TemplateFixturesCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → migrate');
     print('');
     printUsage();
     return 0;

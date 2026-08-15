@@ -525,3 +525,10 @@ class IntegrationTestGenerationException extends PackageStudioException {
   IntegrationTestGenerationException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Test Fixture & Mock Generation subsystem failures.
+class TestFixtureGenerationException extends PackageStudioException {
+  /// Creates a [TestFixtureGenerationException].
+  TestFixtureGenerationException(super.message,
+      [super.details, super.stackTrace]);
+}

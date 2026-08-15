@@ -28,6 +28,7 @@ export '../testing/project/project.dart';
 export '../testing/unit/unit.dart';
 export '../testing/widget/widget.dart';
 export '../testing/integration/integration.dart';
+export '../testing/fixtures/fixtures.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';
