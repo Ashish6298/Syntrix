@@ -259,3 +259,188 @@ class PathSecurityException extends TemplateCompositionException {
   /// Creates a [PathSecurityException].
   PathSecurityException(super.message, [super.details, super.stackTrace]);
 }
+
+// ── Customization Engine Exceptions ───────────────────────────────────────────
+
+/// Base exception for all Template Customization Engine failures.
+class CustomizationException extends PackageStudioException {
+  /// Creates a [CustomizationException].
+  CustomizationException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Thrown when user customization values fail schema validation (missing required value,
+/// invalid type, value outside allowed choices, etc.).
+class CustomizationValidationException extends CustomizationException {
+  /// Creates a [CustomizationValidationException].
+  CustomizationValidationException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when customization rules or path overrides collide irreconcilably.
+class CustomizationConflictException extends CustomizationException {
+  /// Creates a [CustomizationConflictException].
+  CustomizationConflictException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when a customization path override attempts path traversal (`..`) or absolute pathing.
+class CustomizationPathSecurityException extends CustomizationException {
+  /// Creates a [CustomizationPathSecurityException].
+  CustomizationPathSecurityException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+// ── Quality Engine Exceptions ─────────────────────────────────────────────────
+
+/// Base exception for all Template Quality Assurance & Validation failures.
+class TemplateQualityException extends TemplateException {
+  /// Creates a [TemplateQualityException].
+  TemplateQualityException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Thrown when a template fails quality validation under a strict or release quality profile.
+class TemplateQualityValidationException extends TemplateQualityException {
+  /// Creates a [TemplateQualityValidationException].
+  TemplateQualityValidationException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+// ── Hook & Lifecycle System Exceptions ────────────────────────────────────────
+
+/// Base exception for all Template Hook & Lifecycle failures.
+class TemplateHookException extends TemplateException {
+  /// Creates a [TemplateHookException].
+  TemplateHookException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Thrown when hook execution fails or encounters an unhandled runtime error.
+class TemplateHookExecutionException extends TemplateHookException {
+  /// Creates a [TemplateHookExecutionException].
+  TemplateHookExecutionException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when a hook attempts unauthorized operations, path traversal, sandbox escape, or secret leak.
+class TemplateHookSecurityException extends TemplateHookException {
+  /// Creates a [TemplateHookSecurityException].
+  TemplateHookSecurityException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when hook metadata, registration, or phase assignment is invalid.
+class TemplateHookValidationException extends TemplateHookException {
+  /// Creates a [TemplateHookValidationException].
+  TemplateHookValidationException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when hook dependency resolution fails or circular dependencies are detected.
+class TemplateHookDependencyException extends TemplateHookException {
+  /// Creates a [TemplateHookDependencyException].
+  TemplateHookDependencyException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when a hook execution exceeds its maximum allowed duration.
+class TemplateHookTimeoutException extends TemplateHookException {
+  /// Creates a [TemplateHookTimeoutException].
+  TemplateHookTimeoutException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+// ── Certification Engine Exceptions ──────────────────────────────────────────
+
+/// Base exception for all Template Certification System failures.
+class TemplateCertificationException extends TemplateException {
+  /// Creates a [TemplateCertificationException].
+  TemplateCertificationException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when template certification validation fails or certification gates are violated.
+class TemplateCertificationValidationException
+    extends TemplateCertificationException {
+  /// Creates a [TemplateCertificationValidationException].
+  TemplateCertificationValidationException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+// ── Testing Framework Exceptions ──────────────────────────────────────────────
+
+/// Base exception for all Template Testing Framework failures.
+class TemplateTestingException extends TemplateException {
+  /// Creates a [TemplateTestingException].
+  TemplateTestingException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Thrown when template test configuration or test case definition is invalid.
+class TemplateTestConfigurationException extends TemplateTestingException {
+  /// Creates a [TemplateTestConfigurationException].
+  TemplateTestConfigurationException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when a template test fails during execution unexpectedly.
+class TemplateTestExecutionException extends TemplateTestingException {
+  /// Creates a [TemplateTestExecutionException].
+  TemplateTestExecutionException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when a template test assertion expectation fails.
+class TemplateTestAssertionException extends TemplateTestingException {
+  /// Creates a [TemplateTestAssertionException].
+  TemplateTestAssertionException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+// ── Migration System Exceptions ───────────────────────────────────────────────
+
+/// Base exception for all Template Upgrade & Migration System failures.
+class TemplateMigrationException extends PackageStudioException {
+  /// Creates a [TemplateMigrationException].
+  TemplateMigrationException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Thrown when migration configuration or request parameters are invalid.
+class TemplateMigrationConfigurationException
+    extends TemplateMigrationException {
+  /// Creates a [TemplateMigrationConfigurationException].
+  TemplateMigrationConfigurationException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when no valid migration path can be resolved or planning fails.
+class TemplateMigrationPlanningException extends TemplateMigrationException {
+  /// Creates a [TemplateMigrationPlanningException].
+  TemplateMigrationPlanningException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when a file or metadata conflict occurs during migration.
+class TemplateMigrationConflictException extends TemplateMigrationException {
+  /// Creates a [TemplateMigrationConflictException].
+  TemplateMigrationConflictException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when a migration action violates path security boundaries (absolute path, traversal).
+class TemplateMigrationSecurityException extends TemplateMigrationException {
+  /// Creates a [TemplateMigrationSecurityException].
+  TemplateMigrationSecurityException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when a migration execution operation fails at runtime.
+class TemplateMigrationExecutionException extends TemplateMigrationException {
+  /// Creates a [TemplateMigrationExecutionException].
+  TemplateMigrationExecutionException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Thrown when a migration rollback operation fails.
+class TemplateMigrationRollbackException extends TemplateMigrationException {
+  /// Creates a [TemplateMigrationRollbackException].
+  TemplateMigrationRollbackException(super.message,
+      [super.details, super.stackTrace]);
+}

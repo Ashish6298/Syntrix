@@ -1,0 +1,136 @@
+================================================================================
+  FLUTTER PACKAGE STUDIO – PHASE 2.11 IMPLEMENTATION REPORT
+  Template Upgrade & Migration System
+================================================================================
+Generated : 2026-08-15 22:00:00 IST (2026-08-15T16:30:00Z)
+Status    : COMPLETE – ALL VERIFICATION GATES PASSED
+================================================================================
+
+PROJECT METADATA
+----------------
+  Monorepo Root : d:\Syntrix
+  Packages      : flutter_package_studio_core, flutter_package_studio_cli
+  Baseline      : Milestone 1 (Phases 1.1–1.8), Milestone 2 (Phases 2.1–2.10)
+
+PHASE 2.11 OBJECTIVE
+--------------------
+  Introduce a production-grade, deterministic, plan-first Template Upgrade & Migration
+  subsystem capable of detecting originating project metadata, resolving ordered
+  migration chains across SemVer versions, previewing planned steps and file actions
+  without disk mutation, safely executing transformations with atomic backup and
+  rollback support under explicit conflict policies (`fail`, `preserve`, `overwrite`, `skip`),
+  and producing complete auditable migration reports without mutating host environments or
+  destroying backward compatibility.
+
+================================================================================
+  SUMMARY OF IMPLEMENTATION
+================================================================================
+
+1. MIGRATION SUBSYSTEM (`src/template/migration/`)
+   - TemplateMigrationFileSystem: Injectable filesystem abstraction (MemoryMigrationFileSystem)
+     for isolated testing without operating on the real workspace filesystem.
+   - TemplateMigrationAction: Discrete file/metadata action model (`createFile`, `updateFile`,
+     `renameFile`, `deleteFile`, `updateMetadata`, `updateDependency`).
+   - TemplateMigrationStep: Single version step in a migration chain (e.g. `1.0.0` -> `1.1.0`).
+   - TemplateMigrationPlan: Immutable preview plan with total action count, step sequence,
+     findings, and JSON export.
+   - TemplateMigrationResult: Execution result containing action status, rollback status,
+     and findings.
+   - TemplateMigrationRequest: Parameter container for migration planning.
+   - TemplateMigrationProfile & ConflictPolicy: Profiles (`basic`, `standard`, `strict`,
+     `release`) and policies (`fail`, `preserve`, `overwrite`, `skip`).
+   - TemplateMigration & SimpleTemplateMigration: Abstract migration contract and declaration model.
+   - TemplateMigrationRegistry: Registers migrations and resolves ordered migration chains.
+   - TemplateMigrationEngine: Core engine providing metadata detection (`.fps/template_metadata.json`),
+     dry-run migration planning, path-security verification, atomic backup creation, execution,
+     and automatic rollback upon failure.
+
+2. EXCEPTION HIERARCHY EXTENSION
+   - Added TemplateMigrationException, TemplateMigrationConfigurationException,
+     TemplateMigrationPlanningException, TemplateMigrationConflictException,
+     TemplateMigrationSecurityException, TemplateMigrationExecutionException, and
+     TemplateMigrationRollbackException to `exceptions.dart`.
+
+3. CLI INTEGRATION (`fps template migrate`)
+   - Added `fps template migrate <target>` subcommand under TemplateCatalogCommand.
+   - Supports `--from`, `--to`, `--profile`, `--conflict-policy`, `--dry-run`, `--execute`, and `--json`.
+
+================================================================================
+  FILES CREATED & MODIFIED
+================================================================================
+
+FILES CREATED:
+  packages/flutter_package_studio_core:
+    lib/src/template/migration/migration_models.dart
+    lib/src/template/migration/migration_contract.dart
+    lib/src/template/migration/migration_registry.dart
+    lib/src/template/migration/migration_filesystem.dart
+    lib/src/template/migration/migration_engine.dart
+    lib/src/template/migration/migration.dart
+    test/template/template_migration_engine_test.dart
+
+  packages/flutter_package_studio_cli:
+    test/cli_template_migrate_test.dart
+
+FILES MODIFIED:
+  packages/flutter_package_studio_core:
+    lib/src/error/exceptions.dart
+    lib/src/template/template.dart
+
+  packages/flutter_package_studio_cli:
+    lib/src/commands/template_command.dart
+
+================================================================================
+  VERIFICATION COMMANDS & RESULTS
+================================================================================
+
+1. STATIC ANALYSIS
+   Command : dart analyze packages/flutter_package_studio_core packages/flutter_package_studio_cli
+   Result  : No issues found! (0 errors, 0 warnings, 0 lints)
+
+2. CODE FORMATTING
+   Command : dart format --output=none --set-exit-if-changed packages/flutter_package_studio_core packages/flutter_package_studio_cli
+   Result  : Formatted 251 files (0 changed) in 0.26 seconds.
+
+3. DOCUMENTATION ANALYSIS
+   Command : dart doc --dry-run packages/flutter_package_studio_core && dart doc --dry-run packages/flutter_package_studio_cli
+   Result  : Found 0 warnings and 0 errors across both packages!
+
+4. FULL MONOREPO TEST SUITE
+   Command : dart test packages/flutter_package_studio_core packages/flutter_package_studio_cli --concurrency=1
+   Result  : All 524 tests passed! (524/524)
+
+TEST BREAKDOWN:
+  - Regression Tests (Phases 1.1–2.10) : 515 passed
+  - Phase 2.11 New Tests                : 9 passed
+    * TemplateMigrationEngine tests     : 5 tests (metadata detection, dry-run plan preview,
+                                          atomic execution & rollback, path security rejection,
+                                          missing chain detection)
+    * CLI TemplateMigrateCommand        : 4 tests (usage 64, default dry-run preview,
+                                          JSON plan output, missing path exit code 1)
+
+================================================================================
+  SECURITY, SIDE-EFFECT & DETERMINISM VERIFICATION
+================================================================================
+
+- Security: Path traversal (`..`) and absolute path references are rejected by `_validatePathSecurity`.
+- Zero Mutation: Preview mode (`planMigration`) operates 100% in memory with zero disk writes.
+- Atomic Rollback: File execution creates backups prior to mutation and automatically restores
+  them if any step fails.
+
+================================================================================
+  KNOWN LIMITATIONS & DEFERRED FUNCTIONALITY
+================================================================================
+
+- AST-based automated code refactoring (e.g., rewriting Dart class methods) is deferred to future tools.
+
+================================================================================
+  FINAL ASSESSMENT
+================================================================================
+
+  All verification gates passed: YES
+  Existing functionality preserved: YES
+  Unresolved blockers: NONE
+
+  Ready for Phase 2.12: YES
+================================================================================

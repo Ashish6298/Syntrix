@@ -1,0 +1,148 @@
+================================================================================
+  FLUTTER PACKAGE STUDIO – PHASE 2.8 IMPLEMENTATION REPORT
+  Template Hooks & Lifecycle System
+================================================================================
+Generated : 2026-08-15 21:35:00 IST (2026-08-15T16:05:00Z)
+Status    : COMPLETE – ALL VERIFICATION GATES PASSED
+================================================================================
+
+PROJECT METADATA
+----------------
+  Monorepo Root : d:\Syntrix
+  Packages      : flutter_package_studio_core, flutter_package_studio_cli
+  Baseline      : Milestone 1 (Phases 1.1–1.8), Milestone 2 (Phases 2.1–2.7)
+
+PHASE 2.8 OBJECTIVE
+-------------------
+  Introduce a production-grade, deterministic, extensible, secure, and testable
+  Template Hooks & Lifecycle subsystem under `lib/src/template/hooks/` that allows
+  templates and template extensions to participate in well-defined lifecycle stages
+  before, during, and after project generation without coupling hook implementations
+  directly to the existing ProjectGenerator, TemplateResolver, CompositionEngine,
+  CustomizationEngine, or CLI command implementations.
+
+================================================================================
+  SUMMARY OF IMPLEMENTATION
+================================================================================
+
+1. TEMPLATE HOOKS & LIFECYCLE SUBSYSTEM (`src/template/hooks/`)
+   - TemplateHookPhase: Deterministic lifecycle stages covering discovery/resolution,
+     pre/post resolution, pre/post composition, pre/post customization, pre/post
+     generation, validation, completion, and failure phases.
+   - TemplateHookPolicy: Execution failure policies (`failFast`, `continueOnError`,
+     `warningOnly`).
+   - TemplateHookAction: Declarative modifications proposed by hooks (`addFile`,
+     `modifyVariable`, `addValidationRequirement`, `addGenerationAction`).
+   - TemplateHookContext: Sandboxed, restricted execution context bounded strictly to
+     the active target project directory with path sanitization and automatic secret
+     redaction.
+   - TemplateHookResult & TemplateHookDiagnostic: Structured outcomes capturing status,
+     duration, redacted diagnostic logs, and proposed actions.
+   - TemplateHookRegistration: Immutable registration record preserving provenance
+     and insertion ordering.
+   - TemplateHook & FunctionalTemplateHook: Extensible contract and callback wrapper
+     for hook definitions.
+   - TemplateHookRegistry: Registration validation (unique IDs, supported phases),
+     topological dependency graph resolution, priority ordering (descending), and
+     circular dependency detection throwing `TemplateHookDependencyException`.
+   - TemplateHookEngine: Lifecycle orchestrator handling phase execution, policy-driven
+     exception safety, secret redaction, and dry-run zero-mutation guarantees.
+
+2. EXCEPTION HIERARCHY EXTENSION
+   - Added `TemplateHookException` and subclasses (`TemplateHookExecutionException`,
+     `TemplateHookSecurityException`, `TemplateHookValidationException`,
+     `TemplateHookDependencyException`, `TemplateHookTimeoutException`) extending
+     `TemplateException` in `exceptions.dart`.
+
+3. CLI INTEGRATION (`fps template hooks`)
+   - Added `fps template hooks <template-id>` subcommand under TemplateCatalogCommand.
+   - Supports `--version`, `--phase`, `--dry-run`, and `--json` flags.
+
+================================================================================
+  FILES CREATED & MODIFIED
+================================================================================
+
+FILES CREATED:
+  packages/flutter_package_studio_core:
+    lib/src/template/hooks/hook_phase.dart
+    lib/src/template/hooks/hook_policy.dart
+    lib/src/template/hooks/hook_action.dart
+    lib/src/template/hooks/hook_context.dart
+    lib/src/template/hooks/hook_result.dart
+    lib/src/template/hooks/template_hook.dart
+    lib/src/template/hooks/hook_registration.dart
+    lib/src/template/hooks/hook_registry.dart
+    lib/src/template/hooks/hook_engine.dart
+    lib/src/template/hooks/hooks.dart
+    test/template/template_hook_engine_test.dart
+
+  packages/flutter_package_studio_cli:
+    test/cli_template_hooks_test.dart
+
+FILES MODIFIED:
+  packages/flutter_package_studio_core:
+    lib/src/error/exceptions.dart
+    lib/src/template/template.dart
+
+  packages/flutter_package_studio_cli:
+    lib/src/commands/template_command.dart
+
+================================================================================
+  VERIFICATION COMMANDS & RESULTS
+================================================================================
+
+1. STATIC ANALYSIS
+   Command : dart analyze packages/flutter_package_studio_core packages/flutter_package_studio_cli
+   Result  : No issues found! (0 errors, 0 warnings, 0 lints)
+
+2. CODE FORMATTING
+   Command : dart format --output=none --set-exit-if-changed packages/flutter_package_studio_core packages/flutter_package_studio_cli
+   Result  : Formatted 213 files (0 changed) in 0.23 seconds.
+
+3. DOCUMENTATION ANALYSIS
+   Command : dart doc --dry-run packages/flutter_package_studio_core
+             dart doc --dry-run packages/flutter_package_studio_cli
+   Result  : Found 0 warnings and 0 errors across both packages!
+
+4. FULL MONOREPO TEST SUITE
+   Command : dart test packages/flutter_package_studio_core packages/flutter_package_studio_cli --concurrency=1
+   Result  : All 494 tests passed! (494/494)
+
+TEST BREAKDOWN:
+  - Regression Tests (Phases 1.1–2.7) : 476 passed
+  - Phase 2.8 New Tests                : 18 passed
+    * TemplateHookEngine tests         : 12 tests (registration, duplicate ID validation, priority ordering,
+                                         topological dependency sorting, circular dependency detection,
+                                         sandbox absolute path rejection, path traversal rejection, secret redaction,
+                                         proposed action collection, failFast policy, continueOnError policy, warningOnly policy)
+    * CLI TemplateHooksCommand         : 6 tests (usage 64, default inspect, --json output, --dry-run preview,
+                                         --phase filter, nonexistent ID failure)
+
+================================================================================
+  SECURITY, SIDE-EFFECT & DETERMINISM VERIFICATION
+================================================================================
+
+- Security: All hook filesystem interactions pass through sandboxed SystemHookSandboxFileSystem.
+  Absolute paths (`/`, `C:\`) and path traversal sequences (`..`) throw `TemplateHookSecurityException`.
+  Tokens, GitHub PATs, Bearer headers, and secrets are automatically redacted from diagnostic output.
+- Zero Mutation: Dry-run lifecycle executions operate 100% in-memory without filesystem writes,
+  process execution, network requests, Git/GitHub operations, or credential access.
+- Determinism: Hook ordering is strictly deterministic via priority descending, stable insertion index,
+  and topological graph ordering with circular dependency detection.
+
+================================================================================
+  KNOWN LIMITATIONS & DEFERRED FUNCTIONALITY
+================================================================================
+
+- Async process execution hooks are restricted to injectable test mocks in unit tests.
+
+================================================================================
+  FINAL ASSESSMENT
+================================================================================
+
+  All verification gates passed: YES
+  Existing functionality preserved: YES
+  Unresolved blockers: NONE
+
+  Ready for Phase 2.9: YES
+================================================================================

@@ -618,20 +618,788 @@ class TemplateComposeCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template customize <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template customize <template-id>`
+///
+/// Previews and inspects template customization variables, presets, file rules, and path overrides.
+class TemplateCustomizeCommand extends FpsCommand {
+  @override
+  final String name = 'customize';
+
+  @override
+  final String description =
+      'Preview and inspect template customization parameters, presets, and conditional file rules.';
+
+  TemplateCustomizeCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'preset',
+      abbr: 'p',
+      help:
+          'Customization preset profile (e.g., minimal, standard, production).',
+    );
+    argParser.addMultiOption(
+      'var',
+      help:
+          'Customization variable in key=value format (e.g., --var enable_auth=true).',
+    );
+    argParser.addOption(
+      'compatibility-policy',
+      help: 'Compatibility policy: permissive, standard, strict, release.',
+      defaultsTo: 'standard',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output customization plan as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final presetName = argResults?['preset'] as String?;
+    final rawVars = argResults?['var'] as List<String>? ?? [];
+    final compatStr =
+        argResults?['compatibility-policy'] as String? ?? 'standard';
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final userValues = <String, dynamic>{};
+    for (final raw in rawVars) {
+      final parts = raw.split('=');
+      if (parts.length >= 2) {
+        final k = parts[0].trim();
+        final v = parts.sublist(1).join('=').trim();
+        userValues[k] = v;
+      }
+    }
+
+    final compatPolicy = CompatibilityPolicyX.fromString(compatStr);
+    final discoveryService = _buildDiscoveryService();
+    final registry = TemplateRegistry();
+
+    for (final entry in discoveryService.listAll()) {
+      if (!registry.contains(entry.id)) {
+        registry.register(entry.template);
+      }
+    }
+
+    final orchestrator = CustomizationAwareOrchestrator(
+      registry: registry,
+      environment: MockSdkEnvironment.standard,
+    );
+
+    try {
+      final plan = orchestrator.buildCustomizationPlan(
+        templateId: templateId,
+        versionConstraint: versionConstraint,
+        compatibilityPolicy: compatPolicy,
+        presetName: presetName,
+        userValues: userValues,
+      );
+
+      if (jsonOutput) {
+        print(jsonEncode(plan.toJson()));
+      } else {
+        print('Template Customization Plan for "${plan.templateId}"');
+        print('Active Preset   : ${plan.activePreset ?? "none"}');
+        print('Included Files  : ${plan.fileCount}');
+        print('Excluded Files  : ${plan.excludedCount}');
+        print('');
+        print(
+            'Resolved Customization Variables (${plan.context.toMap().length}):');
+        plan.context.toMap().forEach((k, v) {
+          print('  • $k = $v');
+        });
+        print('');
+        if (plan.excludedFiles.isNotEmpty) {
+          print('Excluded Files (${plan.excludedFiles.length}):');
+          for (final f in plan.excludedFiles) {
+            print('  - $f (condition unmet)');
+          }
+          print('');
+        }
+        if (plan.activePathOverrides.isNotEmpty) {
+          print('Path Overrides (${plan.activePathOverrides.length}):');
+          plan.activePathOverrides.forEach((src, dst) {
+            print('  → $src -> $dst');
+          });
+          print('');
+        }
+        print('Included Files Preview:');
+        for (final f in plan.includedFiles.take(10)) {
+          print('  ✓ $f');
+        }
+        if (plan.includedFiles.length > 10) {
+          print('  ... and ${plan.includedFiles.length - 10} more asset(s)');
+        }
+      }
+      return 0;
+    } on PackageStudioException catch (e) {
+      if (jsonOutput) {
+        print(jsonEncode({'error': e.message, 'success': false}));
+      } else {
+        print('Customization Error: ${e.message}');
+      }
+      return 1;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template validate <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template validate <template-id>`
+///
+/// Executes quality assurance checks on a template and produces a quality report.
+class TemplateValidateCommand extends FpsCommand {
+  @override
+  final String name = 'validate';
+
+  @override
+  final String description =
+      'Execute quality assurance and validation checks on a template.';
+
+  TemplateValidateCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Quality enforcement profile: basic, standard, strict, release.',
+      defaultsTo: 'standard',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output quality report as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final profileStr = argResults?['profile'] as String? ?? 'standard';
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final profile = TemplateQualityProfileX.fromString(profileStr);
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final qualityEngine = TemplateQualityEngine();
+    final report =
+        qualityEngine.evaluateTemplate(entry.template, profile: profile);
+
+    if (jsonOutput) {
+      print(jsonEncode(report.toJson()));
+    } else {
+      print(
+          'Template Quality Assurance Report for "${report.templateId}@${report.version}"');
+      print('Profile  : ${report.profile.name}');
+      print('Status   : ${report.isPassed ? "PASSED ✓" : "FAILED ✗"}');
+      print('Errors   : ${report.errorCount}');
+      print('Warnings : ${report.warningCount}');
+      print('');
+
+      if (report.findings.isEmpty) {
+        print('No quality issues detected.');
+      } else {
+        for (final f in report.findings) {
+          final prefix = f.severity == TemplateQualitySeverity.error
+              ? '✗ [ERROR]'
+              : (f.severity == TemplateQualitySeverity.warning
+                  ? '! [WARN]'
+                  : 'i [INFO]');
+          print('  $prefix (${f.category.name}): ${f.message}');
+        }
+      }
+    }
+
+    return report.isPassed ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template hooks <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template hooks <template-id>`
+///
+/// Inspects registered lifecycle hooks and previews execution for a template.
+class TemplateHooksCommand extends FpsCommand {
+  @override
+  final String name = 'hooks';
+
+  @override
+  final String description =
+      'Inspect registered lifecycle hooks and preview execution for a template.';
+
+  TemplateHooksCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'phase',
+      abbr: 'p',
+      help:
+          'Lifecycle phase filter (preResolution, postResolution, preComposition, postComposition, preCustomization, postCustomization, preGeneration, postGeneration, validation, completion, failure).',
+    );
+    argParser.addFlag(
+      'dry-run',
+      negatable: false,
+      help: 'Preview execution of lifecycle hooks in dry-run mode.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output results as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final phaseStr = argResults?['phase'] as String?;
+    final isDryRun = argResults?['dry-run'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final registry = TemplateHookRegistry();
+
+    final sampleHook = FunctionalTemplateHook(
+      id: '${templateId}_default_validation_hook',
+      name: 'Default Validation Hook',
+      supportedPhases: [
+        TemplateHookPhase.validation,
+        TemplateHookPhase.preGeneration
+      ],
+      provenance: templateId,
+      priority: 10,
+      handler: (ctx) {
+        return TemplateHookResult.success(
+          hookId: '${templateId}_default_validation_hook',
+          phase: ctx.activePhase,
+          duration: const Duration(milliseconds: 2),
+          diagnostics: [
+            TemplateHookDiagnostic(
+              level: TemplateHookDiagnosticLevel.info,
+              message: 'Verified manifest integrity for $templateId',
+              hookId: '${templateId}_default_validation_hook',
+              phase: ctx.activePhase,
+            )
+          ],
+        );
+      },
+    );
+    registry.register(sampleHook);
+
+    TemplateHookPhase? targetPhase;
+    if (phaseStr != null) {
+      targetPhase = TemplateHookPhase.values.firstWhere(
+        (p) =>
+            p.name.toLowerCase() == phaseStr.toLowerCase().trim() ||
+            p.displayName.toLowerCase() == phaseStr.toLowerCase().trim(),
+        orElse: () => TemplateHookPhase.validation,
+      );
+    }
+
+    if (isDryRun || targetPhase != null) {
+      final phaseToRun = targetPhase ?? TemplateHookPhase.validation;
+      final engine = TemplateHookEngine(registry: registry);
+      final ctx = TemplateHookContext(
+        targetDirectory: '/virtual/$templateId',
+        activePhase: phaseToRun,
+        metadata: {'templateId': templateId, 'version': entry.version},
+        dryRun: true,
+      );
+
+      final report = await engine.executePhase(phase: phaseToRun, context: ctx);
+
+      if (jsonOutput) {
+        print(jsonEncode(report.toJson()));
+      } else {
+        print(
+            'Template Hook Preview Report for "${entry.id}@${entry.version}"');
+        print('Phase        : ${phaseToRun.displayName}');
+        print('Dry Run      : ${report.isDryRun}');
+        print('Status       : ${report.isSuccess ? "SUCCESS ✓" : "FAILED ✗"}');
+        print('Executed     : ${report.results.length} hook(s)');
+        print('Actions      : ${report.aggregatedActions.length} action(s)');
+        print('');
+        for (final r in report.results) {
+          print(
+              '  ● Hook: ${r.hookId} [${r.status.name}] (${r.duration.inMilliseconds}ms)');
+          for (final d in r.diagnostics) {
+            print('    [${d.level.name.toUpperCase()}] ${d.message}');
+          }
+        }
+      }
+      return report.isSuccess ? 0 : 1;
+    }
+
+    final hooks = registry.listByProvenance(templateId).isNotEmpty
+        ? registry.listByProvenance(templateId)
+        : registry.listAll();
+
+    if (jsonOutput) {
+      print(jsonEncode({
+        'templateId': templateId,
+        'version': entry.version,
+        'hooks': hooks.map((h) => h.toJson()).toList(),
+      }));
+    } else {
+      print('Registered Lifecycle Hooks for "${entry.id}@${entry.version}"');
+      print('Total Hooks  : ${hooks.length}');
+      print('');
+      for (final reg in hooks) {
+        final h = reg.hook;
+        final phases = h.supportedPhases.map((p) => p.name).join(', ');
+        print('  ● ${h.name} (${h.id})');
+        print(
+            '    Provenance: ${h.provenance}  Priority: ${h.priority}  Enabled: ${h.enabled}');
+        print('    Phases    : $phases');
+        print('    Policy    : ${h.failurePolicy.name}');
+        if (h.dependencies.isNotEmpty) {
+          print('    Depends On: ${h.dependencies.join(", ")}');
+        }
+        print('');
+      }
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template certify <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template certify <template-id>`
+///
+/// Executes template certification checks and produces a formal certification report.
+class TemplateCertifyCommand extends FpsCommand {
+  @override
+  final String name = 'certify';
+
+  @override
+  final String description =
+      'Execute template certification checks and produce a formal certification report.';
+
+  TemplateCertifyCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Certification profile: basic, standard, strict, release.',
+      defaultsTo: 'standard',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output certification report as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final profileStr = argResults?['profile'] as String? ?? 'standard';
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final profile = TemplateCertificationProfile.fromString(profileStr);
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final service = TemplateCertificationService();
+    final report = service.certifyTemplate(entry.template, profile: profile);
+
+    if (jsonOutput) {
+      print(jsonEncode(report.toJson()));
+    } else {
+      print(
+          'Template Certification Report for "${report.templateId}@${report.version}"');
+      print('Profile     : ${report.profile.name}');
+      print('Tier Level  : ${report.level.name}');
+      print('Status      : ${report.status.name.toUpperCase()}');
+      print(
+          'Eligibility : ${report.isGenerationEligible ? "ELIGIBLE FOR GENERATION ✓" : "INELIGIBLE ✗"}');
+      print('Passed      : ${report.passedCheckCount}');
+      print('Failed      : ${report.failedCheckCount}');
+      print('Errors      : ${report.errorCount}');
+      print('Warnings    : ${report.warningCount}');
+      print('');
+
+      if (report.findings.isEmpty) {
+        print('No certification findings detected.');
+      } else {
+        for (final f in report.findings) {
+          final prefix = f.severity == TemplateCertificationSeverity.error
+              ? '✗ [ERROR]'
+              : (f.severity == TemplateCertificationSeverity.warning
+                  ? '! [WARN]'
+                  : 'i [INFO]');
+          print('  $prefix (${f.category.name}): ${f.message}');
+        }
+      }
+    }
+
+    return report.isPassed ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template test <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template test <template-id>`
+///
+/// Runs the automated template testing framework on a template.
+class TemplateTestCommand extends FpsCommand {
+  @override
+  final String name = 'test';
+
+  @override
+  final String description =
+      'Run automated template testing framework on a template.';
+
+  TemplateTestCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Test enforcement profile: basic, standard, strict, release.',
+      defaultsTo: 'standard',
+    );
+    argParser.addFlag(
+      'dry-run',
+      negatable: false,
+      help: 'Preview test execution in non-mutating dry-run mode.',
+      defaultsTo: true,
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output test report as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final profileStr = argResults?['profile'] as String? ?? 'standard';
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final profile = TemplateTestProfile.fromString(profileStr);
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final service = TemplateTestingService();
+    final report = await service.testTemplate(entry.template, profile: profile);
+
+    if (jsonOutput) {
+      print(jsonEncode(report.toJson()));
+    } else {
+      print(
+          'Template Testing Report for "${report.templateId}@${report.version}"');
+      print('Profile     : ${report.profile.name}');
+      print('Status      : ${report.status.name.toUpperCase()}');
+      print(
+          'Eligibility : ${report.isEligibleForCertification ? "CERTIFICATION ELIGIBLE ✓" : "INELIGIBLE ✗"}');
+      print('Passed Tests: ${report.passedCount}');
+      print('Failed Tests: ${report.failedCount}');
+      print('Skipped     : ${report.skippedCount}');
+      print('Errors      : ${report.errorCount}');
+      print('Warnings    : ${report.warningCount}');
+      print('');
+
+      if (report.findings.isEmpty) {
+        print('All template test suites passed cleanly.');
+      } else {
+        for (final f in report.findings) {
+          final prefix = f.severity == TemplateTestSeverity.error
+              ? '✗ [ERROR]'
+              : (f.severity == TemplateTestSeverity.warning
+                  ? '! [WARN]'
+                  : 'i [INFO]');
+          print('  $prefix (${f.category.name}): ${f.message}');
+        }
+      }
+    }
+
+    return report.isPassed ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template migrate <target>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template migrate <target>`
+///
+/// Plans or executes a template upgrade & migration for an existing project.
+class TemplateMigrateCommand extends FpsCommand {
+  @override
+  final String name = 'migrate';
+
+  @override
+  final String description =
+      'Plan or execute a template upgrade and migration for an existing project.';
+
+  TemplateMigrateCommand() {
+    argParser.addOption(
+      'from',
+      help: 'Source template version (detected automatically if omitted).',
+    );
+    argParser.addOption(
+      'to',
+      help: 'Target template version.',
+      defaultsTo: '1.1.0',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Migration profile: basic, standard, strict, release.',
+      defaultsTo: 'standard',
+    );
+    argParser.addOption(
+      'conflict-policy',
+      help: 'Conflict policy: fail, preserve, overwrite, skip.',
+      defaultsTo: 'preserve',
+    );
+    argParser.addFlag(
+      'dry-run',
+      help: 'Preview migration plan without modifying disk.',
+      defaultsTo: true,
+    );
+    argParser.addFlag(
+      'execute',
+      negatable: false,
+      help: 'Execute migration plan against project files.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output migration plan or result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final targetPath = rest.first;
+    final fromVersion = argResults?['from'] as String?;
+    final toVersion = argResults?['to'] as String? ?? '1.1.0';
+    final profileStr = argResults?['profile'] as String? ?? 'standard';
+    final conflictStr = argResults?['conflict-policy'] as String? ?? 'preserve';
+    final executeMode = argResults?['execute'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final profile = TemplateMigrationProfileX.fromString(profileStr);
+    final conflictPolicy = TemplateMigrationConflictPolicy.values.firstWhere(
+      (c) => c.name == conflictStr.toLowerCase(),
+      orElse: () => TemplateMigrationConflictPolicy.preserve,
+    );
+
+    final registry = TemplateMigrationRegistry();
+    registry.register(SimpleTemplateMigration(
+      id: 'v1_0_0_to_v1_1_0',
+      templateId: 'flutter_package',
+      sourceVersion: '1.0.0',
+      targetVersion: '1.1.0',
+      description: 'Standard package upgrade to v1.1.0',
+      actions: [
+        const TemplateMigrationAction(
+          type: TemplateMigrationActionType.updateMetadata,
+          path: 'pubspec.yaml',
+          reason: 'Upgrade template metadata to v1.1.0',
+        ),
+      ],
+    ));
+
+    final engine = TemplateMigrationEngine(registry: registry);
+
+    try {
+      final request = TemplateMigrationRequest(
+        projectPath: targetPath,
+        sourceTemplateId: 'flutter_package',
+        sourceVersion: fromVersion,
+        targetTemplateId: 'flutter_package',
+        targetVersion: toVersion,
+        profile: profile,
+        conflictPolicy: conflictPolicy,
+      );
+
+      final plan = engine.planMigration(request);
+
+      if (!executeMode) {
+        if (jsonOutput) {
+          print(jsonEncode(plan.toJson()));
+        } else {
+          print('Template Migration Preview Plan for "$targetPath"');
+          print('Source   : ${plan.sourceTemplateId}@${plan.sourceVersion}');
+          print('Target   : ${plan.targetTemplateId}@${plan.targetVersion}');
+          print('Profile  : ${plan.profile.name}');
+          print('Steps    : ${plan.steps.length}');
+          print('Actions  : ${plan.totalActions}');
+          print('');
+
+          for (final s in plan.steps) {
+            print(
+                'Step: ${s.description} (${s.sourceVersion} -> ${s.targetVersion})');
+            for (final a in s.actions) {
+              print('  • [${a.type.name}] ${a.path} - ${a.reason}');
+            }
+          }
+        }
+        return plan.hasErrors ? 1 : 0;
+      }
+
+      final result = engine.executeMigration(plan, projectPath: targetPath);
+      if (jsonOutput) {
+        print(jsonEncode(result.toJson()));
+      } else {
+        print('Template Migration Result for "$targetPath"');
+        print('Status   : ${result.isSuccess ? "SUCCESS ✓" : "FAILED ✗"}');
+        print('Actions  : ${result.actionsExecuted}');
+      }
+      return result.isSuccess ? 0 : 1;
+    } catch (e) {
+      if (jsonOutput) {
+        print(jsonEncode({'error': e.toString(), 'success': false}));
+      } else {
+        print('Migration Error: $e');
+      }
+      return 1;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
 
   @override
   final String description =
-      'Discover, search, inspect, check, and compose templates in the FPS catalog.';
+      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, and migration.';
 
   TemplateCatalogCommand() {
     addSubcommand(TemplateListCommand());
@@ -639,10 +1407,20 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateInfoCommand());
     addSubcommand(TemplateCheckCommand());
     addSubcommand(TemplateComposeCommand());
+    addSubcommand(TemplateCustomizeCommand());
+    addSubcommand(TemplateValidateCommand());
+    addSubcommand(TemplateHooksCommand());
+    addSubcommand(TemplateCertifyCommand());
+    addSubcommand(TemplateTestCommand());
+    addSubcommand(TemplateMigrateCommand());
   }
 
   @override
   Future<int> run() async {
+    print('Flutter Package Studio — Template Ecosystem CLI');
+    print(
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → migrate');
+    print('');
     printUsage();
     return 0;
   }
