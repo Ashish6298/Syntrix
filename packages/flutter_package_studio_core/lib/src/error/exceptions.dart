@@ -518,3 +518,10 @@ class WidgetTestGenerationException extends PackageStudioException {
   WidgetTestGenerationException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Integration Test Generation subsystem failures.
+class IntegrationTestGenerationException extends PackageStudioException {
+  /// Creates a [IntegrationTestGenerationException].
+  IntegrationTestGenerationException(super.message,
+      [super.details, super.stackTrace]);
+}

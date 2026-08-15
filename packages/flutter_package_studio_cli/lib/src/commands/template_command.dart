@@ -2573,13 +2573,132 @@ class TemplateWidgetTestsCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template integration-tests <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template integration-tests <template-id>`
+///
+/// Previews or writes generated integration test source files for a template.
+class TemplateIntegrationTestsCommand extends FpsCommand {
+  @override
+  final String name = 'integration-tests';
+
+  @override
+  final String description =
+      'Preview or generate integration test suites for a template.';
+
+  TemplateIntegrationTestsCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing integration tests to disk.',
+      defaultsTo: 'test/integration',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Generation profile (basic, standard, strict, release).',
+      defaultsTo: 'standard',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated integration test files directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output integration test generation result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final outputDir = argResults?['output'] as String? ?? 'test/integration';
+    final profile = argResults?['profile'] as String? ?? 'standard';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final generator = IntegrationTestGenerator();
+    final options = IntegrationTestOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      profile: profile,
+    );
+
+    final plan = generator.planIntegrationTests(options);
+    final result = generator.generateIntegrationTests(plan, options);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+
+      for (final entry in result.files.entries) {
+        final file = File(
+            '${baseDir.path}/${entry.key.replaceFirst('test/integration/', '')}');
+        await file.parent.create(recursive: true);
+        await file.writeAsString(entry.value);
+      }
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote integration tests (${result.files.length} files) to "$outputDir".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Integration Test Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Profile             : ${plan.profile}');
+      print('Integration Targets : ${plan.targets.length}');
+      print(
+          'Targets             : ${plan.targets.map((t) => t.name).join(', ')}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -2611,13 +2730,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateTestProjectCommand());
     addSubcommand(TemplateUnitTestsCommand());
     addSubcommand(TemplateWidgetTestsCommand());
+    addSubcommand(TemplateIntegrationTestsCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → migrate');
     print('');
     printUsage();
     return 0;
