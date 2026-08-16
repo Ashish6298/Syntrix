@@ -629,3 +629,28 @@ class ReleaseDocumentationException extends PackageStudioException {
   ReleaseDocumentationException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Package Publishing Manager subsystem failures.
+class PackagePublishingException extends PackageStudioException {
+  /// Creates a [PackagePublishingException].
+  PackagePublishingException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Base exception for all Release Channel Manager subsystem failures.
+class ReleaseChannelException extends PackageStudioException {
+  /// Creates a [ReleaseChannelException].
+  ReleaseChannelException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Base exception for all Release Rollback & Recovery subsystem failures.
+class ReleaseRollbackException extends PackageStudioException {
+  /// Creates a [ReleaseRollbackException].
+  ReleaseRollbackException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Base exception for all Release Certification & Final Delivery Gate subsystem failures.
+class ReleaseCertificationException extends PackageStudioException {
+  /// Creates a [ReleaseCertificationException].
+  ReleaseCertificationException(super.message,
+      [super.details, super.stackTrace]);
+}

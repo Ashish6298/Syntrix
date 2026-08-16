@@ -44,6 +44,10 @@ export '../release/manifest/manifest.dart';
 export '../release/security/security.dart';
 export '../release/verification/verification.dart';
 export '../release/notes/notes.dart';
+export '../release/publishing/publishing.dart';
+export '../release/channels/channels.dart';
+export '../release/rollback/rollback.dart';
+export '../release/certification/release_certification.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';

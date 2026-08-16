@@ -4701,20 +4701,555 @@ class TemplateReleaseNotesCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template publish <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template publish <template-id>`
+///
+/// Previews or executes package publishing for a template.
+class TemplatePublishCommand extends FpsCommand {
+  @override
+  final String name = 'publish';
+
+  @override
+  final String description =
+      'Preview or execute controlled package publication for a template.';
+
+  TemplatePublishCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint/target for template package publication.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Publishing verification profile (standard, strict).',
+      defaultsTo: 'standard',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing publishing report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'publish',
+      negatable: false,
+      help: 'Execute controlled package publication to registry.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated package publishing report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output package publishing result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final targetVersion = argResults?['version'] as String? ?? '1.0.0';
+    final profile = argResults?['profile'] as String? ?? 'standard';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final publishOpt = argResults?['publish'] as bool? ?? false;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final manager = PackagePublishingManager();
+    final options = PublishingOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      version: targetVersion,
+      profile: profile,
+      publish: publishOpt,
+      outputDir: outputDir,
+    );
+
+    final plan = manager.planPublishing(options);
+    final result = manager.executePublishing(plan, publish: publishOpt);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/package_publishing_report.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote package publishing report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Package Publishing Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Package Version : ${plan.version}');
+      print('Registry Target : ${plan.target.name}');
+      print(
+          'Execution Mode  : ${publishOpt ? "EXECUTE PUBLISH" : "PREVIEW DRY-RUN"}');
+      print(
+          'Status          : ${result.isSuccess ? "PUBLISHING SUCCESS ✓" : "PUBLISHING BLOCKED / FAILED ✗"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isSuccess ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template channel <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template channel <template-id>`
+///
+/// Previews or executes release channel promotion for a template.
+class TemplateChannelCommand extends FpsCommand {
+  @override
+  final String name = 'channel';
+
+  @override
+  final String description =
+      'Preview or execute release channel promotion for a template.';
+
+  TemplateChannelCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint/target for release channel promotion.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'channel',
+      abbr: 'c',
+      help: 'Target release channel (stable, beta, dev, canary).',
+      defaultsTo: 'stable',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing channel report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'promote',
+      negatable: false,
+      help: 'Execute channel promotion action.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated channel promotion report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output channel promotion result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final targetVersion = argResults?['version'] as String? ?? '1.0.0';
+    final channelStr = argResults?['channel'] as String? ?? 'stable';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final promoteOpt = argResults?['promote'] as bool? ?? false;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final ReleaseChannelType targetChannel;
+    switch (channelStr.toLowerCase()) {
+      case 'beta':
+        targetChannel = ReleaseChannelType.beta;
+        break;
+      case 'dev':
+        targetChannel = ReleaseChannelType.dev;
+        break;
+      case 'canary':
+        targetChannel = ReleaseChannelType.canary;
+        break;
+      case 'stable':
+      default:
+        targetChannel = ReleaseChannelType.stable;
+        break;
+    }
+
+    final tmpl = entry.template;
+    final manager = ReleaseChannelManager();
+    final options = ReleaseChannelOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      version: targetVersion,
+      targetChannel: targetChannel,
+      promote: promoteOpt,
+      outputDir: outputDir,
+    );
+
+    final plan = manager.planChannelPromotion(options);
+    final result = manager.executeChannelPromotion(plan, promote: promoteOpt);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/release_channel_report.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print('Successfully wrote release channel report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Release Channel Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Package Version : ${plan.version}');
+      print('Target Channel  : ${plan.targetChannel.name}');
+      print(
+          'Execution Mode  : ${promoteOpt ? "EXECUTE PROMOTION" : "PREVIEW DRY-RUN"}');
+      print(
+          'Status          : ${result.isSuccess ? "PROMOTION SUCCESS ✓" : "PROMOTION REJECTED ✗"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isSuccess ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template rollback <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template rollback <template-id>`
+///
+/// Previews or executes release rollback & recovery for a template.
+class TemplateRollbackCommand extends FpsCommand {
+  @override
+  final String name = 'rollback';
+
+  @override
+  final String description =
+      'Preview or execute release rollback & recovery for a template.';
+
+  TemplateRollbackCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Current version constraint for rollback evaluation.',
+      defaultsTo: '1.1.0',
+    );
+    argParser.addOption(
+      'target',
+      abbr: 't',
+      help: 'Target rollback version to recover to.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'channel',
+      abbr: 'c',
+      help: 'Target release channel (stable, beta, dev, canary).',
+      defaultsTo: 'stable',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing rollback report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'recover',
+      negatable: false,
+      help: 'Execute rollback & recovery action.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated rollback report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output rollback & recovery result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final currentVersion = argResults?['version'] as String? ?? '1.1.0';
+    final targetVersion = argResults?['target'] as String? ?? '1.0.0';
+    final channelStr = argResults?['channel'] as String? ?? 'stable';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final recoverOpt = argResults?['recover'] as bool? ?? false;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final manager = ReleaseRollbackManager();
+    final options = RollbackOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      currentVersion: currentVersion,
+      targetVersion: targetVersion,
+      channel: channelStr,
+      recover: recoverOpt,
+      outputDir: outputDir,
+    );
+
+    final plan = manager.planRollback(options);
+    final result = manager.executeRollback(plan, recover: recoverOpt);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/release_rollback_report.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print('Successfully wrote release rollback report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Release Rollback Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Current Version : ${plan.currentVersion}');
+      print('Target Rollback : ${plan.target.version}');
+      print(
+          'Execution Mode  : ${recoverOpt ? "EXECUTE RECOVERY" : "PREVIEW DRY-RUN"}');
+      print(
+          'Status          : ${result.isSuccess ? "RECOVERY SUCCESS ✓" : "RECOVERY BLOCKED / FAILED ✗"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isSuccess ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template certify-release <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template certify-release <template-id>`
+///
+/// Previews or executes release certification & final delivery gate for a template.
+class TemplateCertifyReleaseCommand extends FpsCommand {
+  @override
+  final String name = 'certify-release';
+
+  @override
+  final String description =
+      'Preview or execute release certification & final delivery gate for a template.';
+
+  TemplateCertifyReleaseCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint/target for release certification.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'channel',
+      abbr: 'c',
+      help: 'Target release channel (stable, beta, dev, canary).',
+      defaultsTo: 'stable',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Certification profile (standard, strict, custom).',
+      defaultsTo: 'standard',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help:
+          'Target output directory when writing certification report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'deliver',
+      negatable: false,
+      help: 'Execute final delivery authorization action.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated release certification report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output release certification result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final targetVersion = argResults?['version'] as String? ?? '1.0.0';
+    final channelStr = argResults?['channel'] as String? ?? 'stable';
+    final profile = argResults?['profile'] as String? ?? 'standard';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final deliverOpt = argResults?['deliver'] as bool? ?? false;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final gate = ReleaseCertificationGate();
+    final options = ReleaseCertificationOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      version: targetVersion,
+      channel: channelStr,
+      profile: profile,
+      deliver: deliverOpt,
+      outputDir: outputDir,
+    );
+
+    final plan = gate.planCertification(options);
+    final result = gate.certifyRelease(plan);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/release_certification_report.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote release certification report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Release Certification Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Package Version : ${plan.version}');
+      print('Release Channel : ${plan.channel}');
+      print('Gate Count      : ${result.gates.length}');
+      print(
+          'Overall Status  : ${result.isSuccess ? "CERTIFIED FOR FINAL DELIVERY ✓" : "CERTIFICATION BLOCKED / FAILED ✗"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isSuccess ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`, `release-plan`, `version`, `build`, `pubdev-validate`, `manifest`, `security-audit`, `verify-release`, `release-notes`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`, `release-plan`, `version`, `build`, `pubdev-validate`, `manifest`, `security-audit`, `verify-release`, `release-notes`, `publish`, `channel`, `rollback`, `certify-release`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
 
   @override
   final String description =
-      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, migration, release, build, validation, manifest, security, verification, notes, and documentation.';
+      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, migration, release, build, validation, manifest, security, verification, notes, publishing, channel management, rollback recovery, final release certification, and documentation.';
 
   TemplateCatalogCommand() {
     addSubcommand(TemplateListCommand());
@@ -4756,13 +5291,17 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateSecurityAuditCommand());
     addSubcommand(TemplateVerifyReleaseCommand());
     addSubcommand(TemplateReleaseNotesCommand());
+    addSubcommand(TemplatePublishCommand());
+    addSubcommand(TemplateChannelCommand());
+    addSubcommand(TemplateRollbackCommand());
+    addSubcommand(TemplateCertifyReleaseCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → release-plan → version → build → pubdev-validate → manifest → security-audit → verify-release → release-notes → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → release-plan → version → build → pubdev-validate → manifest → security-audit → verify-release → release-notes → publish → channel → rollback → certify-release → migrate');
     print('');
     printUsage();
     return 0;
