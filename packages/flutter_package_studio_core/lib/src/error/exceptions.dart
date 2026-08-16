@@ -570,3 +570,10 @@ class TestCertificationException extends PackageStudioException {
   /// Creates a [TestCertificationException].
   TestCertificationException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Unified Testing Workflow subsystem failures.
+class UnifiedTestingWorkflowException extends PackageStudioException {
+  /// Creates a [UnifiedTestingWorkflowException].
+  UnifiedTestingWorkflowException(super.message,
+      [super.details, super.stackTrace]);
+}

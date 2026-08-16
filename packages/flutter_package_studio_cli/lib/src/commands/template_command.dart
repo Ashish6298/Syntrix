@@ -3575,13 +3575,145 @@ class TemplateTestCertifyCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template test-workflow <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template test-workflow <template-id>`
+///
+/// Previews or executes the unified testing workflow lifecycle for a template.
+class TemplateTestWorkflowCommand extends FpsCommand {
+  @override
+  final String name = 'test-workflow';
+
+  @override
+  final String description =
+      'Preview or execute the unified testing workflow lifecycle for a template.';
+
+  TemplateTestWorkflowCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Workflow profile (plan, test, full, regression, certify, all).',
+      defaultsTo: 'all',
+    );
+    argParser.addFlag(
+      'execute',
+      negatable: false,
+      help: 'Opt-in to process execution through controlled runner.',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing workflow report to disk.',
+      defaultsTo: 'doc/testing_workflow',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated unified testing workflow report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output unified testing workflow result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final profileName = argResults?['profile'] as String? ?? 'all';
+    final executeOpt = argResults?['execute'] as bool? ?? false;
+    final outputDir =
+        argResults?['output'] as String? ?? 'doc/testing_workflow';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final workflow = UnifiedTestingWorkflow();
+    final profile = WorkflowProfile.values.firstWhere(
+      (p) => p.name.toLowerCase() == profileName.toLowerCase(),
+      orElse: () => WorkflowProfile.all,
+    );
+
+    final options = WorkflowOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      profile: profile,
+      execute: executeOpt,
+      outputDir: outputDir,
+    );
+
+    final plan = workflow.planWorkflow(options);
+    final result = workflow.executeWorkflow(plan);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/unified_testing_workflow.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote unified testing workflow report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Unified Testing Workflow Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Profile      : ${plan.profile.name}');
+      print(
+          'Execution    : ${options.execute ? "EXPLICIT EXECUTION" : "PREVIEW-ONLY"}');
+      print('Total Stages : ${result.stages.length}');
+      print(
+          'Status       : ${result.isSuccess ? "WORKFLOW COMPLETED ✓" : "WORKFLOW FAILED ✗"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isSuccess ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -3621,13 +3753,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateCompatibilityCommand());
     addSubcommand(TemplateRegressionCommand());
     addSubcommand(TemplateTestCertifyCommand());
+    addSubcommand(TemplateTestWorkflowCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → migrate');
     print('');
     printUsage();
     return 0;
