@@ -577,3 +577,9 @@ class UnifiedTestingWorkflowException extends PackageStudioException {
   UnifiedTestingWorkflowException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Release Planning & Readiness subsystem failures.
+class ReleasePlanningException extends PackageStudioException {
+  /// Creates a [ReleasePlanningException].
+  ReleasePlanningException(super.message, [super.details, super.stackTrace]);
+}

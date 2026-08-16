@@ -3707,20 +3707,145 @@ class TemplateTestWorkflowCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template release-plan <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template release-plan <template-id>`
+///
+/// Previews or evaluates release readiness plans for a template.
+class TemplateReleasePlanCommand extends FpsCommand {
+  @override
+  final String name = 'release-plan';
+
+  @override
+  final String description =
+      'Preview or evaluate release readiness criteria for a template.';
+
+  TemplateReleasePlanCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Target release version.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Release planning profile (standard, strict, custom).',
+      defaultsTo: 'standard',
+    );
+    argParser.addOption(
+      'config',
+      abbr: 'c',
+      help: 'Path to release planning configuration file.',
+      defaultsTo: 'release_config.json',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing release plan report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated release readiness report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output release readiness plan result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final targetVersion = argResults?['version'] as String? ?? '1.0.0';
+    final profile = argResults?['profile'] as String? ?? 'standard';
+    final configPath =
+        argResults?['config'] as String? ?? 'release_config.json';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final planner = ReleasePlanner();
+    final options = ReleasePlanningOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      profile: profile,
+      targetVersion: targetVersion,
+      configPath: configPath,
+    );
+
+    final plan = planner.createReleasePlan(options);
+    final result = planner.evaluateReadiness(plan);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/release_readiness.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print('Successfully wrote release readiness report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Release Readiness Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Target Version : ${plan.targetVersion}');
+      print('Profile        : ${plan.profile}');
+      print('Total Checks   : ${result.checks.length}');
+      print(
+          'Decision       : ${result.isReady ? "RELEASE READY ✓" : "NOT READY ✗"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isReady ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`, `release-plan`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
 
   @override
   final String description =
-      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, migration, and documentation.';
+      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, migration, release, and documentation.';
 
   TemplateCatalogCommand() {
     addSubcommand(TemplateListCommand());
@@ -3754,13 +3879,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateRegressionCommand());
     addSubcommand(TemplateTestCertifyCommand());
     addSubcommand(TemplateTestWorkflowCommand());
+    addSubcommand(TemplateReleasePlanCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → release-plan → migrate');
     print('');
     printUsage();
     return 0;
