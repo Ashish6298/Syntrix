@@ -4464,20 +4464,138 @@ class TemplateSecurityAuditCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template verify-release <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template verify-release <template-id>`
+///
+/// Previews or executes the release verification pipeline for a template.
+class TemplateVerifyReleaseCommand extends FpsCommand {
+  @override
+  final String name = 'verify-release';
+
+  @override
+  final String description =
+      'Preview or execute full release verification pipeline for a template.';
+
+  TemplateVerifyReleaseCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint/target for template release verification.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Verification policy profile (standard, strict, custom).',
+      defaultsTo: 'standard',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing verification report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated release verification report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output release verification pipeline result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final targetVersion = argResults?['version'] as String? ?? '1.0.0';
+    final profile = argResults?['profile'] as String? ?? 'standard';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final pipeline = ReleaseVerificationPipeline();
+    final options = ReleaseVerificationOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      version: targetVersion,
+      profile: profile,
+      outputDir: outputDir,
+    );
+
+    final plan = pipeline.planPipeline(options);
+    final result = pipeline.executePipeline(plan);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/release_verification_report.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote release verification report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Release Verification Pipeline Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Package Version : ${plan.version}');
+      print('Policy Profile  : ${plan.policy.profile}');
+      print('Total Stages    : ${plan.stages.length}');
+      print(
+          'Release Gate    : ${result.isReady ? "READY FOR RELEASE ✓" : "NOT READY / BLOCKED ✗"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isReady ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`, `release-plan`, `version`, `build`, `pubdev-validate`, `manifest`, `security-audit`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`, `release-plan`, `version`, `build`, `pubdev-validate`, `manifest`, `security-audit`, `verify-release`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
 
   @override
   final String description =
-      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, migration, release, build, validation, manifest, security, and documentation.';
+      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, migration, release, build, validation, manifest, security, verification, and documentation.';
 
   TemplateCatalogCommand() {
     addSubcommand(TemplateListCommand());
@@ -4517,13 +4635,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplatePubDevValidateCommand());
     addSubcommand(TemplateManifestCommand());
     addSubcommand(TemplateSecurityAuditCommand());
+    addSubcommand(TemplateVerifyReleaseCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → release-plan → version → build → pubdev-validate → manifest → security-audit → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → release-plan → version → build → pubdev-validate → manifest → security-audit → verify-release → migrate');
     print('');
     printUsage();
     return 0;

@@ -615,3 +615,10 @@ class ReleaseSecurityAuditException extends PackageStudioException {
   ReleaseSecurityAuditException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Release Verification Pipeline subsystem failures.
+class ReleaseVerificationException extends PackageStudioException {
+  /// Creates a [ReleaseVerificationException].
+  ReleaseVerificationException(super.message,
+      [super.details, super.stackTrace]);
+}
