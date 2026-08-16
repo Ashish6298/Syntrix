@@ -43,6 +43,7 @@ export '../release/validation/validation.dart';
 export '../release/manifest/manifest.dart';
 export '../release/security/security.dart';
 export '../release/verification/verification.dart';
+export '../release/notes/notes.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';

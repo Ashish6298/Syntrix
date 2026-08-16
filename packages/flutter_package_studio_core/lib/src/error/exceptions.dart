@@ -622,3 +622,10 @@ class ReleaseVerificationException extends PackageStudioException {
   ReleaseVerificationException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Release Notes & Documentation Bundle subsystem failures.
+class ReleaseDocumentationException extends PackageStudioException {
+  /// Creates a [ReleaseDocumentationException].
+  ReleaseDocumentationException(super.message,
+      [super.details, super.stackTrace]);
+}
