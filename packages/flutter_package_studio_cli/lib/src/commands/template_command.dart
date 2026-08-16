@@ -3449,13 +3449,139 @@ class TemplateRegressionCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template test-certify <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template test-certify <template-id>`
+///
+/// Previews or evaluates test quality & certification gate reports for a template.
+class TemplateTestCertifyCommand extends FpsCommand {
+  @override
+  final String name = 'test-certify';
+
+  @override
+  final String description =
+      'Preview or evaluate test quality certification gate requirements for a template.';
+
+  TemplateTestCertifyCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Quality certification profile (standard, strict, custom).',
+      defaultsTo: 'standard',
+    );
+    argParser.addOption(
+      'config',
+      abbr: 'c',
+      help: 'Path to certification gate configuration file.',
+      defaultsTo: 'test/certification_config.json',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing report to disk.',
+      defaultsTo: 'doc/certification',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated test certification report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output test certification result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final profile = argResults?['profile'] as String? ?? 'standard';
+    final configPath =
+        argResults?['config'] as String? ?? 'test/certification_config.json';
+    final outputDir = argResults?['output'] as String? ?? 'doc/certification';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final gate = TestCertificationGate();
+    final options = TestCertificationOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      profile: profile,
+      configPath: configPath,
+    );
+
+    final plan = gate.planCertification(options);
+    final result = gate.certifyPackage(plan);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/test_certification.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote test certification report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Test Quality Certification Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Profile     : ${plan.profile}');
+      print('Config File : ${plan.configPath}');
+      print('Total Gates : ${result.gates.length}');
+      print(
+          'Decision    : ${result.isCertified ? "CERTIFIED ✓" : "NOT CERTIFIED ✗"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isCertified ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -3494,13 +3620,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateTestReportCommand());
     addSubcommand(TemplateCompatibilityCommand());
     addSubcommand(TemplateRegressionCommand());
+    addSubcommand(TemplateTestCertifyCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → migrate');
     print('');
     printUsage();
     return 0;

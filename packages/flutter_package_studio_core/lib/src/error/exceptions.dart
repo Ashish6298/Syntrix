@@ -564,3 +564,9 @@ class RegressionTestingException extends PackageStudioException {
   /// Creates a [RegressionTestingException].
   RegressionTestingException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Test Quality & Certification Gate subsystem failures.
+class TestCertificationException extends PackageStudioException {
+  /// Creates a [TestCertificationException].
+  TestCertificationException(super.message, [super.details, super.stackTrace]);
+}
