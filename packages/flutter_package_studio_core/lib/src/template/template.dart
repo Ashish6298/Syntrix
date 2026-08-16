@@ -41,6 +41,7 @@ export '../release/versioning/versioning.dart';
 export '../release/artifacts/artifacts.dart';
 export '../release/validation/validation.dart';
 export '../release/manifest/manifest.dart';
+export '../release/security/security.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';

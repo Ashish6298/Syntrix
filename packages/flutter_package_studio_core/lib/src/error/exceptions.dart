@@ -608,3 +608,10 @@ class ReleaseArtifactManifestException extends PackageStudioException {
   ReleaseArtifactManifestException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Release Security & Secret Audit subsystem failures.
+class ReleaseSecurityAuditException extends PackageStudioException {
+  /// Creates a [ReleaseSecurityAuditException].
+  ReleaseSecurityAuditException(super.message,
+      [super.details, super.stackTrace]);
+}
