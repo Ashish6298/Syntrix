@@ -3954,20 +3954,136 @@ class TemplateVersionCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template build <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template build <template-id>`
+///
+/// Previews or generates package build artifacts for a template.
+class TemplateBuildCommand extends FpsCommand {
+  @override
+  final String name = 'build';
+
+  @override
+  final String description =
+      'Preview or generate distributable package build artifacts for a template.';
+
+  TemplateBuildCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint/target for template package artifact.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing artifacts to disk.',
+      defaultsTo: 'build/artifacts',
+    );
+    argParser.addFlag(
+      'execute',
+      negatable: false,
+      help: 'Execute controlled build commands.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated build artifact report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output build artifact result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final targetVersion = argResults?['version'] as String? ?? '1.0.0';
+    final outputDir = argResults?['output'] as String? ?? 'build/artifacts';
+    final executeOpt = argResults?['execute'] as bool? ?? false;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final generator = PackageArtifactGenerator();
+    final options = ArtifactOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      version: targetVersion,
+      outputDir: outputDir,
+      execute: executeOpt,
+    );
+
+    final plan = generator.planArtifactGeneration(options);
+    final result = generator.generateArtifacts(plan);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/build_artifact_report.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print('Successfully wrote build artifact report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Package Build & Artifact Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Package Version  : ${plan.version}');
+      print('Output Directory : ${plan.outputDir}');
+      print('Total Targets    : ${result.generatedArtifacts.length}');
+      print(
+          'Status           : ${result.isSuccess ? "BUILD PLAN SUCCESS ✓" : "BUILD PLAN FAILED ✗"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isSuccess ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`, `release-plan`, `version`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`, `release-plan`, `version`, `build`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
 
   @override
   final String description =
-      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, migration, release, and documentation.';
+      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, migration, release, build, and documentation.';
 
   TemplateCatalogCommand() {
     addSubcommand(TemplateListCommand());
@@ -4003,13 +4119,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateTestWorkflowCommand());
     addSubcommand(TemplateReleasePlanCommand());
     addSubcommand(TemplateVersionCommand());
+    addSubcommand(TemplateBuildCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → release-plan → version → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → release-plan → version → build → migrate');
     print('');
     printUsage();
     return 0;

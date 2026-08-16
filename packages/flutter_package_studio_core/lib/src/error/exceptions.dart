@@ -589,3 +589,9 @@ class VersioningException extends PackageStudioException {
   /// Creates a [VersioningException].
   VersioningException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Package Build & Artifact Generator subsystem failures.
+class ArtifactGenerationException extends PackageStudioException {
+  /// Creates an [ArtifactGenerationException].
+  ArtifactGenerationException(super.message, [super.details, super.stackTrace]);
+}
