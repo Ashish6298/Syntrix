@@ -76,7 +76,17 @@ void main() {
       final report1 = await engine.execute(req);
       final report2 = await engine.execute(req);
 
-      expect(report1.toJson(), equals(report2.toJson()));
+      final map1 = report1.toJson()..remove('totalDurationMs');
+      final map2 = report2.toJson()..remove('totalDurationMs');
+
+      for (final item in (map1['results'] as List)) {
+        (item as Map).remove('durationMs');
+      }
+      for (final item in (map2['results'] as List)) {
+        (item as Map).remove('durationMs');
+      }
+
+      expect(map1, equals(map2));
     });
   });
 }

@@ -551,3 +551,16 @@ class TestReportGenerationException extends PackageStudioException {
   TestReportGenerationException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Compatibility Test Matrix subsystem failures.
+class CompatibilityMatrixException extends PackageStudioException {
+  /// Creates a [CompatibilityMatrixException].
+  CompatibilityMatrixException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Base exception for all Regression Testing Engine subsystem failures.
+class RegressionTestingException extends PackageStudioException {
+  /// Creates a [RegressionTestingException].
+  RegressionTestingException(super.message, [super.details, super.stackTrace]);
+}

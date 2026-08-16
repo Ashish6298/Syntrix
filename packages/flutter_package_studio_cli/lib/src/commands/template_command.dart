@@ -3193,13 +3193,269 @@ class TemplateTestReportCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template compatibility <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template compatibility <template-id>`
+///
+/// Previews or writes compatibility test matrix reports for a template.
+class TemplateCompatibilityCommand extends FpsCommand {
+  @override
+  final String name = 'compatibility';
+
+  @override
+  final String description =
+      'Preview or evaluate compatibility test matrix for a template.';
+
+  TemplateCompatibilityCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Test profile to filter (unit, widget, integration, all).',
+      defaultsTo: 'all',
+    );
+    argParser.addOption(
+      'platform',
+      help: 'Platform target to filter (android, ios, web, all).',
+      defaultsTo: 'all',
+    );
+    argParser.addOption(
+      'sdk',
+      help: 'SDK constraint to evaluate.',
+      defaultsTo: '>=3.0.0 <4.0.0',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing matrix to disk.',
+      defaultsTo: 'doc/matrix',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated compatibility matrix directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output compatibility matrix result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final profile = argResults?['profile'] as String? ?? 'all';
+    final platform = argResults?['platform'] as String? ?? 'all';
+    final sdkConstraint = argResults?['sdk'] as String? ?? '>=3.0.0 <4.0.0';
+    final outputDir = argResults?['output'] as String? ?? 'doc/matrix';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final service = CompatibilityMatrixService();
+    final options = CompatibilityOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      profile: profile,
+      platform: platform,
+      sdkConstraint: sdkConstraint,
+    );
+
+    final plan = service.planCompatibilityMatrix(options);
+    final result = service.evaluateMatrix(plan);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/compatibility_matrix.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print('Successfully wrote compatibility matrix to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Compatibility Matrix Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Profile     : ${plan.profile}');
+      print('Platform    : ${plan.platform}');
+      print('SDK Range   : ${plan.sdkConstraint}');
+      print('Total Cells : ${result.cells.length}');
+      print(
+          'Status      : ${result.isFullyCompatible ? "COMPATIBLE ✓" : "INCOMPATIBLE ✗"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isFullyCompatible ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template regression <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template regression <template-id>`
+///
+/// Previews or executes regression testing checks against baselines for a template.
+class TemplateRegressionCommand extends FpsCommand {
+  @override
+  final String name = 'regression';
+
+  @override
+  final String description =
+      'Preview or evaluate regression testing checks against baseline for a template.';
+
+  TemplateRegressionCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint for template.',
+      defaultsTo: '*',
+    );
+    argParser.addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Regression test profile (unit, widget, integration, all).',
+      defaultsTo: 'all',
+    );
+    argParser.addOption(
+      'baseline',
+      abbr: 'b',
+      help: 'Path to baseline evidence JSON file.',
+      defaultsTo: 'test/regression/baseline.json',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing report to disk.',
+      defaultsTo: 'doc/regression',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated regression report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output regression check result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final versionConstraint = argResults?['version'] as String? ?? '*';
+    final profile = argResults?['profile'] as String? ?? 'all';
+    final baselinePath =
+        argResults?['baseline'] as String? ?? 'test/regression/baseline.json';
+    final outputDir = argResults?['output'] as String? ?? 'doc/regression';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId,
+        version: versionConstraint == '*' ? null : versionConstraint);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final engine = RegressionTestingEngine();
+    final options = RegressionOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      profile: profile,
+      baselinePath: baselinePath,
+    );
+
+    final plan = engine.planRegressionTesting(options);
+    final result = engine.runRegressionCheck(plan);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/regression_report.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print('Successfully wrote regression report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Regression Testing Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Profile        : ${plan.profile}');
+      print('Baseline File  : ${plan.baselinePath}');
+      print('Total Cases    : ${result.cases.length}');
+      print(
+          'Status         : ${result.hasRegressions ? "REGRESSION DETECTED ✗" : "NO REGRESSION ✓"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.hasRegressions ? 1 : 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -3236,13 +3492,15 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateTestRunnerCommand());
     addSubcommand(TemplateCoverageCommand());
     addSubcommand(TemplateTestReportCommand());
+    addSubcommand(TemplateCompatibilityCommand());
+    addSubcommand(TemplateRegressionCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → migrate');
     print('');
     printUsage();
     return 0;
