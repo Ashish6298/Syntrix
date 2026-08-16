@@ -37,6 +37,7 @@ export '../testing/regression/regression.dart';
 export '../testing/certification/test_certification.dart';
 export '../testing/workflow/workflow.dart';
 export '../release/planning/release_planning.dart';
+export '../release/versioning/versioning.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';

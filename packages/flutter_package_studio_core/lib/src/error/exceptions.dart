@@ -583,3 +583,9 @@ class ReleasePlanningException extends PackageStudioException {
   /// Creates a [ReleasePlanningException].
   ReleasePlanningException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Version & Changelog Manager subsystem failures.
+class VersioningException extends PackageStudioException {
+  /// Creates a [VersioningException].
+  VersioningException(super.message, [super.details, super.stackTrace]);
+}

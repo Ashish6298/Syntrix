@@ -3832,13 +3832,135 @@ class TemplateReleasePlanCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template version <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template version <template-id>`
+///
+/// Previews or applies version bumps and changelog release notes for a template.
+class TemplateVersionCommand extends FpsCommand {
+  @override
+  final String name = 'version';
+
+  @override
+  final String description =
+      'Preview or apply semantic version bumps and changelog updates for a template.';
+
+  TemplateVersionCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Explicit target version.',
+    );
+    argParser.addOption(
+      'type',
+      abbr: 't',
+      help: 'Version bump type (patch, minor, major, explicit).',
+      defaultsTo: 'patch',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing version report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help:
+          'Apply generated version bump and changelog update directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output version bump result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final explicitVer = argResults?['version'] as String?;
+    final typeName = argResults?['type'] as String? ?? 'patch';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final manager = VersionChangelogManager();
+    final type = VersionChangeType.values.firstWhere(
+      (t) => t.name.toLowerCase() == typeName.toLowerCase(),
+      orElse: () => VersionChangeType.patch,
+    );
+
+    final options = VersionOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      currentVersion: tmpl.manifest.version,
+      type: explicitVer != null ? VersionChangeType.explicit : type,
+      explicitVersion: explicitVer,
+    );
+
+    final plan = manager.planVersionBump(options);
+    final result = manager.applyVersionBump(plan, writeDisk: writeDisk);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file =
+          File('${baseDir.path}/version_bump.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print('Successfully wrote version report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Version & Changelog Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Previous Version : ${result.previousVersion}');
+      print('New Version      : ${result.newVersion}');
+      print('Change Type      : ${plan.type.name}');
+      print(
+          'Status           : ${result.isApplied ? "APPLIED ✓" : "PREVIEW-ONLY"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`, `release-plan`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`, `release-plan`, `version`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
@@ -3880,13 +4002,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateTestCertifyCommand());
     addSubcommand(TemplateTestWorkflowCommand());
     addSubcommand(TemplateReleasePlanCommand());
+    addSubcommand(TemplateVersionCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → release-plan → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → release-plan → version → migrate');
     print('');
     printUsage();
     return 0;
