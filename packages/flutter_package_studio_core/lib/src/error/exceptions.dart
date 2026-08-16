@@ -601,3 +601,10 @@ class PubDevValidationException extends PackageStudioException {
   /// Creates a [PubDevValidationException].
   PubDevValidationException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Release Artifact Manifest subsystem failures.
+class ReleaseArtifactManifestException extends PackageStudioException {
+  /// Creates a [ReleaseArtifactManifestException].
+  ReleaseArtifactManifestException(super.message,
+      [super.details, super.stackTrace]);
+}

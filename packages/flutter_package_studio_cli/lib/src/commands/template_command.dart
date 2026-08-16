@@ -4194,20 +4194,158 @@ class TemplatePubDevValidateCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template manifest <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template manifest <template-id>`
+///
+/// Previews or generates a release artifact manifest for a template.
+class TemplateManifestCommand extends FpsCommand {
+  @override
+  final String name = 'manifest';
+
+  @override
+  final String description =
+      'Preview or generate canonical release artifact manifest for a template.';
+
+  TemplateManifestCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version constraint/target for template package manifest.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'artifact-dir',
+      abbr: 'a',
+      help: 'Target directory containing generated artifacts.',
+      defaultsTo: 'build/artifacts',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing manifest to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'verify',
+      negatable: false,
+      help: 'Verify existing release artifact manifest integrity.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated release artifact manifest directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output release artifact manifest as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final targetVersion = argResults?['version'] as String? ?? '1.0.0';
+    final artifactDir =
+        argResults?['artifact-dir'] as String? ?? 'build/artifacts';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final verifyOpt = argResults?['verify'] as bool? ?? false;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final generator = ReleaseArtifactManifestGenerator();
+    final options = ManifestOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      version: targetVersion,
+      artifactDir: artifactDir,
+      outputDir: outputDir,
+    );
+
+    final plan = generator.planManifest(options);
+    final result = generator.generateManifest(plan);
+
+    if (verifyOpt) {
+      final isVerified = generator.verifyManifest(result);
+      if (!isVerified) {
+        if (jsonOutput) {
+          print(jsonEncode(
+              {'error': 'Manifest verification failed.', 'success': false}));
+        } else {
+          print('Error: Release artifact manifest verification failed.');
+        }
+        return 1;
+      }
+    }
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/release_artifact_manifest.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote release artifact manifest to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Release Artifact Manifest Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Package Version : ${plan.version}');
+      print('Schema Version  : ${plan.schemaVersion}');
+      print('Total Entries   : ${result.entries.length}');
+      print(
+          'Integrity Status: ${result.isVerified ? "VERIFIED ✓" : "UNVERIFIED ✗"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isVerified ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template (parent)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Command: `fps template`
 ///
 /// Parent command hosting the template catalog subcommands:
-/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`, `release-plan`, `version`, `build`, `pubdev-validate`.
+/// `list`, `search`, `info`, `check`, `compose`, `customize`, `validate`, `hooks`, `certify`, `test`, `migrate`, `readme`, `api-docs`, `architecture`, `mermaid`, `examples`, `screenshots`, `gifs`, `website`, `test-project`, `unit-tests`, `widget-tests`, `integration-tests`, `fixtures`, `coverage`, `test-runner`, `test-report`, `compatibility`, `regression`, `test-certify`, `test-workflow`, `release-plan`, `version`, `build`, `pubdev-validate`, `manifest`.
 class TemplateCatalogCommand extends FpsCommand {
   @override
   final String name = 'template';
 
   @override
   final String description =
-      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, migration, release, build, validation, and documentation.';
+      'Ecosystem CLI for template discovery, inspection, composition, customization, quality, testing, certification, migration, release, build, validation, manifest, and documentation.';
 
   TemplateCatalogCommand() {
     addSubcommand(TemplateListCommand());
@@ -4245,13 +4383,14 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateVersionCommand());
     addSubcommand(TemplateBuildCommand());
     addSubcommand(TemplatePubDevValidateCommand());
+    addSubcommand(TemplateManifestCommand());
   }
 
   @override
   Future<int> run() async {
     print('Flutter Package Studio — Template Ecosystem CLI');
     print(
-        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → release-plan → version → build → pubdev-validate → migrate');
+        'Recommended Workflow: discovery → info → check → compose → customize → validate → test → certify → readme → api-docs → architecture → mermaid → examples → screenshots → gifs → website → test-project → unit-tests → widget-tests → integration-tests → fixtures → coverage → test-runner → test-report → compatibility → regression → test-certify → test-workflow → release-plan → version → build → pubdev-validate → manifest → migrate');
     print('');
     printUsage();
     return 0;

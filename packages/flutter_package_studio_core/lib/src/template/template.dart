@@ -40,6 +40,7 @@ export '../release/planning/release_planning.dart';
 export '../release/versioning/versioning.dart';
 export '../release/artifacts/artifacts.dart';
 export '../release/validation/validation.dart';
+export '../release/manifest/manifest.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';
