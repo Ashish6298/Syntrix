@@ -595,3 +595,9 @@ class ArtifactGenerationException extends PackageStudioException {
   /// Creates an [ArtifactGenerationException].
   ArtifactGenerationException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Pub.dev Package Validation subsystem failures.
+class PubDevValidationException extends PackageStudioException {
+  /// Creates a [PubDevValidationException].
+  PubDevValidationException(super.message, [super.details, super.stackTrace]);
+}
