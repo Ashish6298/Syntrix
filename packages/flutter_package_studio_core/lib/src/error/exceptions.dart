@@ -672,3 +672,9 @@ class GitReleaseException extends PackageStudioException {
   /// Creates a [GitReleaseException].
   GitReleaseException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Release Notes Generator subsystem failures.
+class ReleaseNotesException extends PackageStudioException {
+  /// Creates a [ReleaseNotesException].
+  ReleaseNotesException(super.message, [super.details, super.stackTrace]);
+}

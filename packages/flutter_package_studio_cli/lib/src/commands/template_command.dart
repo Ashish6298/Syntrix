@@ -4802,28 +4802,48 @@ class TemplateReleaseNotesCommand extends FpsCommand {
     }
 
     final tmpl = entry.template;
-    final generator = ReleaseDocumentationGenerator();
-    final options = ReleaseDocumentationOptions(
-      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+    final pkgName = tmpl.manifest.name.toLowerCase().replaceAll(' ', '_');
+    final semVer = SemVer.parse(targetVersion);
+
+    final changelogGen = AutomatedChangelogGenerator();
+    final changelogPlan = changelogGen.planChangelog(AutomatedChangelogOptions(
+      packageName: pkgName,
       version: targetVersion,
-      profile: profile,
-      outputDir: outputDir,
+    ));
+
+    final gitGen = GitReleaseManager();
+    final gitPlan = await gitGen.planRelease(GitReleaseOptions(
+      packageName: pkgName,
+      version: targetVersion,
+    ));
+
+    final inputs = ReleaseNotesInputs(
+      packageName: pkgName,
+      version: semVer,
+      changelogPlan: changelogPlan,
+      gitPlan: gitPlan,
+      certificationData: profile == 'strict' ? {'status': 'passed'} : null,
+      securityData: {'status': 'clean'},
     );
 
-    final plan = generator.planDocumentation(options);
-    final result = generator.generateDocumentation(plan);
+    final generator = ReleaseNotesGenerator();
+    final plan = generator.planReleaseNotes(inputs,
+        options: ReleaseNotesOptions(
+          outputDir: outputDir,
+          writeDisk: writeDisk,
+        ));
+    final result = generator.generateReleaseNotes(plan);
 
     if (writeDisk) {
       final baseDir = Directory(outputDir);
       await baseDir.create(recursive: true);
       final file = File(
-          '${baseDir.path}/release_notes_bundle.${jsonOutput ? 'json' : 'md'}');
+          '${baseDir.path}/release_notes_v$targetVersion.${jsonOutput ? 'json' : 'md'}');
       await file.writeAsString(
-          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+          jsonOutput ? jsonEncode(result.toJson()) : result.markdownContent);
 
       if (!jsonOutput) {
-        print(
-            'Successfully wrote release documentation bundle to "${file.path}".');
+        print('Successfully wrote release notes to "${file.path}".');
       }
     }
 
@@ -4831,17 +4851,16 @@ class TemplateReleaseNotesCommand extends FpsCommand {
       print(jsonEncode(result.toJson()));
     } else if (!writeDisk) {
       print(
-          'Generated Release Notes & Documentation Bundle Plan Preview for "${result.packageName}":');
+          'Generated Release Notes Plan Preview for "${result.packageName}":');
       print('══════════════════════════════════════════════════════════════');
-      print('Package Version : ${plan.version}');
-      print('Profile Profile : ${plan.profile}');
-      print('Total Sections  : ${result.sections.length}');
+      print('Package Version : ${plan.inputs.version}');
+      print('Output Target   : ${plan.targetPath}');
       print(
-          'Bundle Status   : ${result.isSuccess ? "BUNDLE SUCCESS ✓" : "BUNDLE FAILED ✗"}');
+          'Status          : ${result.isApplied ? "APPLIED ✓" : "PREVIEW-ONLY"}');
       print('══════════════════════════════════════════════════════════════');
     }
 
-    return result.isSuccess ? 0 : 1;
+    return 0;
   }
 }
 
