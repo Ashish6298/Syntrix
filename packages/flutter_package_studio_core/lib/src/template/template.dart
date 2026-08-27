@@ -48,6 +48,8 @@ export '../release/publishing/publishing.dart';
 export '../release/channels/channels.dart';
 export '../release/rollback/rollback.dart';
 export '../release/certification/release_certification.dart';
+export '../release/changelog/changelog.dart';
+export '../release/git/git_release.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';

@@ -654,3 +654,21 @@ class ReleaseCertificationException extends PackageStudioException {
   ReleaseCertificationException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Semantic Version Manager subsystem failures.
+class SemanticVersionException extends PackageStudioException {
+  /// Creates a [SemanticVersionException].
+  SemanticVersionException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Base exception for all Automatic Changelog Generator subsystem failures.
+class AutomatedChangelogException extends PackageStudioException {
+  /// Creates an [AutomatedChangelogException].
+  AutomatedChangelogException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Base exception for all Git Tagging & Release Branching subsystem failures.
+class GitReleaseException extends PackageStudioException {
+  /// Creates a [GitReleaseException].
+  GitReleaseException(super.message, [super.details, super.stackTrace]);
+}

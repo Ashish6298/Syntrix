@@ -3954,6 +3954,151 @@ class TemplateVersionCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template version-plan <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template version-plan <template-id>`
+///
+/// Previews or executes Semantic Versioning 2.0.0 transitions for a template.
+class TemplateVersionPlanCommand extends FpsCommand {
+  @override
+  final String name = 'version-plan';
+
+  @override
+  final String description =
+      'Preview or execute Semantic Versioning 2.0.0 transitions for a template.';
+
+  TemplateVersionPlanCommand() {
+    argParser.addOption(
+      'current',
+      abbr: 'c',
+      help: 'Current package semantic version.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'type',
+      abbr: 't',
+      help:
+          'Version increment type (major, minor, patch, prerelease, explicit).',
+      defaultsTo: 'patch',
+    );
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Explicit target version when type is explicit.',
+    );
+    argParser.addOption(
+      'prerelease-id',
+      help: 'Prerelease identifier tag (e.g. alpha, beta, rc).',
+      defaultsTo: 'alpha',
+    );
+    argParser.addOption(
+      'channel',
+      help: 'Release channel target (stable, beta, dev, canary).',
+      defaultsTo: 'stable',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing version report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated semantic version report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output semantic version plan result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final currentVer = argResults?['current'] as String? ?? '1.0.0';
+    final typeName = argResults?['type'] as String? ?? 'patch';
+    final explicitVer = argResults?['version'] as String?;
+    final preId = argResults?['prerelease-id'] as String? ?? 'alpha';
+    final channelStr = argResults?['channel'] as String? ?? 'stable';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final manager = SemanticVersionManager();
+    final type = SemVerIncrementType.values.firstWhere(
+      (t) => t.name.toLowerCase() == typeName.toLowerCase(),
+      orElse: () => SemVerIncrementType.patch,
+    );
+
+    final options = SemVerOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      currentVersion: currentVer,
+      type: explicitVer != null ? SemVerIncrementType.explicit : type,
+      explicitVersion: explicitVer,
+      prereleaseId: preId,
+      channel: channelStr,
+      outputDir: outputDir,
+    );
+
+    final plan = manager.planTransition(options);
+    final result = manager.applyTransition(plan, writeDisk: writeDisk);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/semver_transition.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdown());
+
+      if (!jsonOutput) {
+        print('Successfully wrote semver transition report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Semantic Version Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Previous Version : ${result.previousVersion}');
+      print('New Version      : ${result.newVersion}');
+      print('Increment Type   : ${plan.type.name}');
+      print('Release Channel  : ${options.channel}');
+      print(
+          'Status           : ${result.isApplied ? "APPLIED ✓" : "PREVIEW-ONLY"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template build <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -4701,6 +4846,261 @@ class TemplateReleaseNotesCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template changelog <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template changelog <template-id>`
+///
+/// Previews or generates an automated changelog entry for a template.
+class TemplateChangelogCommand extends FpsCommand {
+  @override
+  final String name = 'changelog';
+
+  @override
+  final String description =
+      'Preview or generate automated changelog entry for a template.';
+
+  TemplateChangelogCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Version number for generated changelog entry.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'date',
+      abbr: 'd',
+      help: 'Release date string (YYYY-MM-DD).',
+    );
+    argParser.addOption(
+      'changelog-path',
+      help: 'Target CHANGELOG.md file path.',
+      defaultsTo: 'CHANGELOG.md',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing changelog report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated changelog report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output automated changelog result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final targetVersion = argResults?['version'] as String? ?? '1.0.0';
+    final dateStr = argResults?['date'] as String? ?? '';
+    final changelogPath =
+        argResults?['changelog-path'] as String? ?? 'CHANGELOG.md';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final generator = AutomatedChangelogGenerator();
+    final options = AutomatedChangelogOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      version: targetVersion,
+      date: dateStr,
+      changelogPath: changelogPath,
+      outputDir: outputDir,
+    );
+
+    final plan = generator.planChangelog(options);
+    final result = generator.generateChangelog(plan, writeDisk: writeDisk);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/automated_changelog_report.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdownReport());
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote automated changelog report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated Automated Changelog Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Package Version : ${plan.version}');
+      print('Release Date    : ${plan.date}');
+      print('Section Count   : ${plan.sections.length}');
+      print(
+          'Status          : ${result.isApplied ? "APPLIED ✓" : "PREVIEW-ONLY"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template git-release <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template git-release <template-id>`
+///
+/// Previews or executes Git tagging and release branching for a template.
+class TemplateGitReleaseCommand extends FpsCommand {
+  @override
+  final String name = 'git-release';
+
+  @override
+  final String description =
+      'Preview or execute Git release tagging and branching for a template.';
+
+  TemplateGitReleaseCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Target version for release tag and branch.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'tag',
+      abbr: 't',
+      help: 'Explicit Git release tag name (defaults to v<version>).',
+    );
+    argParser.addOption(
+      'branch',
+      abbr: 'b',
+      help:
+          'Explicit Git release branch name (defaults to release/v<version>).',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing release report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'execute',
+      negatable: false,
+      help: 'Execute actual Git tag and branch creation operations.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated Git release report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output Git release result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final targetVersion = argResults?['version'] as String? ?? '1.0.0';
+    final tagName = argResults?['tag'] as String?;
+    final branchName = argResults?['branch'] as String?;
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final executeOpt = argResults?['execute'] as bool? ?? false;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final manager = GitReleaseManager();
+    final options = GitReleaseOptions(
+      packageName: tmpl.manifest.name.toLowerCase().replaceAll(' ', '_'),
+      version: targetVersion,
+      tagName: tagName,
+      branchName: branchName,
+      execute: executeOpt,
+      outputDir: outputDir,
+    );
+
+    final plan = await manager.planRelease(options);
+    final result = await manager.executeRelease(plan, execute: executeOpt);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/git_release_report.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdownReport());
+
+      if (!jsonOutput) {
+        print('Successfully wrote Git release report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print('Generated Git Release Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Release Tag    : ${plan.tagName}');
+      print('Release Branch : ${plan.branchName}');
+      print('Clean State    : ${plan.isClean ? "CLEAN ✓" : "DIRTY ✗"}');
+      print(
+          'Status         : ${result.isExecuted ? "EXECUTED ✓" : "PREVIEW-ONLY"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template publish <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -5285,7 +5685,9 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateTestWorkflowCommand());
     addSubcommand(TemplateReleasePlanCommand());
     addSubcommand(TemplateVersionCommand());
+    addSubcommand(TemplateVersionPlanCommand());
     addSubcommand(TemplateBuildCommand());
+
     addSubcommand(TemplatePubDevValidateCommand());
     addSubcommand(TemplateManifestCommand());
     addSubcommand(TemplateSecurityAuditCommand());
@@ -5295,6 +5697,8 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateChannelCommand());
     addSubcommand(TemplateRollbackCommand());
     addSubcommand(TemplateCertifyReleaseCommand());
+    addSubcommand(TemplateChangelogCommand());
+    addSubcommand(TemplateGitReleaseCommand());
   }
 
   @override
