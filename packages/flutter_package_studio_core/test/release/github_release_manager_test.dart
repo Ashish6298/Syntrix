@@ -161,7 +161,6 @@ void main() {
         final errStr = e.toString();
         expect(errStr, isNot(contains(tokenVal)));
       }
-
     });
 
     test(

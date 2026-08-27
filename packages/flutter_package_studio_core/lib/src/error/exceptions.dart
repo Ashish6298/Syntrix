@@ -684,3 +684,22 @@ class GitHubReleaseException extends PackageStudioException {
   /// Creates a [GitHubReleaseException].
   GitHubReleaseException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Dry Run Automation subsystem failures.
+class ReleaseDryRunException extends PackageStudioException {
+  /// Creates a [ReleaseDryRunException].
+  ReleaseDryRunException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Base exception for all Publishing Assistant subsystem failures.
+class ReleasePublishingAssistantException extends PackageStudioException {
+  /// Creates a [ReleasePublishingAssistantException].
+  ReleasePublishingAssistantException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Base exception for all Release Dashboard subsystem failures.
+class ReleaseDashboardException extends PackageStudioException {
+  /// Creates a [ReleaseDashboardException].
+  ReleaseDashboardException(super.message, [super.details, super.stackTrace]);
+}

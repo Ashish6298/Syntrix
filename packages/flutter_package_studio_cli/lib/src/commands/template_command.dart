@@ -5271,6 +5271,393 @@ class TemplateGitHubReleaseCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template dry-run <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template dry-run <template-id>`
+///
+/// Executes unified end-to-end dry run release orchestration for a template with zero side-effects.
+class TemplateDryRunCommand extends FpsCommand {
+  @override
+  final String name = 'dry-run';
+
+  @override
+  final String description =
+      'Execute unified end-to-end dry run release orchestration for a template with zero side-effects.';
+
+  TemplateDryRunCommand() {
+    argParser.addOption(
+      'current',
+      abbr: 'c',
+      help: 'Current package semantic version.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'target-version',
+      abbr: 'v',
+      help: 'Target release semantic version.',
+      defaultsTo: '1.1.0',
+    );
+    argParser.addOption(
+      'channel',
+      help: 'Target release channel (stable, beta, dev, canary).',
+      defaultsTo: 'stable',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing dry run report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'draft',
+      help: 'Mark GitHub release plan as draft.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated release dry run report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output release dry run report as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final currentVer = argResults?['current'] as String? ?? '1.0.0';
+    final targetVer = argResults?['target-version'] as String? ?? '1.1.0';
+    final channelStr = argResults?['channel'] as String? ?? 'stable';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final isDraft = argResults?['draft'] as bool? ?? false;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final pkgName = tmpl.manifest.name.toLowerCase().replaceAll(' ', '_');
+
+    final orchestrator = ReleaseDryRunOrchestrator();
+    final options = ReleaseDryRunOptions(
+      packageName: pkgName,
+      currentVersion: currentVer,
+      targetVersion: targetVer,
+      channel: channelStr,
+      isDraft: isDraft,
+      outputDir: outputDir,
+    );
+
+    final report = await orchestrator.executeDryRun(options);
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/release_dry_run_report.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(report.toJson()) : report.toFormattedText());
+
+      if (!jsonOutput) {
+        print('Successfully wrote release dry run report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(report.toJson()));
+    } else if (!writeDisk) {
+      print(report.toFormattedText());
+    }
+
+    return report.isReady ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template assistant <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template assistant <template-id>`
+///
+/// Orchestrates full 11-stage release pipeline with strict authorization and zero silent failure absorption.
+class TemplatePublishingAssistantCommand extends FpsCommand {
+  @override
+  final String name = 'assistant';
+
+  @override
+  final String description =
+      'Orchestrate the full 11-stage release pipeline with strict authorization and auditable logs.';
+
+  TemplatePublishingAssistantCommand() {
+    argParser.addOption(
+      'current',
+      abbr: 'c',
+      help: 'Current package semantic version.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'target-version',
+      abbr: 'v',
+      help: 'Target release semantic version.',
+      defaultsTo: '1.1.0',
+    );
+    argParser.addOption(
+      'channel',
+      help: 'Target release channel (stable, beta, dev, canary).',
+      defaultsTo: 'stable',
+    );
+    argParser.addOption(
+      'authorize',
+      help: 'Explicit caller authorization identity string.',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing assistant report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'draft',
+      help: 'Mark GitHub release plan as draft.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated execution report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output publishing execution report as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final currentVer = argResults?['current'] as String? ?? '1.0.0';
+    final targetVer = argResults?['target-version'] as String? ?? '1.1.0';
+    final channelStr = argResults?['channel'] as String? ?? 'stable';
+    final authorizeId = argResults?['authorize'] as String?;
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final isDraft = argResults?['draft'] as bool? ?? false;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final pkgName = tmpl.manifest.name.toLowerCase().replaceAll(' ', '_');
+
+    final auth = authorizeId != null && authorizeId.trim().isNotEmpty
+        ? PublishingAuthorization(
+            authorizedBy: authorizeId,
+            isAuthorized: true,
+            timestamp: DateTime.now().toIso8601String(),
+          )
+        : null;
+
+    final assistant = ReleasePublishingAssistant();
+    final options = PublishingAssistantOptions(
+      packageName: pkgName,
+      currentVersion: currentVer,
+      targetVersion: targetVer,
+      channel: channelStr,
+      isDraft: isDraft,
+      outputDir: outputDir,
+      authorization: auth,
+    );
+
+    try {
+      final result = await assistant.executePipeline(options);
+
+      if (writeDisk) {
+        final baseDir = Directory(outputDir);
+        await baseDir.create(recursive: true);
+        final file = File(
+            '${baseDir.path}/publishing_execution_report.${jsonOutput ? 'json' : 'md'}');
+        await file.writeAsString(jsonOutput
+            ? jsonEncode(result.toJson())
+            : result.toFormattedReport());
+
+        if (!jsonOutput) {
+          print(
+              'Successfully wrote publishing execution report to "${file.path}".');
+        }
+      }
+
+      if (jsonOutput) {
+        print(jsonEncode(result.toJson()));
+      } else if (!writeDisk) {
+        print(result.toFormattedReport());
+      }
+
+      return result.isSuccess ? 0 : 1;
+    } catch (e) {
+      if (jsonOutput) {
+        print(jsonEncode({'error': e.toString(), 'success': false}));
+      } else {
+        print('Execution Error: ${e.toString()}');
+      }
+      return 1;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// template dashboard <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template dashboard <template-id>`
+///
+/// Renders unified read-only release dashboard snapshot for a template.
+class TemplateReleaseDashboardCommand extends FpsCommand {
+  @override
+  final String name = 'dashboard';
+
+  @override
+  final String description =
+      'Render unified read-only release dashboard snapshot for a template.';
+
+  TemplateReleaseDashboardCommand() {
+    argParser.addOption(
+      'current',
+      abbr: 'c',
+      help: 'Current package semantic version.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'next-version',
+      abbr: 'v',
+      help: 'Next release target version.',
+      defaultsTo: '1.1.0',
+    );
+    argParser.addOption(
+      'channel',
+      help: 'Target release channel (stable, beta, dev, canary).',
+      defaultsTo: 'stable',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing dashboard report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated release dashboard snapshot directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output release dashboard snapshot as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final currentVer = argResults?['current'] as String? ?? '1.0.0';
+    final nextVer = argResults?['next-version'] as String? ?? '1.1.0';
+    final channelStr = argResults?['channel'] as String? ?? 'stable';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final pkgName = tmpl.manifest.name.toLowerCase().replaceAll(' ', '_');
+
+    final dashboard = ReleaseDashboard();
+    final snapshot = dashboard.renderSnapshot(
+      packageName: pkgName,
+      currentVersion: currentVer,
+      nextRelease: nextVer,
+      channel: channelStr,
+    );
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/release_dashboard_snapshot.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(jsonOutput
+          ? jsonEncode(snapshot.toJson())
+          : snapshot.toFormattedText());
+
+      if (!jsonOutput) {
+        print(
+            'Successfully wrote release dashboard snapshot to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(snapshot.toJson()));
+    } else if (!writeDisk) {
+      print(snapshot.toFormattedText());
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template publish <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -5870,6 +6257,9 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateChangelogCommand());
     addSubcommand(TemplateGitReleaseCommand());
     addSubcommand(TemplateGitHubReleaseCommand());
+    addSubcommand(TemplateDryRunCommand());
+    addSubcommand(TemplatePublishingAssistantCommand());
+    addSubcommand(TemplateReleaseDashboardCommand());
   }
 
   @override
