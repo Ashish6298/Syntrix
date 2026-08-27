@@ -51,6 +51,7 @@ export '../release/certification/release_certification.dart';
 export '../release/changelog/changelog.dart';
 export '../release/git/git_release.dart';
 export '../release/notes_generator/release_notes_generator.dart';
+export '../release/github/github_release.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';

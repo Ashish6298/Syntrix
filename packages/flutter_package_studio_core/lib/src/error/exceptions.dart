@@ -678,3 +678,9 @@ class ReleaseNotesException extends PackageStudioException {
   /// Creates a [ReleaseNotesException].
   ReleaseNotesException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all GitHub Releases subsystem failures.
+class GitHubReleaseException extends PackageStudioException {
+  /// Creates a [GitHubReleaseException].
+  GitHubReleaseException(super.message, [super.details, super.stackTrace]);
+}

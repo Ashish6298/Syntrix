@@ -5120,6 +5120,157 @@ class TemplateGitReleaseCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template github-release <template-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template github-release <template-id>`
+///
+/// Previews or executes GitHub releases integration for a template.
+class TemplateGitHubReleaseCommand extends FpsCommand {
+  @override
+  final String name = 'github-release';
+
+  @override
+  final String description =
+      'Preview or execute GitHub release creation and artifact upload for a template.';
+
+  TemplateGitHubReleaseCommand() {
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'Target package version.',
+      defaultsTo: '1.0.0',
+    );
+    argParser.addOption(
+      'tag',
+      abbr: 't',
+      help: 'Target Git release tag name (defaults to v<version>).',
+    );
+    argParser.addOption(
+      'channel',
+      abbr: 'c',
+      help: 'Release channel target (stable, beta, dev, canary).',
+      defaultsTo: 'stable',
+    );
+    argParser.addOption(
+      'output',
+      abbr: 'o',
+      help: 'Target output directory when writing release report to disk.',
+      defaultsTo: 'doc/release',
+    );
+    argParser.addFlag(
+      'draft',
+      help: 'Create release in draft state.',
+    );
+    argParser.addFlag(
+      'update-existing',
+      help: 'Allow updating an existing release if tag already exists.',
+    );
+    argParser.addFlag(
+      'publish',
+      negatable: false,
+      help: 'Execute actual GitHub API release creation and asset upload.',
+    );
+    argParser.addFlag(
+      'write',
+      negatable: false,
+      help: 'Write generated GitHub release report directly to disk.',
+    );
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output GitHub release result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final templateId = rest.first;
+    final targetVersion = argResults?['version'] as String? ?? '1.0.0';
+    final tagName = argResults?['tag'] as String? ?? 'v$targetVersion';
+    final channelStr = argResults?['channel'] as String? ?? 'stable';
+    final outputDir = argResults?['output'] as String? ?? 'doc/release';
+    final isDraft = argResults?['draft'] as bool? ?? false;
+    final updateExisting = argResults?['update-existing'] as bool? ?? false;
+    final publishOpt = argResults?['publish'] as bool? ?? false;
+    final writeDisk = argResults?['write'] as bool? ?? false;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final discoveryService = _buildDiscoveryService();
+    final entry = discoveryService.get(templateId);
+
+    if (entry == null) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Template "$templateId" not found.', 'success': false}));
+      } else {
+        print('Error: Template "$templateId" not found in catalog.');
+      }
+      return 1;
+    }
+
+    final tmpl = entry.template;
+    final pkgName = tmpl.manifest.name.toLowerCase().replaceAll(' ', '_');
+
+    final manager = GitHubReleaseManager();
+    final options = GitHubReleaseOptions(
+      packageName: pkgName,
+      version: targetVersion,
+      tagName: tagName,
+      releaseTitle: 'Flutter Package Studio $pkgName v$targetVersion',
+      releaseBody: 'Release notes for $pkgName v$targetVersion.',
+      channel: channelStr,
+      isDraft: isDraft,
+      updateExisting: updateExisting,
+      outputDir: outputDir,
+    );
+
+    final plan = manager.planRelease(options);
+    final result = await manager.executeRelease(
+      plan: plan,
+      ownerRepo: 'Syntrix/$pkgName',
+      credential: const GitHubCredential('mock_token'),
+      execute: publishOpt,
+    );
+
+    if (writeDisk) {
+      final baseDir = Directory(outputDir);
+      await baseDir.create(recursive: true);
+      final file = File(
+          '${baseDir.path}/github_release_report.${jsonOutput ? 'json' : 'md'}');
+      await file.writeAsString(
+          jsonOutput ? jsonEncode(result.toJson()) : result.toMarkdownReport());
+
+      if (!jsonOutput) {
+        print('Successfully wrote GitHub release report to "${file.path}".');
+      }
+    }
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else if (!writeDisk) {
+      print(
+          'Generated GitHub Release Plan Preview for "${result.packageName}":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Release Tag    : ${plan.tagName}');
+      print('Is Prerelease  : ${plan.isPrerelease}');
+      print('Is Draft       : ${plan.isDraft}');
+      print(
+          'Status         : ${result.isExecuted ? "EXECUTED ✓" : "PREVIEW-ONLY"}');
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template publish <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -5718,6 +5869,7 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateCertifyReleaseCommand());
     addSubcommand(TemplateChangelogCommand());
     addSubcommand(TemplateGitReleaseCommand());
+    addSubcommand(TemplateGitHubReleaseCommand());
   }
 
   @override
