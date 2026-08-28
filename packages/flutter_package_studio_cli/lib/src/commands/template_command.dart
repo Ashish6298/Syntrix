@@ -5896,6 +5896,51 @@ class _MockCliPlugin implements CommandContribution {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template plugin-discover <dir1> [dir2...]
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template plugin-discover <dir1> [dir2...]`
+///
+/// Scans plugin directory roots and outputs a non-executing discovery report.
+class TemplatePluginDiscoverCommand extends FpsCommand {
+  @override
+  final String name = 'plugin-discover';
+
+  @override
+  final String description =
+      'Scan directory roots for plugin manifests with zero code execution.';
+
+  TemplatePluginDiscoverCommand() {
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output discovery report as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+    final engine = PluginDiscoveryEngine();
+    final result = await engine.discoverPlugins(rest);
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else {
+      print(result.toFormattedText());
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template publish <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -6501,6 +6546,7 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplatePluginValidateCommand());
     addSubcommand(TemplatePluginCapabilitiesCommand());
     addSubcommand(TemplatePluginListCommand());
+    addSubcommand(TemplatePluginDiscoverCommand());
   }
 
   @override

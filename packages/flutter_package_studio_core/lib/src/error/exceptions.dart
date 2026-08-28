@@ -721,3 +721,9 @@ class PluginRegistrationException extends PackageStudioException {
   /// Creates a [PluginRegistrationException].
   PluginRegistrationException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for plugin discovery engine failures.
+class PluginDiscoveryException extends PackageStudioException {
+  /// Creates a [PluginDiscoveryException].
+  PluginDiscoveryException(super.message, [super.details, super.stackTrace]);
+}
