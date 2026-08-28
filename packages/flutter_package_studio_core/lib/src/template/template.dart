@@ -59,6 +59,7 @@ export '../plugin/contract/plugin_contract.dart';
 export '../plugin/interface/plugin_interface.dart';
 export '../plugin/discovery/plugin_discovery.dart';
 export '../plugin/configuration/plugin_configuration.dart';
+export '../plugin/dependency/plugin_dependency.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';

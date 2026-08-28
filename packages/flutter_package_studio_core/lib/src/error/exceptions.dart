@@ -734,3 +734,9 @@ class PluginConfigurationException extends PackageStudioException {
   PluginConfigurationException(super.message,
       [super.details, super.stackTrace]);
 }
+
+/// Base exception for plugin dependency & compatibility subsystem failures.
+class PluginDependencyException extends PackageStudioException {
+  /// Creates a [PluginDependencyException].
+  PluginDependencyException(super.message, [super.details, super.stackTrace]);
+}

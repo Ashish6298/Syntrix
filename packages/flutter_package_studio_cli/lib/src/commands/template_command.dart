@@ -6005,6 +6005,70 @@ class TemplatePluginConfigValidateCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template plugin-deps-resolve <dir1> [dir2...]
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template plugin-deps-resolve <dir1> [dir2...]`
+///
+/// Discovers plugins across directory roots and resolves dependency compatibility & initialization ordering.
+class TemplatePluginDepsResolveCommand extends FpsCommand {
+  @override
+  final String name = 'plugin-deps-resolve';
+
+  @override
+  final String description =
+      'Resolve plugin dependency graph and compute topological initialization order.';
+
+  TemplatePluginDepsResolveCommand() {
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output dependency resolution result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+    final discoveryEngine = PluginDiscoveryEngine();
+    final discovery = await discoveryEngine.discoverPlugins(rest);
+
+    final validManifests =
+        discovery.validEntries.map((e) => e.manifest!).toList();
+    final resolver = PluginDependencyResolver();
+    final resolution = resolver.resolveDependencies(validManifests);
+
+    if (jsonOutput) {
+      print(jsonEncode(resolution.toJson()));
+    } else {
+      print('Plugin Dependency & Compatibility Resolution Report:');
+      print(
+          'Ecosystem Status: ${resolution.isCompatible ? "COMPATIBLE ✓" : "BLOCKED ✗"}');
+      if (resolution.isCompatible) {
+        print(
+            'Initialization Order (${resolution.initializationOrder!.length}):');
+        for (var i = 0; i < resolution.initializationOrder!.length; i++) {
+          print('  ${i + 1}. ${resolution.initializationOrder![i]}');
+        }
+      } else {
+        print('Detected Findings (${resolution.findings.length}):');
+        for (final f in resolution.findings) {
+          print('  - $f');
+        }
+      }
+    }
+
+    return resolution.isCompatible ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template publish <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -6612,6 +6676,7 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplatePluginListCommand());
     addSubcommand(TemplatePluginDiscoverCommand());
     addSubcommand(TemplatePluginConfigValidateCommand());
+    addSubcommand(TemplatePluginDepsResolveCommand());
   }
 
   @override
