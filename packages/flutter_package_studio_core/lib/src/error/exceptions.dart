@@ -727,3 +727,10 @@ class PluginDiscoveryException extends PackageStudioException {
   /// Creates a [PluginDiscoveryException].
   PluginDiscoveryException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for plugin configuration system failures.
+class PluginConfigurationException extends PackageStudioException {
+  /// Creates a [PluginConfigurationException].
+  PluginConfigurationException(super.message,
+      [super.details, super.stackTrace]);
+}

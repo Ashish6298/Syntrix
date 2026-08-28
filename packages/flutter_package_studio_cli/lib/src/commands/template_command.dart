@@ -5941,6 +5941,70 @@ class TemplatePluginDiscoverCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template plugin-config-validate
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template plugin-config-validate`
+///
+/// Validates a runtime configuration object against a plugin schema with secret redaction.
+class TemplatePluginConfigValidateCommand extends FpsCommand {
+  @override
+  final String name = 'plugin-config-validate';
+
+  @override
+  final String description =
+      'Validate runtime configuration against a plugin configuration schema with secret redaction.';
+
+  TemplatePluginConfigValidateCommand() {
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output validation result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final schema = ConfigurationSchema(properties: [
+      const ConfigurationProperty(
+          key: 'repo_url', type: ConfigPropertyType.string, isRequired: true),
+      const ConfigurationProperty(
+          key: 'api_token',
+          type: ConfigPropertyType.string,
+          isRequired: true,
+          isSecret: true),
+    ]);
+
+    final config = RuntimeConfiguration({
+      'repo_url': 'https://github.com/example/repo',
+      'api_token': SecretValue('super_secret_token_123'),
+    });
+
+    final validator = PluginConfigurationValidator();
+    final result =
+        validator.validateConfiguration(config: config, schema: schema);
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else {
+      print('Plugin Configuration Validation Result:');
+      print('Status: ${result.isValid ? "VALID ✓" : "INVALID ✗"}');
+      print('Configuration Summary: ${config.toJson(schema: schema)}');
+      if (!result.isValid) {
+        print('Violations (${result.violations.length}):');
+        for (final v in result.violations) {
+          print('  - $v');
+        }
+      }
+    }
+
+    return result.isValid ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template publish <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -6547,6 +6611,7 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplatePluginCapabilitiesCommand());
     addSubcommand(TemplatePluginListCommand());
     addSubcommand(TemplatePluginDiscoverCommand());
+    addSubcommand(TemplatePluginConfigValidateCommand());
   }
 
   @override

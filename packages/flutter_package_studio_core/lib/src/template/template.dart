@@ -58,6 +58,7 @@ export '../release/dashboard/release_dashboard.dart';
 export '../plugin/contract/plugin_contract.dart';
 export '../plugin/interface/plugin_interface.dart';
 export '../plugin/discovery/plugin_discovery.dart';
+export '../plugin/configuration/plugin_configuration.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';

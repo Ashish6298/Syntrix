@@ -138,6 +138,154 @@ class PluginCompatibility {
   }
 }
 
+/// Supported property data types in configuration schemas.
+enum ConfigPropertyType {
+  string,
+  number,
+  boolean,
+  map,
+  list,
+}
+
+/// Single declared configuration property in a plugin schema.
+class ConfigurationProperty {
+  final String key;
+  final ConfigPropertyType type;
+  final bool isRequired;
+  final bool isSecret;
+  final String? description;
+
+  const ConfigurationProperty({
+    required this.key,
+    required this.type,
+    this.isRequired = false,
+    this.isSecret = false,
+    this.description,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'key': key,
+        'type': type.name,
+        'isRequired': isRequired,
+        'isSecret': isSecret,
+        if (description != null) 'description': description,
+      };
+
+  factory ConfigurationProperty.fromJson(Map<String, dynamic> json) {
+    final key = json['key'] as String?;
+    final typeStr = json['type'] as String?;
+    if (key == null || key.trim().isEmpty || typeStr == null) {
+      throw PluginContractException(
+          'ConfigurationProperty requires valid "key" and "type".');
+    }
+    final typeMatch =
+        ConfigPropertyType.values.where((t) => t.name == typeStr.trim());
+    if (typeMatch.isEmpty) {
+      throw PluginContractException('Invalid ConfigPropertyType "$typeStr".');
+    }
+    return ConfigurationProperty(
+      key: key.trim(),
+      type: typeMatch.first,
+      isRequired: json['isRequired'] as bool? ?? false,
+      isSecret: json['isSecret'] as bool? ?? false,
+      description: json['description'] as String?,
+    );
+  }
+}
+
+/// Declared configuration schema for a plugin.
+class ConfigurationSchema {
+  final List<ConfigurationProperty> properties;
+
+  ConfigurationSchema({List<ConfigurationProperty>? properties})
+      : properties = List.unmodifiable(properties ?? const []) {
+    final keys = <String>{};
+    for (final p in this.properties) {
+      if (keys.contains(p.key)) {
+        throw PluginContractException(
+            'Duplicate configuration property key "${p.key}" in schema.');
+      }
+      keys.add(p.key);
+    }
+  }
+
+  Map<String, dynamic> toJson() => {
+        'properties': properties.map((p) => p.toJson()).toList(),
+      };
+
+  factory ConfigurationSchema.fromJson(Map<String, dynamic> json) {
+    final rawProps = json['properties'] as List<dynamic>?;
+    final list = <ConfigurationProperty>[];
+    if (rawProps != null) {
+      for (final p in rawProps) {
+        if (p is Map<String, dynamic>) {
+          list.add(ConfigurationProperty.fromJson(p));
+        }
+      }
+    }
+    return ConfigurationSchema(properties: list);
+  }
+}
+
+/// Declared plugin dependency requirement value object.
+class PluginDependency {
+  final String name;
+  final String versionConstraint;
+
+  PluginDependency({
+    required this.name,
+    required this.versionConstraint,
+  }) {
+    if (name.trim().isEmpty) {
+      throw PluginContractException('Dependency name must not be empty.');
+    }
+    if (versionConstraint.trim().isEmpty) {
+      throw PluginContractException(
+          'Dependency version constraint must not be empty.');
+    }
+  }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'versionConstraint': versionConstraint,
+      };
+
+  factory PluginDependency.fromJson(Map<String, dynamic> json) {
+    final name = json['name'] as String?;
+    final ver = json['versionConstraint'] as String?;
+    if (name == null || ver == null) {
+      throw PluginContractException(
+          'PluginDependency requires name and versionConstraint.');
+    }
+    return PluginDependency(name: name, versionConstraint: ver);
+  }
+}
+
+/// Declared plugin security requirements value object.
+class SecurityRequirements {
+  final List<String> permissions;
+  final bool sandboxRequired;
+
+  const SecurityRequirements({
+    this.permissions = const [],
+    this.sandboxRequired = true,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'permissions': permissions,
+        'sandboxRequired': sandboxRequired,
+      };
+
+  factory SecurityRequirements.fromJson(Map<String, dynamic> json) {
+    final rawPerms = json['permissions'] as List<dynamic>?;
+    final perms = rawPerms?.map((e) => e.toString()).toList() ?? const [];
+    return SecurityRequirements(
+      permissions: List.unmodifiable(perms),
+      sandboxRequired: json['sandboxRequired'] as bool? ?? true,
+    );
+  }
+}
+
 /// Top-level immutable manifest object declaring a plugin's identity, metadata, and capabilities.
 class PluginManifest {
   final PluginId id;
@@ -150,7 +298,13 @@ class PluginManifest {
   final PluginCompatibility compatibility;
   final PluginLifecycleState state;
 
-  const PluginManifest({
+  // Genuine Phase 7.5 extended fields (Backward-compatible optional fields)
+  final String? entryPoint;
+  final List<PluginDependency> dependencies;
+  final ConfigurationSchema configSchema;
+  final SecurityRequirements securityRequirements;
+
+  PluginManifest({
     required this.id,
     required this.name,
     required this.description,
@@ -160,7 +314,25 @@ class PluginManifest {
     required this.capabilities,
     required this.compatibility,
     this.state = PluginLifecycleState.discovered,
-  });
+    this.entryPoint,
+    List<PluginDependency>? dependencies,
+    ConfigurationSchema? configSchema,
+    SecurityRequirements? securityRequirements,
+  })  : dependencies = List.unmodifiable(dependencies ?? const []),
+        configSchema = configSchema ?? ConfigurationSchema(),
+        securityRequirements =
+            securityRequirements ?? const SecurityRequirements() {
+    if (entryPoint != null && entryPoint!.trim().isEmpty) {
+      throw PluginContractException(
+          'entryPoint must not be empty string when provided.');
+    }
+    for (final dep in this.dependencies) {
+      if (dep.name == id.value) {
+        throw PluginContractException(
+            'Self-referential dependency: plugin cannot depend on itself "${id.value}".');
+      }
+    }
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id.value,
@@ -172,6 +344,12 @@ class PluginManifest {
         'capabilities': capabilities.map((c) => c.name).toList()..sort(),
         'compatibility': compatibility.toJson(),
         'state': state.name,
+        if (entryPoint != null) 'entryPoint': entryPoint,
+        if (dependencies.isNotEmpty)
+          'dependencies': dependencies.map((d) => d.toJson()).toList(),
+        if (configSchema.properties.isNotEmpty)
+          'configSchema': configSchema.toJson(),
+        'securityRequirements': securityRequirements.toJson(),
       };
 
   factory PluginManifest.fromJson(Map<String, dynamic> json) {
@@ -218,6 +396,27 @@ class PluginManifest {
       }
     }
 
+    // Extended Phase 7.5 fields
+    final entryPoint = json['entryPoint'] as String?;
+    final rawDeps = json['dependencies'] as List<dynamic>?;
+    final depsList = <PluginDependency>[];
+    if (rawDeps != null) {
+      for (final d in rawDeps) {
+        if (d is Map<String, dynamic>) {
+          depsList.add(PluginDependency.fromJson(d));
+        }
+      }
+    }
+    final rawSchema = json['configSchema'] as Map<String, dynamic>?;
+    final configSchema = rawSchema != null
+        ? ConfigurationSchema.fromJson(rawSchema)
+        : ConfigurationSchema();
+
+    final rawSec = json['securityRequirements'] as Map<String, dynamic>?;
+    final secReq = rawSec != null
+        ? SecurityRequirements.fromJson(rawSec)
+        : const SecurityRequirements();
+
     return PluginManifest(
       id: PluginId(rawId),
       name: PluginName(rawName),
@@ -228,6 +427,10 @@ class PluginManifest {
       capabilities: Set.unmodifiable(capsSet),
       compatibility: PluginCompatibility.fromJson(rawComp),
       state: stateEnum,
+      entryPoint: entryPoint,
+      dependencies: depsList,
+      configSchema: configSchema,
+      securityRequirements: secReq,
     );
   }
 }
