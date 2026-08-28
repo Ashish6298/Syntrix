@@ -5658,6 +5658,90 @@ class TemplateReleaseDashboardCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template plugin-validate <manifest-json-or-file>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template plugin-validate <manifest-json-or-file>`
+///
+/// Validates untrusted raw plugin manifest JSON for contract compliance without code execution.
+class TemplatePluginValidateCommand extends FpsCommand {
+  @override
+  final String name = 'plugin-validate';
+
+  @override
+  final String description =
+      'Validate raw plugin manifest for contract compliance with zero code execution.';
+
+  TemplatePluginValidateCommand() {
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output validation result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final input = rest.first;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    Map<String, dynamic> manifestMap;
+    try {
+      if (input.trim().startsWith('{')) {
+        manifestMap = jsonDecode(input) as Map<String, dynamic>;
+      } else {
+        final file = File(input);
+        if (!file.existsSync()) {
+          if (jsonOutput) {
+            print(jsonEncode(
+                {'error': 'File "$input" not found.', 'isValid': false}));
+          } else {
+            print('Error: File "$input" not found.');
+          }
+          return 1;
+        }
+        manifestMap =
+            jsonDecode(await file.readAsString()) as Map<String, dynamic>;
+      }
+    } catch (e) {
+      if (jsonOutput) {
+        print(jsonEncode(
+            {'error': 'Failed to parse JSON input: $e', 'isValid': false}));
+      } else {
+        print('Error: Failed to parse JSON manifest input: $e');
+      }
+      return 1;
+    }
+
+    final validator = PluginContractValidator();
+    final result = validator.validateRawJson(manifestMap);
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else {
+      print('Plugin Manifest Validation Result:');
+      print('══════════════════════════════════════════════════════════════');
+      print('Status: ${result.isValid ? "VALID ✓" : "INVALID ✗"}');
+      if (!result.isValid) {
+        print('Violations (${result.violations.length}):');
+        for (final v in result.violations) {
+          print('  - $v');
+        }
+      }
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isValid ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template publish <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -6260,6 +6344,7 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateDryRunCommand());
     addSubcommand(TemplatePublishingAssistantCommand());
     addSubcommand(TemplateReleaseDashboardCommand());
+    addSubcommand(TemplatePluginValidateCommand());
   }
 
   @override

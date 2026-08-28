@@ -703,3 +703,9 @@ class ReleaseDashboardException extends PackageStudioException {
   /// Creates a [ReleaseDashboardException].
   ReleaseDashboardException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for all Plugin Contract & Architecture subsystem failures.
+class PluginContractException extends PackageStudioException {
+  /// Creates a [PluginContractException].
+  PluginContractException(super.message, [super.details, super.stackTrace]);
+}
