@@ -18,7 +18,7 @@ void main() {
           'url': 'https://syntrix.io',
         },
         'apiVersion': '1.0.0',
-        'capabilities': ['releasePlanning', 'securityAudit'],
+        'capabilities': ['commandContribution', 'validationContribution'],
         'compatibility': {
           'minApiVersion': '1.0.0',
           'maxApiVersion': '2.0.0',
@@ -90,7 +90,7 @@ void main() {
         () {
       final invalidCapMap = Map<String, dynamic>.from(validManifestMap);
       invalidCapMap['capabilities'] = [
-        'releasePlanning',
+        'commandContribution',
         'invalidCapabilityOutsideSet'
       ];
 
@@ -169,7 +169,7 @@ void main() {
       final manifest = PluginManifest.fromJson(validManifestMap);
       expect(
           () => (manifest.capabilities as Set)
-              .add(PluginCapability.changelogGeneration),
+              .add(PluginCapability.serviceContribution),
           throwsUnsupportedError);
     });
 

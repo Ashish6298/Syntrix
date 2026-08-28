@@ -5742,6 +5742,95 @@ class TemplatePluginValidateCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template plugin-capabilities <plugin-id-or-json>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template plugin-capabilities <plugin-id-or-json>`
+///
+/// Queries registered capabilities for a plugin instance matching roadmap output structure.
+class TemplatePluginCapabilitiesCommand extends FpsCommand {
+  @override
+  final String name = 'plugin-capabilities';
+
+  @override
+  final String description =
+      'Query authorized capabilities for a plugin instance.';
+
+  TemplatePluginCapabilitiesCommand() {
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output capability query result as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final input = rest.first;
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    Map<String, dynamic> manifestMap;
+    try {
+      if (input.trim().startsWith('{')) {
+        manifestMap = jsonDecode(input) as Map<String, dynamic>;
+      } else {
+        manifestMap = {
+          'id': input,
+          'name': 'Sample Plugin',
+          'description': 'Plugin description',
+          'version': '1.0.0',
+          'author': {'name': 'Dev'},
+          'apiVersion': '1.0.0',
+          'capabilities': ['commandContribution', 'validationContribution'],
+          'compatibility': {'minApiVersion': '1.0.0'},
+        };
+      }
+    } catch (e) {
+      if (jsonOutput) {
+        print(
+            jsonEncode({'error': 'Invalid JSON input: $e', 'success': false}));
+      } else {
+        print('Error: Invalid JSON input: $e');
+      }
+      return 1;
+    }
+
+    try {
+      final manifest = PluginManifest.fromJson(manifestMap);
+      final caps = manifest.capabilities.map((c) => c.name).toList()..sort();
+
+      if (jsonOutput) {
+        print(jsonEncode({
+          'pluginId': manifest.id.value,
+          'capabilities': caps,
+        }));
+      } else {
+        print('Plugin Capabilities for "${manifest.id}":');
+        print('══════════════════════════════════════════════════════════════');
+        for (final cap in caps) {
+          print('  ├── $cap');
+        }
+        print('══════════════════════════════════════════════════════════════');
+      }
+      return 0;
+    } catch (e) {
+      if (jsonOutput) {
+        print(jsonEncode({'error': e.toString(), 'success': false}));
+      } else {
+        print('Error: ${e.toString()}');
+      }
+      return 1;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template publish <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -6345,6 +6434,7 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplatePublishingAssistantCommand());
     addSubcommand(TemplateReleaseDashboardCommand());
     addSubcommand(TemplatePluginValidateCommand());
+    addSubcommand(TemplatePluginCapabilitiesCommand());
   }
 
   @override

@@ -56,6 +56,7 @@ export '../release/dry_run/release_dry_run.dart';
 export '../release/assistant/publishing_assistant.dart';
 export '../release/dashboard/release_dashboard.dart';
 export '../plugin/contract/plugin_contract.dart';
+export '../plugin/interface/plugin_interface.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';

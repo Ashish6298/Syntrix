@@ -3,12 +3,12 @@ import 'package:flutter_package_studio_core/src/release/versioning/semver_models
 
 /// Closed enumerable set of recognized plugin capabilities.
 enum PluginCapability {
-  releasePlanning,
-  versionManagement,
-  changelogGeneration,
-  securityAudit,
-  artifactGeneration,
-  customValidation,
+  commandContribution,
+  serviceContribution,
+  validationContribution,
+  releaseWorkflowContribution,
+  packageAnalysisContribution,
+  lifecycleManagement,
 }
 
 /// Static lifecycle states determinable statically without code execution.

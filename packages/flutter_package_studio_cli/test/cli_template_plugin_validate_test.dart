@@ -20,7 +20,7 @@ void main() {
         'fps template plugin-validate with valid JSON string returns exit code 0',
         () async {
       const validJson =
-          '{"id":"custom_plugin","name":"Name","description":"Desc","version":"1.0.0","author":{"name":"A"},"apiVersion":"1.0.0","capabilities":["releasePlanning"],"compatibility":{"minApiVersion":"1.0.0"}}';
+          '{"id":"custom_plugin","name":"Name","description":"Desc","version":"1.0.0","author":{"name":"A"},"apiVersion":"1.0.0","capabilities":["commandContribution"],"compatibility":{"minApiVersion":"1.0.0"}}';
       final code =
           await _registry().run(['template', 'plugin-validate', validJson]);
       expect(code, equals(0));
@@ -30,7 +30,7 @@ void main() {
         'fps template plugin-validate with valid JSON and --json flag outputs JSON result',
         () async {
       const validJson =
-          '{"id":"custom_plugin","name":"Name","description":"Desc","version":"1.0.0","author":{"name":"A"},"apiVersion":"1.0.0","capabilities":["releasePlanning"],"compatibility":{"minApiVersion":"1.0.0"}}';
+          '{"id":"custom_plugin","name":"Name","description":"Desc","version":"1.0.0","author":{"name":"A"},"apiVersion":"1.0.0","capabilities":["commandContribution"],"compatibility":{"minApiVersion":"1.0.0"}}';
       final code = await _registry()
           .run(['template', 'plugin-validate', validJson, '--json']);
       expect(code, equals(0));

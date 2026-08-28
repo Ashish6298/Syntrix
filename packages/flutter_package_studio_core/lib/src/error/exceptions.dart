@@ -709,3 +709,15 @@ class PluginContractException extends PackageStudioException {
   /// Creates a [PluginContractException].
   PluginContractException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for plugin capability gating failures.
+class PluginCapabilityException extends PackageStudioException {
+  /// Creates a [PluginCapabilityException].
+  PluginCapabilityException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Base exception for plugin registry & lifecycle failures.
+class PluginRegistrationException extends PackageStudioException {
+  /// Creates a [PluginRegistrationException].
+  PluginRegistrationException(super.message, [super.details, super.stackTrace]);
+}
