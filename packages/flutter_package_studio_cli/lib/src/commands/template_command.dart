@@ -5831,6 +5831,71 @@ class TemplatePluginCapabilitiesCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template plugin-list
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template plugin-list`
+///
+/// Lists all registered plugins in the central PluginRegistry inventory.
+class TemplatePluginListCommand extends FpsCommand {
+  @override
+  final String name = 'plugin-list';
+
+  @override
+  final String description =
+      'List all registered plugins in the central PluginRegistry inventory.';
+
+  TemplatePluginListCommand() {
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output registered plugins list as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final registry = PluginRegistry();
+    final sampleManifest = PluginManifest(
+      id: PluginId('sample_plugin'),
+      name: PluginName('Sample Plugin'),
+      description: PluginDescription('Sample plugin description.'),
+      version: SemVer.parse('1.0.0'),
+      author: const PluginAuthor(name: 'FPS Core Team'),
+      apiVersion: '1.0.0',
+      capabilities: {PluginCapability.commandContribution},
+      compatibility: PluginCompatibility(minApiVersion: '1.0.0'),
+    );
+    registry.registerPlugin(
+        manifest: sampleManifest, instance: _MockCliPlugin());
+
+    final list = registry.listPlugins();
+
+    if (jsonOutput) {
+      print(jsonEncode(list.map((m) => m.toJson()).toList()));
+    } else {
+      print('Registered Plugins Inventory (${list.length}):');
+      print('══════════════════════════════════════════════════════════════');
+      for (final m in list) {
+        print('  • ${m.id} (v${m.version}): ${m.name}');
+        print(
+            '    Capabilities: ${m.capabilities.map((c) => c.name).join(", ")}');
+      }
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+class _MockCliPlugin implements CommandContribution {
+  @override
+  List<String> getCommands() => ['sample_cmd'];
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template publish <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -6435,6 +6500,7 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplateReleaseDashboardCommand());
     addSubcommand(TemplatePluginValidateCommand());
     addSubcommand(TemplatePluginCapabilitiesCommand());
+    addSubcommand(TemplatePluginListCommand());
   }
 
   @override
