@@ -184,11 +184,11 @@ void main() {
     });
 
     test(
-        '8. Lifecycle-state test confirms static states only (discovered, validated, incompatible, disabled)',
+        '8. Lifecycle-state test confirms original pre-execution states (discovered, validated, incompatible, disabled) are preserved',
         () {
       final states = PluginLifecycleState.values.map((s) => s.name).toList();
 
-      expect(states,
+      expect(states.sublist(0, 4),
           equals(['discovered', 'validated', 'incompatible', 'disabled']));
       expect(states.contains('running'), isFalse);
       expect(states.contains('enabled'), isFalse);

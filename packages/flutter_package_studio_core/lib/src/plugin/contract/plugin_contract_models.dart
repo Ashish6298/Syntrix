@@ -11,12 +11,24 @@ enum PluginCapability {
   lifecycleManagement,
 }
 
-/// Static lifecycle states determinable statically without code execution.
+/// Full set of pre-execution and execution lifecycle states.
 enum PluginLifecycleState {
+  // Pre-execution states (Phase 7.1 baseline)
   discovered,
   validated,
   incompatible,
   disabled,
+
+  // Genuine Phase 7.7 additive execution & failure states
+  registered,
+  initialized,
+  active,
+  stopping,
+  inactive,
+  invalid,
+  blocked,
+  initializationFailed,
+  shutdownFailed,
 }
 
 /// Validated canonical plugin identifier value object.

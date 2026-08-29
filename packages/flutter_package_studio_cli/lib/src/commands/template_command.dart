@@ -6069,6 +6069,74 @@ class TemplatePluginDepsResolveCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template plugin-lifecycle-status
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template plugin-lifecycle-status`
+///
+/// Demonstrates per-instance plugin lifecycle transitions and prints audit history.
+class TemplatePluginLifecycleStatusCommand extends FpsCommand {
+  @override
+  final String name = 'plugin-lifecycle-status';
+
+  @override
+  final String description =
+      'Demonstrate plugin per-instance state machine transitions and audit history.';
+
+  TemplatePluginLifecycleStatusCommand() {
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output lifecycle status and audit history as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final manager = PluginLifecycleManager();
+    final manifest = PluginManifest(
+      id: PluginId('demo_plugin'),
+      name: PluginName('Demo Plugin'),
+      description: PluginDescription('Desc'),
+      version: SemVer.parse('1.0.0'),
+      author: const PluginAuthor(name: 'Dev'),
+      apiVersion: '1.0.0',
+      capabilities: {PluginCapability.commandContribution},
+      compatibility: PluginCompatibility(minApiVersion: '1.0.0'),
+    );
+
+    final record = manager.trackInstance(
+        instanceId: 'inst_001', manifest: manifest, instance: _MockCliPlugin());
+
+    await manager.transitionTo(
+        instanceId: 'inst_001', targetState: PluginLifecycleState.validated);
+    await manager.transitionTo(
+        instanceId: 'inst_001', targetState: PluginLifecycleState.registered);
+    await manager.transitionTo(
+        instanceId: 'inst_001', targetState: PluginLifecycleState.initialized);
+    await manager.transitionTo(
+        instanceId: 'inst_001', targetState: PluginLifecycleState.active);
+
+    if (jsonOutput) {
+      print(jsonEncode(record.toJson()));
+    } else {
+      print('Plugin Instance Lifecycle Record:');
+      print('Instance ID : ${record.instanceId}');
+      print('Plugin ID   : ${record.manifest.id.value}');
+      print('State       : ${record.state.name}');
+      print('Audit History (${record.history.length}):');
+      for (final h in record.history) {
+        print('  - $h');
+      }
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template publish <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -6677,6 +6745,7 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplatePluginDiscoverCommand());
     addSubcommand(TemplatePluginConfigValidateCommand());
     addSubcommand(TemplatePluginDepsResolveCommand());
+    addSubcommand(TemplatePluginLifecycleStatusCommand());
   }
 
   @override

@@ -740,3 +740,9 @@ class PluginDependencyException extends PackageStudioException {
   /// Creates a [PluginDependencyException].
   PluginDependencyException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for plugin lifecycle manager failures.
+class PluginLifecycleException extends PackageStudioException {
+  /// Creates a [PluginLifecycleException].
+  PluginLifecycleException(super.message, [super.details, super.stackTrace]);
+}
