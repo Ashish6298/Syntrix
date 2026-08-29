@@ -752,3 +752,15 @@ class PluginPermissionException extends PackageStudioException {
   /// Creates a [PluginPermissionException].
   PluginPermissionException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for plugin execution runtime failures.
+class PluginExecutionException extends PackageStudioException {
+  /// Creates a [PluginExecutionException].
+  PluginExecutionException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Exception raised when a plugin invocation exceeds its allocated timeout.
+class PluginTimeoutException extends PluginExecutionException {
+  /// Creates a [PluginTimeoutException].
+  PluginTimeoutException(super.message, [super.details, super.stackTrace]);
+}

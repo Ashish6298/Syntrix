@@ -6213,6 +6213,129 @@ class TemplatePluginPermissionsCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template plugin-exec <plugin-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _MockCliCommandPlugin implements CommandContribution {
+  @override
+  List<String> getCommands() => ['custom_cmd_1', 'custom_cmd_2'];
+}
+
+/// Subcommand: `fps template plugin-exec <plugin-id>`
+///
+/// Executes a contribution operation on an active plugin within an isolated runtime.
+class TemplatePluginExecCommand extends FpsCommand {
+  @override
+  final String name = 'plugin-exec';
+
+  @override
+  final String description =
+      'Execute a contribution operation on an active plugin within an isolated runtime.';
+
+  TemplatePluginExecCommand() {
+    argParser
+      ..addOption(
+        'capability',
+        abbr: 'c',
+        defaultsTo: 'commandContribution',
+        help:
+            'Capability/Contribution to invoke (commandContribution, packageAnalysisContribution, releaseWorkflowContribution).',
+      )
+      ..addOption(
+        'timeout-ms',
+        abbr: 't',
+        defaultsTo: '5000',
+        help: 'Maximum timeout duration in milliseconds.',
+      )
+      ..addFlag(
+        'json',
+        negatable: false,
+        help: 'Output execution result as JSON.',
+      );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final rawId = rest.first.trim();
+    final sanitizedId =
+        rawId.toLowerCase().replaceAll(RegExp(r'[^a-z0-9_]'), '_');
+    final validId = sanitizedId.startsWith(RegExp(r'[a-z]'))
+        ? (sanitizedId.length < 3 ? '${sanitizedId}_plugin' : sanitizedId)
+        : 'plugin_$sanitizedId';
+
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+    final timeoutMs =
+        int.tryParse(argResults?['timeout-ms'] as String? ?? '5000') ?? 5000;
+
+    final manifest = PluginManifest(
+      id: PluginId(validId),
+      name: PluginName('SampleRunner'),
+      description: PluginDescription('Sample execution plugin.'),
+      version: SemVer.parse('1.0.0'),
+      author: const PluginAuthor(name: 'Dev'),
+      apiVersion: '1.0.0',
+      capabilities: {PluginCapability.commandContribution},
+      compatibility: PluginCompatibility(minApiVersion: '1.0.0'),
+      securityRequirements: const SecurityRequirements(
+        permissions: ['cliCommand.add'],
+      ),
+    );
+
+    final gate = PluginPermissionGate();
+    gate.approvePermission(validId, PluginPermission.cliCommandAdd);
+
+    final lifecycle = PluginLifecycleManager(permissionGate: gate);
+    final instance = _MockCliCommandPlugin();
+    lifecycle.trackInstance(
+        instanceId: validId, manifest: manifest, instance: instance);
+
+    await lifecycle.transitionTo(
+        instanceId: validId, targetState: PluginLifecycleState.validated);
+    await lifecycle.transitionTo(
+        instanceId: validId, targetState: PluginLifecycleState.registered);
+    await lifecycle.transitionTo(
+        instanceId: validId, targetState: PluginLifecycleState.initialized);
+    await lifecycle.transitionTo(
+        instanceId: validId, targetState: PluginLifecycleState.active);
+
+    final runtime = PluginExecutionRuntime(
+      lifecycleManager: lifecycle,
+      permissionGate: gate,
+      registry: PluginRegistry(),
+    );
+
+    final result = await runtime.executeCommandContribution(
+      instanceId: validId,
+      timeout: Duration(milliseconds: timeoutMs),
+    );
+
+    if (jsonOutput) {
+      print(jsonEncode(result.toJson()));
+    } else {
+      print('Plugin Execution Outcome for "$validId":');
+      print('══════════════════════════════════════════════════════════════');
+      print('Status      : ${result.status.name.toUpperCase()}');
+      print('Operation   : ${result.operation}');
+      print('Duration    : ${result.durationMs}ms');
+      if (result.isSuccess) {
+        print('Output      : ${result.value}');
+      } else {
+        print('Error       : ${result.errorMessage}');
+      }
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return result.isSuccess ? 0 : 1;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template publish <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -6823,6 +6946,7 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplatePluginDepsResolveCommand());
     addSubcommand(TemplatePluginLifecycleStatusCommand());
     addSubcommand(TemplatePluginPermissionsCommand());
+    addSubcommand(TemplatePluginExecCommand());
   }
 
   @override
