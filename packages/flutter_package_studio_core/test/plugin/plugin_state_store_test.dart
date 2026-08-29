@@ -2,7 +2,6 @@ import 'dart:io' as io;
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:test/test.dart';
 
-
 void main() {
   group('Plugin State, Persistence & Recovery Tests (Phase 7.11)', () {
     late io.Directory tempDir;
