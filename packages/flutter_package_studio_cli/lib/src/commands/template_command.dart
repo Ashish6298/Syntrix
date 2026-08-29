@@ -5662,15 +5662,16 @@ class TemplateReleaseDashboardCommand extends FpsCommand {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Subcommand: `fps template plugin-validate <manifest-json-or-file>`
-///
+/// Deprecated: Use `fps plugin validate` instead.
 /// Validates untrusted raw plugin manifest JSON for contract compliance without code execution.
 class TemplatePluginValidateCommand extends FpsCommand {
+
   @override
   final String name = 'plugin-validate';
 
   @override
   final String description =
-      'Validate raw plugin manifest for contract compliance with zero code execution.';
+      '[DEPRECATED: Use \'fps plugin validate\'] Validate raw plugin manifest for contract compliance with zero code execution.';
 
   TemplatePluginValidateCommand() {
     argParser.addFlag(
@@ -5754,7 +5755,7 @@ class TemplatePluginCapabilitiesCommand extends FpsCommand {
 
   @override
   final String description =
-      'Query authorized capabilities for a plugin instance.';
+      '[DEPRECATED: Use \'fps plugin info\' or \'fps plugin inspect\'] Query authorized capabilities for a plugin instance.';
 
   TemplatePluginCapabilitiesCommand() {
     argParser.addFlag(
@@ -5843,7 +5844,7 @@ class TemplatePluginListCommand extends FpsCommand {
 
   @override
   final String description =
-      'List all registered plugins in the central PluginRegistry inventory.';
+      '[DEPRECATED: Use \'fps plugin list\'] List all registered plugins in the central PluginRegistry inventory.';
 
   TemplatePluginListCommand() {
     argParser.addFlag(
@@ -5908,7 +5909,7 @@ class TemplatePluginDiscoverCommand extends FpsCommand {
 
   @override
   final String description =
-      'Scan directory roots for plugin manifests with zero code execution.';
+      '[DEPRECATED: Use \'fps plugin discover\'] Scan directory roots for plugin manifests with zero code execution.';
 
   TemplatePluginDiscoverCommand() {
     argParser.addFlag(
@@ -5953,7 +5954,7 @@ class TemplatePluginConfigValidateCommand extends FpsCommand {
 
   @override
   final String description =
-      'Validate runtime configuration against a plugin configuration schema with secret redaction.';
+      '[DEPRECATED: Use \'fps plugin validate\' or \'fps plugin inspect\'] Validate runtime configuration against a plugin configuration schema with secret redaction.';
 
   TemplatePluginConfigValidateCommand() {
     argParser.addFlag(
@@ -6017,7 +6018,7 @@ class TemplatePluginDepsResolveCommand extends FpsCommand {
 
   @override
   final String description =
-      'Resolve plugin dependency graph and compute topological initialization order.';
+      '[DEPRECATED: Use \'fps plugin inspect\' or \'fps plugin discover\'] Resolve plugin dependency graph and compute topological initialization order.';
 
   TemplatePluginDepsResolveCommand() {
     argParser.addFlag(
@@ -6081,7 +6082,7 @@ class TemplatePluginLifecycleStatusCommand extends FpsCommand {
 
   @override
   final String description =
-      'Demonstrate plugin per-instance state machine transitions and audit history.';
+      '[DEPRECATED: Use \'fps plugin inspect\'] Demonstrate plugin per-instance state machine transitions and audit history.';
 
   TemplatePluginLifecycleStatusCommand() {
     argParser.addFlag(
@@ -6149,7 +6150,7 @@ class TemplatePluginPermissionsCommand extends FpsCommand {
 
   @override
   final String description =
-      'Query permission status summary (✓/✗ per permission) for a plugin.';
+      '[DEPRECATED: Use \'fps plugin inspect\' or \'fps plugin info\'] Query permission status summary (✓/✗ per permission) for a plugin.';
 
   TemplatePluginPermissionsCommand() {
     argParser.addFlag(
@@ -6230,7 +6231,7 @@ class TemplatePluginExecCommand extends FpsCommand {
 
   @override
   final String description =
-      'Execute a contribution operation on an active plugin within an isolated runtime.';
+      '[DEPRECATED: Use \'fps plugin enable\' and isolated runtime] Execute a contribution operation on an active plugin within an isolated runtime.';
 
   TemplatePluginExecCommand() {
     argParser

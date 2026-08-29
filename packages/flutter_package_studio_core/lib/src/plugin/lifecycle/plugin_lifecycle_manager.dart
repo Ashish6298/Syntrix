@@ -101,6 +101,11 @@ class PluginLifecycleManager {
   PluginInstanceRecord? getInstance(String instanceId) =>
       _instances[instanceId];
 
+  /// Get all tracked plugin instance records.
+  List<PluginInstanceRecord> get instances =>
+      List.unmodifiable(_instances.values);
+
+
   /// Get complete audit transition history for a tracked instance.
   List<LifecycleTransitionRecord> getAuditHistory(String instanceId) {
     final record = _instances[instanceId];
