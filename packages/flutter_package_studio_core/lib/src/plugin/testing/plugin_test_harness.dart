@@ -15,7 +15,9 @@ import 'package:flutter_package_studio_core/src/plugin/permission/plugin_permiss
 import 'package:flutter_package_studio_core/src/plugin/persistence/plugin_state_store.dart';
 import 'package:flutter_package_studio_core/src/plugin/runtime/plugin_execution_runtime.dart';
 import 'package:flutter_package_studio_core/src/plugin/testing/plugin_sandbox_models.dart';
+import 'package:flutter_package_studio_core/src/plugin/trust/plugin_trust_gate.dart';
 import 'package:flutter_package_studio_core/src/release/git/git_process_runner.dart';
+
 import 'package:flutter_package_studio_core/src/release/git/git_release_manager.dart';
 import 'package:flutter_package_studio_core/src/release/github/github_api_client.dart';
 import 'package:flutter_package_studio_core/src/release/publishing/package_publishing_manager.dart';
@@ -40,6 +42,7 @@ class PluginTestHarness {
   final PluginExecutionRuntime runtimeHarness;
   final PluginStateStore stateStoreHarness;
   final PluginDiagnosticsEngine diagnosticsHarness;
+  final PluginTrustGate trustGateHarness;
 
   PluginTestHarness._({
     required this.fileSystem,
@@ -58,12 +61,13 @@ class PluginTestHarness {
     required this.runtimeHarness,
     required this.stateStoreHarness,
     required this.diagnosticsHarness,
+    required this.trustGateHarness,
   });
 
   /// Factory creating a fresh, isolated, sandboxed harness.
   ///
   /// Guarantees:
-  /// - Real subsystems from 7.1–7.12 are directly exercised.
+  /// - Real subsystems from 7.1–7.14 are directly exercised.
   /// - Real external edges (filesystem, Git, GitHub API, publishing, network, credentials) are structurally faked.
   /// - Zero escape hatches: public API contains no parameter to enable real backends.
   factory PluginTestHarness.create({
@@ -94,10 +98,16 @@ class PluginTestHarness {
     final discovery = PluginDiscoveryEngine(validator: validator);
     final registry = PluginRegistry(validator: validator);
     final permissionGate = PluginPermissionGate();
+    final trustGate = PluginTrustGate(
+      contractValidator: validator,
+      permissionGate: permissionGate,
+      dependencyResolver: PluginDependencyResolver(),
+    );
     final lifecycle = PluginLifecycleManager(
       validator: validator,
       registry: registry,
       permissionGate: permissionGate,
+      trustGate: trustGate,
     );
     final runtime = PluginExecutionRuntime(
       lifecycleManager: lifecycle,
@@ -130,6 +140,7 @@ class PluginTestHarness {
       runtimeHarness: runtime,
       stateStoreHarness: stateStore,
       diagnosticsHarness: diagnostics,
+      trustGateHarness: trustGate,
     );
   }
 

@@ -789,3 +789,9 @@ class PluginHarnessException extends PackageStudioException {
   /// Creates a [PluginHarnessException].
   PluginHarnessException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception raised when plugin security or trust verification fails (Phase 7.14).
+class PluginTrustException extends PackageStudioException {
+  /// Creates a [PluginTrustException].
+  PluginTrustException(super.message, [super.details, super.stackTrace]);
+}

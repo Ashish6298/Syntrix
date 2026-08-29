@@ -5,6 +5,8 @@ import 'package:flutter_package_studio_core/src/plugin/interface/plugin_registry
 import 'package:flutter_package_studio_core/src/plugin/lifecycle/plugin_lifecycle_models.dart';
 import 'package:flutter_package_studio_core/src/plugin/permission/plugin_permission_gate.dart';
 import 'package:flutter_package_studio_core/src/plugin/permission/plugin_permission_models.dart';
+import 'package:flutter_package_studio_core/src/plugin/trust/plugin_trust_gate.dart';
+import 'package:flutter_package_studio_core/src/plugin/trust/plugin_trust_models.dart';
 
 /// Single authority for tracking and transitioning plugin instances through the lifecycle state machine.
 class PluginLifecycleManager {
@@ -12,14 +14,21 @@ class PluginLifecycleManager {
   final PluginContractValidator _validator;
   final PluginRegistry _registry;
   final PluginPermissionGate _permissionGate;
+  final PluginTrustGate _trustGate;
 
   PluginLifecycleManager({
     PluginContractValidator? validator,
     PluginRegistry? registry,
     PluginPermissionGate? permissionGate,
+    PluginTrustGate? trustGate,
   })  : _validator = validator ?? PluginContractValidator(),
         _registry = registry ?? PluginRegistry(),
-        _permissionGate = permissionGate ?? PluginPermissionGate();
+        _permissionGate = permissionGate ?? PluginPermissionGate(),
+        _trustGate = trustGate ??
+            PluginTrustGate(
+              contractValidator: validator ?? PluginContractValidator(),
+              permissionGate: permissionGate ?? PluginPermissionGate(),
+            );
 
   /// Legal transition graph defining valid (fromState -> Set<toState>) pairs.
   static const Map<PluginLifecycleState, Set<PluginLifecycleState>>
@@ -199,6 +208,40 @@ class PluginLifecycleManager {
             _applyTransition(record, PluginLifecycleState.initializationFailed,
                 'initialize() hook threw exception: $e');
             return PluginLifecycleState.initializationFailed;
+          }
+        }
+      } else if (targetState == PluginLifecycleState.active) {
+        // Evaluate trust classification before allowing transition to active
+        final trustEval = _trustGate.evaluateTrust(
+          manifest: record.manifest,
+          manifestRawContent: context['manifestRawContent'] as String?,
+          expectedChecksum: context['expectedChecksum'] as String?,
+          pluginDirectoryPath: context['pluginDirectoryPath'] as String?,
+          dependencyTrustMap:
+              context['dependencyTrustMap'] as Map<String, PluginTrustLevel>? ??
+                  const {},
+        );
+
+        if (trustEval.isHardBlocked) {
+          _applyTransition(
+            record,
+            trustEval.trustLevel == PluginTrustLevel.invalid
+                ? PluginLifecycleState.invalid
+                : PluginLifecycleState.blocked,
+            'Trust Gate Violation: ${trustEval.summary}',
+          );
+          return record.state;
+        }
+
+        if (trustEval.requiresOperatorAcknowledgment) {
+          final operatorAck = context['operatorAcknowledged'] == true;
+          if (!operatorAck) {
+            _applyTransition(
+              record,
+              PluginLifecycleState.blocked,
+              'Activation Refused: Plugin is RESTRICTED and requires explicit operator acknowledgment ("operatorAcknowledged: true" in context) to activate. Reason: ${trustEval.summary}',
+            );
+            return PluginLifecycleState.blocked;
           }
         }
       } else if (targetState == PluginLifecycleState.stopping) {
