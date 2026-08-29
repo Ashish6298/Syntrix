@@ -65,6 +65,7 @@ export '../plugin/permission/plugin_permission.dart';
 export '../plugin/runtime/plugin_runtime.dart';
 export '../plugin/persistence/plugin_persistence.dart';
 export '../plugin/diagnostics/plugin_diagnostics.dart';
+export '../plugin/testing/plugin_testing.dart';
 export 'migration/migration.dart';
 
 export '../documentation/readme/readme.dart';

@@ -776,3 +776,16 @@ class PluginRecoveryException extends PackageStudioException {
   /// Creates a [PluginRecoveryException].
   PluginRecoveryException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception raised when a plugin or test violates sandbox isolation boundaries (Phase 7.13).
+class PluginSandboxSecurityException extends PackageStudioException {
+  /// Creates a [PluginSandboxSecurityException].
+  PluginSandboxSecurityException(super.message,
+      [super.details, super.stackTrace]);
+}
+
+/// Base exception raised when plugin test harness setup or configuration is invalid (Phase 7.13).
+class PluginHarnessException extends PackageStudioException {
+  /// Creates a [PluginHarnessException].
+  PluginHarnessException(super.message, [super.details, super.stackTrace]);
+}

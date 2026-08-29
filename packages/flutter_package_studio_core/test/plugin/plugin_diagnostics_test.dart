@@ -493,4 +493,3 @@ class _DummyCommandContribution implements CommandContribution {
   @override
   List<String> getCommands() => const ['dummy'];
 }
-
