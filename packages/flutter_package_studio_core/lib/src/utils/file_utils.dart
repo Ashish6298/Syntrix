@@ -31,6 +31,11 @@ abstract interface class FileUtils {
   ///
   /// Throws a [StudioFileSystemException] if deletion fails.
   void delete(String path, {bool recursive = true});
+
+  /// Renames or moves the entity from [sourcePath] to [targetPath].
+  ///
+  /// Throws a [StudioFileSystemException] if renaming fails.
+  void rename(String sourcePath, String targetPath);
 }
 
 /// Production implementation of [FileUtils] delegating to [io.File] and [io.Directory].
@@ -99,6 +104,35 @@ class SystemFileUtils implements FileUtils {
     } catch (e, st) {
       throw StudioFileSystemException(
           'Failed to delete path at "$path"', e, st);
+    }
+  }
+
+  @override
+  void rename(String sourcePath, String targetPath) {
+    try {
+      final type = io.FileSystemEntity.typeSync(sourcePath);
+      if (type == io.FileSystemEntityType.file) {
+        final targetFile = io.File(targetPath);
+        if (targetFile.existsSync()) {
+          try {
+            io.File(sourcePath).renameSync(targetPath);
+          } catch (_) {
+            targetFile.deleteSync();
+            io.File(sourcePath).renameSync(targetPath);
+          }
+        } else {
+          io.File(sourcePath).renameSync(targetPath);
+        }
+      } else if (type == io.FileSystemEntityType.directory) {
+        io.Directory(sourcePath).renameSync(targetPath);
+      } else {
+        throw StudioFileSystemException(
+            'Source path "$sourcePath" not found to rename.');
+      }
+    } catch (e, st) {
+      if (e is StudioFileSystemException) rethrow;
+      throw StudioFileSystemException(
+          'Failed to rename "$sourcePath" to "$targetPath"', e, st);
     }
   }
 }

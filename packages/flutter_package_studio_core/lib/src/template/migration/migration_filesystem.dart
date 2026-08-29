@@ -60,6 +60,15 @@ class MemoryMigrationFileSystem implements TemplateMigrationFileSystem {
   }
 
   @override
+  void rename(String sourcePath, String targetPath) {
+    final srcNorm = _normalize(sourcePath);
+    final dstNorm = _normalize(targetPath);
+    if (_files.containsKey(srcNorm)) {
+      _files[dstNorm] = _files.remove(srcNorm)!;
+    }
+  }
+
+  @override
   void writeStringAtomic(String path, String content) {
     writeString(path, content);
   }

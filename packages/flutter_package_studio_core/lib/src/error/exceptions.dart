@@ -764,3 +764,15 @@ class PluginTimeoutException extends PluginExecutionException {
   /// Creates a [PluginTimeoutException].
   PluginTimeoutException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for plugin state persistence and serialization failures.
+class PluginPersistenceException extends PackageStudioException {
+  /// Creates a [PluginPersistenceException].
+  PluginPersistenceException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Base exception for plugin state recovery failures.
+class PluginRecoveryException extends PackageStudioException {
+  /// Creates a [PluginRecoveryException].
+  PluginRecoveryException(super.message, [super.details, super.stackTrace]);
+}

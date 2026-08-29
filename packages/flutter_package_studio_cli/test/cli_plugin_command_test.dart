@@ -208,14 +208,14 @@ void main() {
 
       expect(code, equals(0));
 
-      final manifest =
-          PluginCliServices.instance.lifecycleManager.getInstance('samplerunner')!.manifest;
+      final manifest = PluginCliServices.instance.lifecycleManager
+          .getInstance('samplerunner')!
+          .manifest;
       expect(manifest.id.value, equals('samplerunner'));
       expect(manifest.capabilities,
           contains(PluginCapability.commandContribution));
       expect(
           manifest.securityRequirements.permissions, contains('package.read'));
-
     });
 
     // ─────────────────────────────────────────────────────────────────────────

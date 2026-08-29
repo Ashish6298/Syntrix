@@ -5665,7 +5665,6 @@ class TemplateReleaseDashboardCommand extends FpsCommand {
 /// Deprecated: Use `fps plugin validate` instead.
 /// Validates untrusted raw plugin manifest JSON for contract compliance without code execution.
 class TemplatePluginValidateCommand extends FpsCommand {
-
   @override
   final String name = 'plugin-validate';
 

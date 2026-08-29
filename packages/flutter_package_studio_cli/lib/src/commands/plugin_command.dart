@@ -113,7 +113,6 @@ class PluginCliServices {
       );
     } catch (_) {}
 
-
     return PluginCliServices(
       validator: validator,
       discoveryEngine: discoveryEngine,
@@ -167,7 +166,6 @@ class PluginCatalogCommand extends FpsCommand {
   }
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Subcommand 1: fps plugin list
 // ─────────────────────────────────────────────────────────────────────────────
@@ -203,7 +201,6 @@ class PluginListCommand extends FpsCommand {
       pluginsMap[inst.manifest.id.value] = inst.manifest;
     }
     final plugins = pluginsMap.values.toList();
-
 
     if (jsonOutput) {
       print(jsonEncode(plugins.map((m) => m.toJson()).toList()));

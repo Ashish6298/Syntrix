@@ -42,4 +42,13 @@ class MapMemoryFileUtils implements FileUtils {
 
   @override
   void delete(String path, {bool recursive = true}) {}
+
+  @override
+  void rename(String sourcePath, String targetPath) {
+    final srcNorm = p.normalize(sourcePath);
+    final dstNorm = p.normalize(targetPath);
+    if (_rawFiles.containsKey(srcNorm)) {
+      _rawFiles[dstNorm] = _rawFiles.remove(srcNorm)!;
+    }
+  }
 }

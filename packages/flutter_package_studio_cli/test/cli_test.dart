@@ -135,7 +135,6 @@ void main() {
       expect(await registry.run(['template']), isIn([0, 64]));
       expect(await registry.run(['plugin']), isIn([0, 64]));
 
-
       // Verify that resolve works inside the command context
       final testCommand = CreateCommand();
       DependencyContainer()
