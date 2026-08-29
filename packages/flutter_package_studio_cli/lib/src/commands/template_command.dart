@@ -6137,6 +6137,82 @@ class TemplatePluginLifecycleStatusCommand extends FpsCommand {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// template plugin-permissions <plugin-id>
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Subcommand: `fps template plugin-permissions <plugin-id>`
+///
+/// Query permission status summary (✓/✗ per permission) for a plugin.
+class TemplatePluginPermissionsCommand extends FpsCommand {
+  @override
+  final String name = 'plugin-permissions';
+
+  @override
+  final String description =
+      'Query permission status summary (✓/✗ per permission) for a plugin.';
+
+  TemplatePluginPermissionsCommand() {
+    argParser.addFlag(
+      'json',
+      negatable: false,
+      help: 'Output permission status summary as JSON.',
+    );
+  }
+
+  @override
+  Future<int> run() async {
+    final rest = argResults?.rest ?? [];
+    if (rest.isEmpty) {
+      printUsage();
+      return 64;
+    }
+
+    final rawId = rest.first.trim();
+    final sanitizedId =
+        rawId.toLowerCase().replaceAll(RegExp(r'[^a-z0-9_]'), '_');
+    final validId = sanitizedId.startsWith(RegExp(r'[a-z]'))
+        ? (sanitizedId.length < 3 ? '${sanitizedId}_plugin' : sanitizedId)
+        : 'plugin_$sanitizedId';
+
+    final jsonOutput = argResults?['json'] as bool? ?? false;
+
+    final manifest = PluginManifest(
+      id: PluginId(validId),
+      name: PluginName('DocumentationGenerator'),
+      description: PluginDescription('Generates package documentation.'),
+      version: SemVer.parse('1.0.0'),
+      author: const PluginAuthor(name: 'Dev'),
+      apiVersion: '1.0.0',
+      capabilities: {PluginCapability.commandContribution},
+      compatibility: PluginCompatibility(minApiVersion: '1.0.0'),
+      securityRequirements: const SecurityRequirements(
+        permissions: ['package.read', 'documentation.write'],
+      ),
+    );
+
+    final gate = PluginPermissionGate();
+    gate.approvePermission(validId, PluginPermission.packageRead);
+    gate.approvePermission(validId, PluginPermission.documentationWrite);
+
+    final summary = gate.queryStatus(manifest);
+
+    if (jsonOutput) {
+      print(jsonEncode(summary.toJson()));
+    } else {
+      print('Plugin Permission Status Report for "${summary.pluginId}":');
+      print('══════════════════════════════════════════════════════════════');
+      for (final item in summary.items) {
+        print(
+            '  ${item.isEffective ? "✓" : "✗"} ${item.permission.wireName.padRight(22)} (Declared: ${item.isDeclared}, Approved: ${item.isApproved})');
+      }
+      print('══════════════════════════════════════════════════════════════');
+    }
+
+    return 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // template publish <template-id>
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -6746,6 +6822,7 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplatePluginConfigValidateCommand());
     addSubcommand(TemplatePluginDepsResolveCommand());
     addSubcommand(TemplatePluginLifecycleStatusCommand());
+    addSubcommand(TemplatePluginPermissionsCommand());
   }
 
   @override

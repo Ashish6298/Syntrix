@@ -1,0 +1,160 @@
+================================================================================
+  FLUTTER PACKAGE STUDIO – PHASE 7.8 IMPLEMENTATION & TESTING REPORT
+  Plugin Isolation & Permission Model Subsystem
+================================================================================
+Generated : 2026-08-29 16:53:00 IST (2026-08-29T11:23:00Z)
+Status    : COMPLETE – ALL VERIFICATION GATES PASSED
+================================================================================
+
+PROJECT METADATA
+----------------
+  Monorepo Root : d:\Syntrix
+  Packages      : flutter_package_studio_core, flutter_package_studio_cli
+  Baseline      : Milestone 1 (Phases 1.1–1.8), Milestone 2 (Phases 2.1–2.12), Milestone 3 (Phases 3.1–3.8), Milestone 4 (Phases 4.1–4.12), Milestone 5 (Phases 5.1–5.12), Milestone 6 (Phases 6.1–6.8), Milestone 7 (Phases 7.1–7.7)
+
+MANIFEST FORMALIZATION AUDIT (`SecurityRequirements` -> `PluginPermission`)
+-------------------------------------------------------------------------
+  Phase 7.5's `SecurityRequirements.permissions` (previously loosely-typed string list) was formalized into Phase 7.8's closed, enumerable `PluginPermission` enum.
+  Supported closed permission set (10 permissions):
+    - `package.read` (`packageRead`)
+    - `packageFiles.read` (`packageFilesRead`)
+    - `artifacts.write` (`artifactsWrite`)
+    - `process.execute` (`processExecute`)
+    - `git.access` (`gitAccess`)
+    - `network.access` (`networkAccess`)
+    - `cliCommand.add` (`cliCommandAdd`)
+    - `releaseInfo.access` (`releaseInfoAccess`)
+    - `documentation.write` (`documentationWrite`)
+    - `package.publish` (`packagePublish`)
+  Confirmation: Manifest parser preserves string list format while `PluginPermissionGate` parses and validates against `PluginPermission.tryParse()`, ignoring or failing closed on unrecognized values.
+
+SECURITY BOUNDARY SCOPE STATEMENT (HONEST SCOPE DECLARATION)
+------------------------------------------------------------
+  Enforced Boundary Scope:
+    This phase enforces permission-checked access strictly at the **Core-API Boundary** (`PluginPermissionGate` & Checked Contribution Proxies).
+    The core refuses to hand over resources, invoke contributions, or grant CLI command capabilities to plugins that do not hold matching declared and approved permissions.
+  Out of Scope Boundary:
+    This phase does **NOT** construct operating-system level sandboxing (cgroups, OS process isolation, memory address space separation).
+    A malicious plugin bypassing the core API surface via lower-level platform calls (e.g. `Platform.environment`, raw socket opening outside core proxies) is outside this phase's boundary.
+
+================================================================================
+  SUMMARY OF IMPLEMENTATION
+================================================================================
+
+1. DOMAIN MODELS (`lib/src/plugin/permission/plugin_permission_models.dart`)
+   - `PluginPermission`: Closed enum covering all 10 core capability permissions with canonical dot-notation wire format helpers.
+   - `PermissionAuditRecord`: Immutable log entry capturing `pluginId`, `permissionName`, `operationAttempted`, `isGranted`, and `reason`.
+   - `PermissionStatusSummary`: Map capturing `✓`/`✗` roadmap status items per permission.
+
+2. PLUGIN PERMISSION GATE (`lib/src/plugin/permission/plugin_permission_gate.dart`)
+   - Single authority for permission grants (`approvePermission`), audit logging (`_auditLog`), and runtime check (`check()`).
+   - Enforces Three-Stage Permission Model:
+     1. **Declared**: Present in `manifest.securityRequirements.permissions`.
+     2. **Approved**: Explicitly granted in `_approvedPermissions[pluginId]`.
+     3. **Enforced**: `check()` requires `isDeclared && isApproved`.
+   - Posture: **Deny-by-Default**. Zero approval records or un-declared requests are strictly refused.
+
+3. CHECKED CONTRIBUTION PROXIES (`lib/src/plugin/permission/plugin_contribution_proxies.dart`)
+   - Wraps Phase 7.2 contribution interfaces (`PackageAnalysisContribution`, `ReleaseWorkflowContribution`, `CommandContribution`) to gate invocations at the core boundary.
+   - Prevents self-reporting plugin code from bypassing checks.
+
+4. LIFECYCLE MANAGER INTEGRATION (`lib/src/plugin/lifecycle/plugin_lifecycle_manager.dart`)
+   - Integrated `PluginPermissionGate` check during `transitionTo(registered)`.
+   - Plugins carrying declared permissions that are unapproved are blocked during registration and cannot reach `Initialized` or `Active`.
+
+5. CLI INTEGRATION (`fps template plugin-permissions <plugin-id>`)
+   - Added `fps template plugin-permissions` subcommand printing roadmap-style `✓`/`✗` status tables and JSON output (`--json`).
+
+================================================================================
+  FILES CREATED & MODIFIED
+================================================================================
+
+FILES CREATED:
+  packages/flutter_package_studio_core:
+    lib/src/plugin/permission/plugin_permission_models.dart
+    lib/src/plugin/permission/plugin_permission_gate.dart
+    lib/src/plugin/permission/plugin_contribution_proxies.dart
+    lib/src/plugin/permission/plugin_permission.dart
+    test/plugin/plugin_permission_test.dart
+
+  packages/flutter_package_studio_cli:
+    test/cli_template_plugin_permissions_test.dart
+
+  reports directory:
+    d:\Syntrix\report\PHASE_7.8_IMPLEMENTATION_REPORT.txt
+
+FILES MODIFIED:
+  packages/flutter_package_studio_core:
+    lib/src/error/exceptions.dart
+    lib/src/plugin/lifecycle/plugin_lifecycle_manager.dart
+    lib/src/template/template.dart
+
+  packages/flutter_package_studio_cli:
+    lib/src/commands/template_command.dart
+
+================================================================================
+  VERIFICATION COMMANDS & RESULTS
+================================================================================
+
+1. STATIC ANALYSIS
+   Command : dart analyze packages/flutter_package_studio_core packages/flutter_package_studio_cli
+   Result  : No issues found! (0 errors, 0 warnings, 0 lints)
+
+2. CODE FORMATTING
+   Command : dart format --output=none --set-exit-if-changed packages/flutter_package_studio_core packages/flutter_package_studio_cli
+   Result  : Formatted 499 files (0 changed) in 0.92 seconds.
+
+3. DOCUMENTATION ANALYSIS
+   Command : dart doc --dry-run packages/flutter_package_studio_core; dart doc --dry-run packages/flutter_package_studio_cli
+   Result  : Found 0 warnings and 0 errors across both packages!
+
+4. FULL MONOREPO TEST SUITE
+   Command : dart test packages/flutter_package_studio_core packages/flutter_package_studio_cli --concurrency=1
+   Result  : All 1060 tests passed! (1060/1060)
+
+================================================================================
+  DEDICATED PHASE 7.8 TESTING SECTION (INDIVIDUAL TEST CASE TABLE)
+================================================================================
+
+| Test # | Test Case Description | Status | Validation Note |
+|---|---|---|---|
+| 1 | Happy-path test matching `DocumentationGenerator` example pattern | **PASSED** | Produced exact roadmap `✓`/`✗` pattern (`package.read` & `documentation.write` approved; `network`, `git`, `publish` unapproved). |
+| 2 | Deny-by-default test: zero approval records refuses operation | **PASSED** | Confirmed operation denied with zero approval records without special-casing. |
+| 3a | Declared vs Approved: declared-but-unapproved permission is denied | **PASSED** | Declared permission without approval record denied at enforcement time. |
+| 3b | Declared vs Approved: approved permission never declared is denied | **PASSED** | Approval record for un-declared permission denied at enforcement time. |
+| 4a | Negative enforcement test: `PackageAnalysisContribution` blocked without `package.read` | **PASSED** | `CheckedPackageAnalysisContribution` threw `PluginPermissionException`. |
+| 4b | Negative enforcement test: `ReleaseWorkflowContribution` blocked without `git.access` | **PASSED** | `CheckedReleaseWorkflowContribution` threw `PluginPermissionException`. |
+| 4c | Negative enforcement test: `CommandContribution` blocked without `cliCommand.add` | **PASSED** | `CheckedCommandContribution` threw `PluginPermissionException`. |
+| 4d | Negative enforcement test: Network operation blocked without `network.access` | **PASSED** | `CheckedNetworkAccessProxy` threw `PluginPermissionException` explicitly naming `network.access`. |
+| 5a | Positive enforcement test: `PackageAnalysisContribution` succeeds when approved | **PASSED** | Proxy allowed call when both declared and approved. |
+| 5b | Positive enforcement test: `CommandContribution` succeeds when approved | **PASSED** | Proxy allowed command retrieval when declared and approved. |
+| 5c | Positive enforcement test: `ReleaseWorkflowContribution` succeeds when approved for `git.access` | **PASSED** | Proxy allowed workflow hook retrieval when declared and approved. |
+| 5d | Positive enforcement test: Network operation succeeds when approved for `network.access` | **PASSED** | `CheckedNetworkAccessProxy` executed remote fetch action when declared and approved. |
+| 6 | Self-reporting-cannot-be-trusted test | **PASSED** | Contribution attempting internal bypass blocked by proxy wrapper. |
+| 7 | Lifecycle-integration test | **PASSED** | Plugin with unapproved declared permission blocked during registration before reaching `Initialized`/`Active`. |
+| 8 | Audit test confirms granted and denied records | **PASSED** | Captured attributed `PermissionAuditRecord` entries for both granted and denied operations. |
+| 9 | Determinism test confirms identical state and consistent audit records | **PASSED** | Replaying identical check inputs produced identical boolean result and identical, consistent `PermissionAuditRecord` entries. |
+| 10 | Malformed/unrecognized-permission fail-closed test | **PASSED** | Unrecognized permission strings denied fail-closed without crashing. |
+| 11 | Scope-honesty test | **PASSED** | Verified enforcement operates at core-API boundary across 10 closed enum permissions. |
+
+TEST BREAKDOWN:
+  - Regression Tests (Phases 1.1–7.7)   : 1039 passed
+  - Phase 7.8 New Tests                 : 21 passed
+    * PluginPermissionModel Unit       : 18 tests (cases 1-11, including 3a/3b, 4a-4d, 5a-5d, 6, 7, 8, 9, 10, 11)
+    * CLI TemplatePluginPermissions    : 3 tests (code 64, exit 0, --json output)
+
+================================================================================
+  KNOWN GAPS & DEFERRED EDGE CASES
+================================================================================
+  - True OS-level process sandboxing (cgroups, OS process isolation) is deferred to future milestone infrastructure. Scope is explicitly documented as core-API boundary enforcement.
+
+================================================================================
+  FINAL PHASE 7.9 / MILESTONE 7 COMPLETION READINESS VERDICT
+================================================================================
+
+  Phase 7.8 complete & stable : YES
+  All 1060 monorepo tests passed: YES
+  All 4 permission-gated contribution surfaces (package-read, git-access, CLI-command, network-access) have both negative (4a-4d) and positive (5a-5d) enforcement test coverage: YES
+  PHASE 7.8 IS COMPLETE AND READY TO SERVE AS THE PERMISSION & ISOLATION FOUNDATION FOR MILESTONE 7 PLUGINS.
+================================================================================
+

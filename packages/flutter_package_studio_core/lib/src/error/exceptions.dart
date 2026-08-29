@@ -746,3 +746,9 @@ class PluginLifecycleException extends PackageStudioException {
   /// Creates a [PluginLifecycleException].
   PluginLifecycleException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception for plugin permission & isolation failures.
+class PluginPermissionException extends PackageStudioException {
+  /// Creates a [PluginPermissionException].
+  PluginPermissionException(super.message, [super.details, super.stackTrace]);
+}

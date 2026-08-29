@@ -3,18 +3,23 @@ import 'package:flutter_package_studio_core/src/plugin/contract/plugin_contract_
 import 'package:flutter_package_studio_core/src/plugin/contract/plugin_contract_validator.dart';
 import 'package:flutter_package_studio_core/src/plugin/interface/plugin_registry.dart';
 import 'package:flutter_package_studio_core/src/plugin/lifecycle/plugin_lifecycle_models.dart';
+import 'package:flutter_package_studio_core/src/plugin/permission/plugin_permission_gate.dart';
+import 'package:flutter_package_studio_core/src/plugin/permission/plugin_permission_models.dart';
 
 /// Single authority for tracking and transitioning plugin instances through the lifecycle state machine.
 class PluginLifecycleManager {
   final Map<String, PluginInstanceRecord> _instances = {};
   final PluginContractValidator _validator;
   final PluginRegistry _registry;
+  final PluginPermissionGate _permissionGate;
 
   PluginLifecycleManager({
     PluginContractValidator? validator,
     PluginRegistry? registry,
+    PluginPermissionGate? permissionGate,
   })  : _validator = validator ?? PluginContractValidator(),
-        _registry = registry ?? PluginRegistry();
+        _registry = registry ?? PluginRegistry(),
+        _permissionGate = permissionGate ?? PluginPermissionGate();
 
   /// Legal transition graph defining valid (fromState -> Set<toState>) pairs.
   static const Map<PluginLifecycleState, Set<PluginLifecycleState>>
@@ -158,6 +163,22 @@ class PluginLifecycleManager {
           return PluginLifecycleState.invalid;
         }
       } else if (targetState == PluginLifecycleState.registered) {
+        for (final raw in record.manifest.securityRequirements.permissions) {
+          final perm = PluginPermission.tryParse(raw);
+          if (perm != null) {
+            final ok = _permissionGate.check(
+              manifest: record.manifest,
+              permission: perm,
+              operationAttempted:
+                  'PluginLifecycleManager.transitionTo(registered)',
+            );
+            if (!ok) {
+              _applyTransition(record, PluginLifecycleState.blocked,
+                  'Unapproved permission requirement "${perm.wireName}".');
+              return PluginLifecycleState.blocked;
+            }
+          }
+        }
         try {
           _registry.registerPlugin(
               manifest: record.manifest, instance: record.instance ?? Object());
