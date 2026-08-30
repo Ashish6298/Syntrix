@@ -19,8 +19,8 @@ import 'package:flutter_package_studio_core/src/plugin/trust/plugin_trust_gate.d
 import 'package:flutter_package_studio_core/src/plugin/upgrade/plugin_upgrade_manager.dart';
 import 'package:flutter_package_studio_core/src/plugin/removal/plugin_removal_manager.dart';
 import 'package:flutter_package_studio_core/src/plugin/integration/plugin_integration_service.dart';
+import 'package:flutter_package_studio_core/src/plugin/certification/plugin_architecture_certifier.dart';
 import 'package:flutter_package_studio_core/src/release/git/git_process_runner.dart';
-
 
 import 'package:flutter_package_studio_core/src/release/git/git_release_manager.dart';
 import 'package:flutter_package_studio_core/src/release/github/github_api_client.dart';
@@ -50,6 +50,7 @@ class PluginTestHarness {
   final PluginUpgradeManager upgradeManagerHarness;
   final PluginRemovalManager removalManagerHarness;
   final PluginIntegrationService integrationServiceHarness;
+  final PluginArchitectureCertifier certifierHarness;
 
   PluginTestHarness._({
     required this.fileSystem,
@@ -72,6 +73,7 @@ class PluginTestHarness {
     required this.upgradeManagerHarness,
     required this.removalManagerHarness,
     required this.integrationServiceHarness,
+    required this.certifierHarness,
   });
 
   /// Factory creating a fresh, isolated, sandboxed harness.
@@ -150,6 +152,7 @@ class PluginTestHarness {
       stateStore: stateStore,
       discoveryEngine: discovery,
     );
+    final certifier = PluginArchitectureCertifier();
 
     return PluginTestHarness._(
       fileSystem: fs,
@@ -172,6 +175,7 @@ class PluginTestHarness {
       upgradeManagerHarness: upgradeManager,
       removalManagerHarness: removalManager,
       integrationServiceHarness: integrationService,
+      certifierHarness: certifier,
     );
   }
 

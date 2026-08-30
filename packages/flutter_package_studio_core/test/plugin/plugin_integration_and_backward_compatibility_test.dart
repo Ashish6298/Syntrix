@@ -46,8 +46,7 @@ void main() {
     late io.Directory tempDir;
 
     setUp(() {
-      tempDir = io.Directory.systemTemp
-          .createTempSync('fps_integration_test_');
+      tempDir = io.Directory.systemTemp.createTempSync('fps_integration_test_');
     });
 
     tearDown(() {
@@ -167,8 +166,8 @@ void main() {
         '5a. Optional extension point: release workflow executes pre-existing baseline flow with zero registered plugins',
         () {
       final integration = PluginIntegrationService(rootPath: tempDir.path);
-      final hooks = integration.executeReleaseWorkflowHooks(
-          stageName: 'pre_publish');
+      final hooks =
+          integration.executeReleaseWorkflowHooks(stageName: 'pre_publish');
 
       expect(hooks, isEmpty);
     });
@@ -187,11 +186,12 @@ void main() {
         id: 'release_helper_plugin',
         capabilities: {PluginCapability.releaseWorkflowContribution},
       );
-      final plugin = MockReleaseHookPlugin(hooks: ['sign_artifacts', 'ping_team']);
+      final plugin =
+          MockReleaseHookPlugin(hooks: ['sign_artifacts', 'ping_team']);
       registry.registerPlugin(manifest: manifest, instance: plugin);
 
-      final hooks = integration.executeReleaseWorkflowHooks(
-          stageName: 'publish_stage');
+      final hooks =
+          integration.executeReleaseWorkflowHooks(stageName: 'publish_stage');
 
       expect(hooks.length, equals(2));
       expect(hooks.any((h) => h.contains('sign_artifacts')), isTrue);
@@ -220,8 +220,8 @@ void main() {
           manifest: failingManifest, instance: failingPlugin);
 
       // Core invocation must NOT throw
-      final hooks = integration.executeReleaseWorkflowHooks(
-          stageName: 'packaging_stage');
+      final hooks =
+          integration.executeReleaseWorkflowHooks(stageName: 'packaging_stage');
 
       // Degrades gracefully to empty hooks without crashing
       expect(hooks, isEmpty);
@@ -245,7 +245,9 @@ void main() {
       );
 
       expect(lifecycle, isNotNull);
-      expect(PluginLifecycleState.values.contains(PluginLifecycleState.shutdownFailed),
+      expect(
+          PluginLifecycleState.values
+              .contains(PluginLifecycleState.shutdownFailed),
           isTrue);
       expect(PluginLifecycleState.values.contains(PluginLifecycleState.active),
           isTrue);
@@ -284,8 +286,7 @@ void main() {
         '7d. Cross-phase regression: 7.11 atomic state writing and isolated storage preserved',
         () {
       final stateStore = PluginStateStore(rootPath: tempDir.path);
-      expect(stateStore.stateDirPath,
-          equals('${tempDir.path}/.fps/plugins'));
+      expect(stateStore.stateDirPath, equals('${tempDir.path}/.fps/plugins'));
     });
 
     test(
@@ -300,7 +301,8 @@ void main() {
         () {
       final trustGate = PluginTrustGate();
       expect(trustGate, isNotNull);
-      expect(PluginTrustLevel.values.contains(PluginTrustLevel.trusted), isTrue);
+      expect(
+          PluginTrustLevel.values.contains(PluginTrustLevel.trusted), isTrue);
     });
 
     test(
@@ -332,7 +334,7 @@ void main() {
       final pluginDir = io.Directory('${tempDir.path}/.fps/plugins')
         ..createSync(recursive: true);
       io.File('${pluginDir.path}/plugins_state.json')
-        .writeAsStringSync('{ malformed json corrupted state ...');
+          .writeAsStringSync('{ malformed json corrupted state ...');
 
       final integration = PluginIntegrationService(rootPath: tempDir.path);
 

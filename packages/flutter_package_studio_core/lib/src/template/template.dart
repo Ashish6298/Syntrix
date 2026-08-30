@@ -70,8 +70,8 @@ export '../plugin/trust/plugin_trust.dart';
 export '../plugin/upgrade/plugin_upgrade.dart';
 export '../plugin/removal/plugin_removal.dart';
 export '../plugin/integration/plugin_integration.dart';
+export '../plugin/certification/plugin_certification.dart';
 export 'migration/migration.dart';
-
 
 export '../documentation/readme/readme.dart';
 export '../documentation/api/api.dart';
