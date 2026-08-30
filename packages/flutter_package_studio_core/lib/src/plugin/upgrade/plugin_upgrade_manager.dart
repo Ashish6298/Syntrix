@@ -36,7 +36,6 @@ class PluginUpgradeManager {
         _dependencyResolver = dependencyResolver ?? PluginDependencyResolver(),
         _stateStore = stateStore;
 
-
   // ───────────────────────────────────────────────────────────────────────────
   // 1. Pure, Non-Mutating Plan Computation (Plan-First Mandate)
   // ───────────────────────────────────────────────────────────────────────────
@@ -468,7 +467,6 @@ class PluginUpgradeManager {
         lastKnownGoodSnapshot: updatedPersistedState.lastKnownGoodSnapshot,
       );
     }
-
 
     return updatedPersistedState;
   }

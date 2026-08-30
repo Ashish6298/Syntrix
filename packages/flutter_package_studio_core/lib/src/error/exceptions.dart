@@ -801,3 +801,9 @@ class PluginUpgradeException extends PackageStudioException {
   /// Creates a [PluginUpgradeException].
   PluginUpgradeException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception raised when plugin removal, cleanup, or restoration fails (Phase 7.16).
+class PluginRemovalException extends PackageStudioException {
+  /// Creates a [PluginRemovalException].
+  PluginRemovalException(super.message, [super.details, super.stackTrace]);
+}
