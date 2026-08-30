@@ -807,3 +807,35 @@ class PluginRemovalException extends PackageStudioException {
   /// Creates a [PluginRemovalException].
   PluginRemovalException(super.message, [super.details, super.stackTrace]);
 }
+
+// ── Milestone 8: AI Assistant Core Exceptions (Phase 8.1) ──────────────────────
+
+/// Base exception for all AI assistant errors.
+class AiAssistantException extends PackageStudioException {
+  /// Creates an [AiAssistantException].
+  AiAssistantException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Exception thrown when an AI provider fails, is unreachable, or errors.
+class AiProviderException extends AiAssistantException {
+  /// Creates an [AiProviderException].
+  AiProviderException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Exception thrown when AI provider invocation exceeds configured timeout.
+class AiTimeoutException extends AiAssistantException {
+  /// Creates an [AiTimeoutException].
+  AiTimeoutException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Exception thrown when an AI response fails schema parsing or structural validation.
+class AiInvalidResponseException extends AiAssistantException {
+  /// Creates an [AiInvalidResponseException].
+  AiInvalidResponseException(super.message, [super.details, super.stackTrace]);
+}
+
+/// Exception thrown when assistant request configuration is invalid or disabled.
+class AiConfigurationException extends AiAssistantException {
+  /// Creates an [AiConfigurationException].
+  AiConfigurationException(super.message, [super.details, super.stackTrace]);
+}

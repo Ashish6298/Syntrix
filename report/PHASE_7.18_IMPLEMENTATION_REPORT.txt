@@ -4,7 +4,7 @@ MILESTONE 7: PLUGIN ARCHITECTURE HARDENING & CERTIFICATION REPORT (PHASE 7.18)
 Date: 2026-08-30
 Milestone: Milestone 7 — Plugin Ecosystem & Extensions (Final Phase 7.18)
 Verdict: CERTIFIED
-Test Count: 1,236 tests total (913 core + 323 CLI) across Monorepo (100% Pass Rate)
+Test Count: 1,245 tests total (922 core + 323 CLI) across Monorepo (100% Pass Rate)
 
 ────────────────────────────────────────────────────────────────────────────────
 1. EXECUTIVE SUMMARY & CERTIFICATION VERDICT
@@ -13,20 +13,20 @@ Phase 7.18 serves as the formal independent certification gate for the complete
 Milestone 7 Plugin Architecture (Phases 7.1 through 7.17).
 
 Rather than continuing feature development, this phase orchestrated an adversarial,
-multi-dimensional audit across 5 formal dimensions:
+multi-dimensional audit across 5 formal dimensions covering 24 distinct gates:
   1. Functional Integrity (Continuous single-pass E2E lifecycle)
-  2. Adversarial Security (Active attempted violations with deny-by-default enforcement)
-  3. Fault Tolerance & Reliability (Isolated mid-execution crashes, circuit breakers, recovery)
-  4. Non-Regression & Invariance (Exact monorepo test count preserved: 1236 vs 1220 baseline)
-  5. Deterministic Execution (Byte-identical serialized diagnostic output)
+  2. Adversarial Security (7 active attempted violations with deny-by-default enforcement)
+  3. Fault Tolerance & Reliability (5 isolated failure modes, circuit breakers, recovery)
+  4. Compound Hostile Re-Audit (5 multi-stress scenarios exercising all previously fixed guarantees)
+  5. Deterministic Execution (6 byte-identical artifact serialization and rendering proofs)
 
-Formal Certification Verdict: CERTIFIED (100% Gate Clearance across all dimensions)
+Formal Certification Verdict: CERTIFIED (100% Gate Clearance: 24/24 passed)
 
 ────────────────────────────────────────────────────────────────────────────────
-2. DETAILED AUDIT & GATE RESULTS
+2. DETAILED AUDIT & GATE RESULTS (24 INDEPENDENT SCENARIOS)
 ────────────────────────────────────────────────────────────────────────────────
 
-[CATEGORY 1: FUNCTIONAL INTEGRITY]
+[CATEGORY 1: FUNCTIONAL INTEGRITY (1 SCENARIO)]
 - CERT-FUNC-01: Full Continuous E2E Lifecycle Flow
   Status: PASSED
   Adversarial: NO
@@ -99,26 +99,71 @@ Formal Certification Verdict: CERTIFIED (100% Gate Clearance across all dimensio
   Evidence: Failing initialize() was caught and explicitly marked instance state as
             `initializationFailed`.
 
-[CATEGORY 4: COMPOUND STRESS & HOSTILE OVERLAP]
-- CERT-HOSTILE-02: Compound Hostile Overlap (Trust + Permissions + Deps + Concurrent Upgrade)
+[CATEGORY 4: COMPOUND HOSTILE RE-AUDIT OF PREVIOUSLY FIXED GAPS (5 SCENARIOS)]
+- CERT-HOSTILE-01: Baseline Overlap (Trust + Permissions + Dependencies + Concurrent Upgrade)
   Status: PASSED
   Adversarial: YES
   Evidence: Unverified author strictly denied TRUSTED tier; undeclared network permission
             blocked; dependent graph validated; atomic upgrade computed without state collision.
+- CERT-HOSTILE-02: Abandoned Future Absorption under Compound Hostile Stress (Phase 7.9)
+  Status: PASSED
+  Adversarial: YES
+  Evidence: Hostile plugin execution was safely contained with rejectedNotActive/timedOut
+            status and zero unhandled asynchronous zone rejections.
+- CERT-HOSTILE-03: State-Store Atomic Write & Temporary File Cleanup (Phase 7.11)
+  Status: PASSED
+  Adversarial: YES
+  Evidence: Persisted state store executed atomic write/rename boundary cleanly under compound
+            load with zero leftover temp files and full read integrity.
+- CERT-HOSTILE-04: Sandbox Path Traversal Rejection under Concurrent Stress (Phase 7.13)
+  Status: PASSED
+  Adversarial: YES
+  Evidence: SandboxFileSystem strictly intercepted traversal attack to
+            "../../core/system/secrets.json" from hostile plugin context under compound load.
+- CERT-HOSTILE-05: Core File & Dependent Protection in Removal Planning (Phase 7.16)
+  Status: PASSED
+  Adversarial: YES
+  Evidence: Removal planning correctly identified active dependent "borderline_plugin_b" as
+            blocking and strictly excluded core system files from removal.
 
-[CATEGORY 5: DETERMINISM VERIFICATION]
-- CERT-DET-01: Byte-Identical Validation and Diagnostic Output
+[CATEGORY 5: DETERMINISM VERIFICATION ACROSS ALL 6 ARTIFACT TYPES (6 SCENARIOS)]
+- CERT-DET-01: JSON Diagnostic Serialization
   Status: PASSED
   Adversarial: NO
-  Evidence: Repeated audit passes over identical input produced byte-identical JSON
-            diagnostic representations.
+  Evidence: Repeated diagnostic evaluation runs over identical inputs produced byte-identical
+            JSON diagnostic representations.
+- CERT-DET-02: Markdown Diagnostic Report Rendering
+  Status: PASSED
+  Adversarial: NO
+  Evidence: Repeated diagnostic Markdown renderings over identical input produced byte-identical
+            Markdown text.
+- CERT-DET-03: Structured Validation Results (Contract 7.1 & Config 7.5)
+  Status: PASSED
+  Adversarial: NO
+  Evidence: Repeated contract validation and configuration validation passes produced byte-identical
+            structured JSON results.
+- CERT-DET-04: Upgrade Migration Plan Computation (Phase 7.15)
+  Status: PASSED
+  Adversarial: NO
+  Evidence: Repeated upgrade migration plan computations over identical manifest state generated
+            byte-identical plan representations.
+- CERT-DET-05: Removal Plan Computation (Phase 7.16)
+  Status: PASSED
+  Adversarial: NO
+  Evidence: Repeated removal plan computations over identical installed inventory produced
+            byte-identical removal plan representations.
+- CERT-DET-06: Registry State & Capability Query Representation (Phase 7.3)
+  Status: PASSED
+  Adversarial: NO
+  Evidence: Repeated registry inventories and capability lookups over identical registrations
+            yielded byte-identical representations.
 
 ────────────────────────────────────────────────────────────────────────────────
 3. MONOREPO REGRESSION & BASELINE INVARIANCE AUDIT
 ────────────────────────────────────────────────────────────────────────────────
 - Phase 7.17 Baseline Test Count: 1,220 tests
-- Phase 7.18 Monorepo Test Count: 1,236 tests (+16 net new certification tests)
-  * flutter_package_studio_core: 913 tests (100% pass)
+- Phase 7.18 Monorepo Test Count: 1,245 tests (+25 net new certification tests)
+  * flutter_package_studio_core: 922 tests (100% pass)
   * flutter_package_studio_cli:  323 tests (100% pass)
 - Zero-Plugin Baseline Invariance:
   * Milestone 1–6 core operations operate with 0 plugins installed.

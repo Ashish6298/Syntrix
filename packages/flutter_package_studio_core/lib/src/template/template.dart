@@ -82,3 +82,4 @@ export '../documentation/screenshots/screenshots.dart';
 export '../documentation/gifs/gifs.dart';
 export '../documentation/website/website.dart';
 export '../compatibility/compatibility.dart';
+export '../ai/ai.dart';

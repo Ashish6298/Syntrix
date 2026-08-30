@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:flutter_package_studio_cli/src/base_command.dart';
+import 'package:flutter_package_studio_cli/src/commands/template_ai_command.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // template list
@@ -6947,6 +6948,7 @@ class TemplateCatalogCommand extends FpsCommand {
     addSubcommand(TemplatePluginLifecycleStatusCommand());
     addSubcommand(TemplatePluginPermissionsCommand());
     addSubcommand(TemplatePluginExecCommand());
+    addSubcommand(TemplateAiCommand());
   }
 
   @override

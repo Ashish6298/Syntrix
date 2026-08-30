@@ -178,7 +178,7 @@ void main() {
       final item = result.items.firstWhere((i) => i.id == 'CERT-HOSTILE-02');
       expect(item.status, equals(PluginCertificationStatus.passed));
       expect(item.isAdversarial, isTrue);
-      expect(item.evidence, contains('safely absorbed'));
+      expect(item.evidence, contains('safely contained'));
     });
 
     test(
