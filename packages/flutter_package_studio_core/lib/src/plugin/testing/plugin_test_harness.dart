@@ -18,7 +18,9 @@ import 'package:flutter_package_studio_core/src/plugin/testing/plugin_sandbox_mo
 import 'package:flutter_package_studio_core/src/plugin/trust/plugin_trust_gate.dart';
 import 'package:flutter_package_studio_core/src/plugin/upgrade/plugin_upgrade_manager.dart';
 import 'package:flutter_package_studio_core/src/plugin/removal/plugin_removal_manager.dart';
+import 'package:flutter_package_studio_core/src/plugin/integration/plugin_integration_service.dart';
 import 'package:flutter_package_studio_core/src/release/git/git_process_runner.dart';
+
 
 import 'package:flutter_package_studio_core/src/release/git/git_release_manager.dart';
 import 'package:flutter_package_studio_core/src/release/github/github_api_client.dart';
@@ -47,6 +49,7 @@ class PluginTestHarness {
   final PluginTrustGate trustGateHarness;
   final PluginUpgradeManager upgradeManagerHarness;
   final PluginRemovalManager removalManagerHarness;
+  final PluginIntegrationService integrationServiceHarness;
 
   PluginTestHarness._({
     required this.fileSystem,
@@ -68,6 +71,7 @@ class PluginTestHarness {
     required this.trustGateHarness,
     required this.upgradeManagerHarness,
     required this.removalManagerHarness,
+    required this.integrationServiceHarness,
   });
 
   /// Factory creating a fresh, isolated, sandboxed harness.
@@ -140,6 +144,12 @@ class PluginTestHarness {
       stateStore: stateStore,
       rootPath: sandboxDir.path,
     );
+    final integrationService = PluginIntegrationService(
+      rootPath: sandboxDir.path,
+      registry: registry,
+      stateStore: stateStore,
+      discoveryEngine: discovery,
+    );
 
     return PluginTestHarness._(
       fileSystem: fs,
@@ -161,6 +171,7 @@ class PluginTestHarness {
       trustGateHarness: trustGate,
       upgradeManagerHarness: upgradeManager,
       removalManagerHarness: removalManager,
+      integrationServiceHarness: integrationService,
     );
   }
 
