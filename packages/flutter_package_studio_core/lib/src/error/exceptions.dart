@@ -795,3 +795,9 @@ class PluginTrustException extends PackageStudioException {
   /// Creates a [PluginTrustException].
   PluginTrustException(super.message, [super.details, super.stackTrace]);
 }
+
+/// Base exception raised when plugin upgrade or migration fails (Phase 7.15).
+class PluginUpgradeException extends PackageStudioException {
+  /// Creates a [PluginUpgradeException].
+  PluginUpgradeException(super.message, [super.details, super.stackTrace]);
+}

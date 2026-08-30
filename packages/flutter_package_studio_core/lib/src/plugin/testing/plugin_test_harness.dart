@@ -16,6 +16,7 @@ import 'package:flutter_package_studio_core/src/plugin/persistence/plugin_state_
 import 'package:flutter_package_studio_core/src/plugin/runtime/plugin_execution_runtime.dart';
 import 'package:flutter_package_studio_core/src/plugin/testing/plugin_sandbox_models.dart';
 import 'package:flutter_package_studio_core/src/plugin/trust/plugin_trust_gate.dart';
+import 'package:flutter_package_studio_core/src/plugin/upgrade/plugin_upgrade_manager.dart';
 import 'package:flutter_package_studio_core/src/release/git/git_process_runner.dart';
 
 import 'package:flutter_package_studio_core/src/release/git/git_release_manager.dart';
@@ -43,6 +44,7 @@ class PluginTestHarness {
   final PluginStateStore stateStoreHarness;
   final PluginDiagnosticsEngine diagnosticsHarness;
   final PluginTrustGate trustGateHarness;
+  final PluginUpgradeManager upgradeManagerHarness;
 
   PluginTestHarness._({
     required this.fileSystem,
@@ -62,6 +64,7 @@ class PluginTestHarness {
     required this.stateStoreHarness,
     required this.diagnosticsHarness,
     required this.trustGateHarness,
+    required this.upgradeManagerHarness,
   });
 
   /// Factory creating a fresh, isolated, sandboxed harness.
@@ -123,6 +126,13 @@ class PluginTestHarness {
     final gitReleaseManager = GitReleaseManager(runner: mockGit);
     const diagnostics = PluginDiagnosticsEngine();
 
+    final upgradeManager = PluginUpgradeManager(
+      contractValidator: validator,
+      configValidator: configValidator,
+      dependencyResolver: PluginDependencyResolver(),
+      stateStore: stateStore,
+    );
+
     return PluginTestHarness._(
       fileSystem: fs,
       gitRunner: mockGit,
@@ -141,6 +151,7 @@ class PluginTestHarness {
       stateStoreHarness: stateStore,
       diagnosticsHarness: diagnostics,
       trustGateHarness: trustGate,
+      upgradeManagerHarness: upgradeManager,
     );
   }
 
