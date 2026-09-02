@@ -13,3 +13,6 @@ export 'context/project_context_renderer.dart';
 export 'review/code_review_models.dart';
 export 'review/code_review_engine.dart';
 export 'review/code_review_renderer.dart';
+export 'testing/test_intelligence_models.dart';
+export 'testing/test_intelligence_engine.dart';
+export 'testing/test_intelligence_renderer.dart';

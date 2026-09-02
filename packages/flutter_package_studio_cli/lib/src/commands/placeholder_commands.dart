@@ -7,6 +7,7 @@ export 'package:flutter_package_studio_cli/src/commands/template_command.dart';
 export 'package:flutter_package_studio_cli/src/commands/plugin_command.dart';
 export 'package:flutter_package_studio_cli/src/commands/project_command.dart';
 export 'package:flutter_package_studio_cli/src/commands/review_command.dart';
+export 'package:flutter_package_studio_cli/src/commands/ai_test_command.dart';
 
 /// Command to create a new production-ready Flutter package.
 class CreateCommand extends FpsCommand {

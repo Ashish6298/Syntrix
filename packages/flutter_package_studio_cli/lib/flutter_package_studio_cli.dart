@@ -9,3 +9,4 @@ export 'src/commands/plugin_command.dart';
 export 'src/commands/registry_command.dart';
 export 'src/commands/project_command.dart';
 export 'src/commands/review_command.dart';
+export 'src/commands/ai_test_command.dart';
