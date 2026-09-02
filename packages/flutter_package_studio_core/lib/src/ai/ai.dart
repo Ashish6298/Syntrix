@@ -25,3 +25,6 @@ export 'architecture/architecture_advisor_renderer.dart';
 export 'documentation/documentation_models.dart';
 export 'documentation/documentation_assistant_engine.dart';
 export 'documentation/documentation_assistant_renderer.dart';
+export 'dependencies/dependency_models.dart';
+export 'dependencies/dependency_advisor_engine.dart';
+export 'dependencies/dependency_advisor_renderer.dart';
