@@ -28,3 +28,14 @@ export 'documentation/documentation_assistant_renderer.dart';
 export 'dependencies/dependency_models.dart';
 export 'dependencies/dependency_advisor_engine.dart';
 export 'dependencies/dependency_advisor_renderer.dart';
+export 'security/secret_redactor.dart';
+export 'security/security_models.dart';
+export 'security/security_advisor_engine.dart';
+export 'security/security_advisor_renderer.dart';
+export 'release/release_readiness_models.dart';
+export 'release/release_readiness_advisor_engine.dart';
+export 'release/release_readiness_renderer.dart';
+export 'planner/workflow_planner_models.dart';
+export 'planner/workflow_planner_engine.dart';
+export 'planner/workflow_planner_renderer.dart';
+

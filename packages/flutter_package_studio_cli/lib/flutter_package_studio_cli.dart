@@ -14,3 +14,7 @@ export 'src/commands/debug_command.dart';
 export 'src/commands/architecture_command.dart';
 export 'src/commands/documentation_command.dart';
 export 'src/commands/dependency_command.dart';
+export 'src/commands/security_command.dart';
+export 'src/commands/release_readiness_command.dart';
+export 'src/commands/plan_command.dart';
+

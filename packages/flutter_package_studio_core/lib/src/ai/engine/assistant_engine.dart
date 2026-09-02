@@ -271,10 +271,18 @@ class AssistantEngine {
         return ExplanationPayload.fromJson(jsonMap);
 
       case AssistantMode.planning:
-        if (!jsonMap.containsKey('objective') ||
-            !jsonMap.containsKey('steps')) {
+        // Accept both 'steps' (legacy) and 'implementationSteps' (Phase 8.11 domain key).
+        final hasSteps = jsonMap.containsKey('steps') ||
+            jsonMap.containsKey('implementationSteps');
+        if (!jsonMap.containsKey('objective') || !hasSteps) {
           throw AiInvalidResponseException(
-              'Planning payload missing required "objective" or "steps" properties.');
+              'Planning payload missing required "objective" or "steps"/"implementationSteps" properties.');
+        }
+        // Normalise to 'steps' key for PlanningPayload.fromJson
+        if (!jsonMap.containsKey('steps') &&
+            jsonMap.containsKey('implementationSteps')) {
+          jsonMap = Map<String, dynamic>.from(jsonMap)
+            ..['steps'] = jsonMap['implementationSteps'];
         }
         return PlanningPayload.fromJson(jsonMap);
     }

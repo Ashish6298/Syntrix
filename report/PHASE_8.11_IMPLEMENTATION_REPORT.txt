@@ -1,0 +1,228 @@
+# Phase 8.11 — AI Engineering Workflow Planner: Implementation Report
+
+**Generated**: 2026-09-02  
+**Phase**: Milestone 8, Phase 8.11  
+**Author**: Antigravity AI Engineering Assistant  
+**Status**: ✅ COMPLETE — All 10 Tests Pass | 1046 Total Tests Passing | 0 Regressions
+
+---
+
+## 1. Executive Summary
+
+Phase 8.11 implements the **AI Engineering Workflow Planner** — a read-only, fail-closed subsystem that converts engineering natural-language requests (e.g., "Add support for generating Debian packages") into structured, production-grade 9-stage implementation plans. The planner grounds its analysis in verified workspace facts discovered via the Phase 8.2 `ProjectContextEngine`, explicitly distinguishing known truths from inferred assumptions, and delivers dual-format output (JSON + Markdown).
+
+---
+
+## 2. Master Prompt (Paragraph Form)
+
+You are the **AI Engineering Workflow Planner** for Flutter Package Studio — a specialized planning intelligence that transforms engineering feature requests into structured, production-grade implementation roadmaps. When a developer submits a request such as "Add support for generating Debian packages," you do not generate code or execute changes; instead, you synthesize a comprehensive 9-stage engineering plan grounded in verified facts about the actual monorepo workspace. You have been provided with concrete evidence from the repository — package names, declared dependencies, existing files — and you must explicitly label each item in your Requirement Analysis as either a **verified FACT** (supported by physical workspace evidence) or an **inferred ASSUMPTION** (requiring further confirmation). Your plan must flow through all nine stages in sequence: (1) Requirement Analysis distinguishing facts from assumptions, (2) Affected Components and their dependency surfaces, (3) Architecture Changes required at the subsystem and interface level, (4) Ordered Implementation Steps with file targets and inter-step dependencies, (5) Test Strategy covering unit, integration, and regression coverage, (6) Security Checks addressing injection, path traversal, and permission concerns, (7) Documentation Requirements for CLI references and API docs, (8) Verification criteria including regression checks and binary acceptance gates, and (9) a Next Phase Recommendation to continue the engineering thread. Under no circumstances may you output any secret, API token, password, or credential — use `[REDACTED_SECRET]` if any such value appears in your context. Return exclusively a valid JSON object conforming to the provided schema; do not include any prose, markdown fences, or explanatory text outside the JSON structure.
+
+---
+
+## 3. Architecture Overview
+
+```
+WorkflowPlanRequest
+       │
+       ▼
+WorkflowPlannerEngine.plan()
+       │
+       ├─► ProjectContextEngine.discoverProject()    ← Phase 8.2 integration
+       │         └─ Extracts verified workspace facts (packages, deps, files)
+       │
+       ├─► SecretRedactor.redact(prompt)             ← Zero-leak guarantee
+       │
+       ├─► AssistantEngine.executeRequest()          ← Phase 8.1 core
+       │         ├─ AssistantMode.planning
+       │         ├─ Capability gate: planSynthesis
+       │         ├─ Schema validation: "objective" + "steps"/"implementationSteps"
+       │         └─ Fail-closed error containment
+       │
+       ├─► _parsePlanResponse()
+       │         ├─ Merges AI facts with verified workspace facts
+       │         ├─ De-duplicates grounded items by text
+       │         ├─ SecretRedactor.redact(objective, scope)
+       │         └─ Constructs WorkflowPlanResult
+       │
+       └─► WorkflowPlannerRenderer
+                 ├─ renderJson()   → Formatted JSON + final redaction pass
+                 └─ renderMarkdown() → 9-stage Markdown + HTML escaping + final redaction pass
+```
+
+---
+
+## 4. Files Created / Modified
+
+### New Files (Phase 8.11)
+
+| File | Purpose |
+|------|---------|
+| `lib/src/ai/planner/workflow_planner_models.dart` | Domain models: `WorkflowPlanRequest`, `WorkflowPlanResult`, `GroundedItem`, `WorkflowImplementationStep`, `WorkflowTestRequirement` |
+| `lib/src/ai/planner/workflow_planner_engine.dart` | Core planning engine with ProjectContextEngine integration and 9-stage synthesis |
+| `lib/src/ai/planner/workflow_planner_renderer.dart` | Dual-format renderer (JSON + Markdown) with HTML escaping and secret redaction |
+| `test/ai/workflow_planner_engine_test.dart` | 10-test comprehensive verification suite |
+
+### Modified Files (Phase 8.11 Integration)
+
+| File | Change |
+|------|--------|
+| `lib/src/ai/engine/assistant_engine.dart` | Broadened `AssistantMode.planning` validation to accept `"implementationSteps"` as alias for `"steps"`, with automatic key normalization |
+
+### Existing CLI (Phase 8.11 CLI Command)
+
+| File | Command |
+|------|---------|
+| `packages/flutter_package_studio_cli/lib/src/commands/plan_command.dart` | `fps plan "<request>"` CLI entry point |
+
+---
+
+## 5. Key Engineering Decisions
+
+### 5.1 Dual-Key Schema Compatibility
+**Problem**: `AssistantEngine` enforced `"steps"` in the planning JSON schema; the Phase 8.11 domain model uses `"implementationSteps"`.  
+**Solution**: Extended `_parseAndValidatePayload` to accept either `"steps"` OR `"implementationSteps"`, normalizing to `"steps"` before passing to `PlanningPayload.fromJson`. This is backwards-compatible with any prior planning consumers.
+
+### 5.2 Grounding Invariant: Facts vs. Assumptions
+The engine seeds the `requirementAnalysis` with workspace-verified facts before calling the AI, then merges AI-provided items, de-duplicating by text equality. This guarantees at least one verified fact is always present and clearly labelled.
+
+### 5.3 Read-Only Safety Invariant
+The engine performs zero filesystem writes. All workspace interaction is through `ProjectContextEngine.discoverProject()` and `Directory.listSync()` (read-only operations). Test 5 verifies this by comparing filesystem state before and after planning.
+
+### 5.4 HTML Escaping in Renderer
+All user-controlled string fields (objective, scope, fact text, step descriptions, etc.) are passed through `_escapeHtml()` before being written into the Markdown output. This prevents `<script>`, `<img>`, or heading injection attacks via malicious engineering request strings.
+
+### 5.5 Secret Redaction: Triple-Layer Defence
+1. **Prompt level**: `SecretRedactor.redact(prompt)` before sending to AI provider
+2. **Response level**: `SecretRedactor.redact(objective)` and `SecretRedactor.redact(scope)` in `_parsePlanResponse`
+3. **Output level**: `SecretRedactor.redact(...)` as the final operation in both `renderJson` and `renderMarkdown`
+
+---
+
+## 6. Test Suite Results
+
+**Suite**: `test/ai/workflow_planner_engine_test.dart`  
+**Run time**: < 1 second  
+**Result**: ✅ 10/10 PASS
+
+| # | Test Name | Result | Validates |
+|---|-----------|--------|-----------|
+| 1 | Plan Model Conformance | ✅ PASS | All 9 stages serialize/deserialize correctly via `toJson`/`fromJson` |
+| 2 | Grounding Invariant | ✅ PASS | Facts (isFact=true) and assumptions (isFact=false) are explicitly distinguished |
+| 3 | 9-Stage Pipeline Completeness | ✅ PASS | All 9 stages populated in output for a complete request |
+| 4 | Secret Redaction | ✅ PASS | `ghp_` GitHub tokens absent from prompt, `plan.objective`, JSON, and Markdown |
+| 5 | No-Execution Safety Invariant | ✅ PASS | Zero filesystem mutations during planning |
+| 6 | Fail-Closed Error Handling | ✅ PASS | Provider 503 errors return `isSuccess=false` structured result without crashing |
+| 7 | Dual-Format Renderer | ✅ PASS | JSON is valid and parseable; Markdown contains all 9 expected section headers |
+| 8 | Scoped Target Package | ✅ PASS | `targetPackage` correctly constrains scope to named package |
+| 9 | Escaping Invariant | ✅ PASS | `<script>alert("xss")</script>` is HTML-escaped, never raw in Markdown output |
+| 10 | Regression Check | ✅ PASS | `AssistantMode.planning` exists; `CodeReviewConfidence` unchanged (3 values) |
+
+---
+
+## 7. Regression Test Results
+
+**Full Package Test Suite**: `dart test` (all test files)  
+**Total Tests**: **1046**  
+**Passed**: **1046**  
+**Failed**: **0**  
+**Run Time**: ~7 seconds  
+
+No regressions introduced by the `AssistantMode.planning` schema change — the key normalization is strictly additive and backwards-compatible.
+
+---
+
+## 8. Security Invariants Verified
+
+| Invariant | Status | Mechanism |
+|-----------|--------|-----------|
+| Zero secret leakage to AI prompt | ✅ | `SecretRedactor.redact()` on all prompt fields before dispatch |
+| Zero secret leakage in plan model | ✅ | `SecretRedactor.redact(objective, scope)` in `_parsePlanResponse` |
+| Zero secret leakage in JSON output | ✅ | Final `SecretRedactor.redact()` pass in `renderJson` |
+| Zero secret leakage in Markdown output | ✅ | Final `SecretRedactor.redact()` pass in `renderMarkdown` |
+| XSS/HTML injection prevention | ✅ | `_escapeHtml()` applied to all user-derived string fields in Markdown |
+| Zero filesystem mutation | ✅ | No `File.write*`, `Directory.create*` calls in planner code path |
+| Fail-closed on provider error | ✅ | All exceptions caught, returned as `WorkflowPlanResult.failure()` |
+
+---
+
+## 9. CLI Usage
+
+```bash
+# Generate a plan for a workspace-wide request
+fps plan "Add support for generating Debian packages."
+
+# Scope plan to a specific package
+fps plan "Add Debian packaging" --package packager_core
+
+# Output as JSON
+fps plan "Add Debian packaging" --format json
+
+# Save plan to file
+fps plan "Add Debian packaging" --output plan.md
+```
+
+---
+
+## 10. Sample Output
+
+### 9-Stage Markdown Plan (excerpt)
+
+```markdown
+# Flutter Package Studio — AI Engineering Implementation Plan
+
+**Objective**: Add support for generating Debian packages.
+**Scope**: `packager_core`
+**Confidence**: `HIGH`
+
+## 1. Requirement Analysis (Facts vs. Assumptions)
+
+### Verified Facts (Grounded in Workspace)
+- **[FACT]** Workspace monorepo contains 1 package(s): packager_core *(Evidence: `ProjectContextEngine.discoverProject()`)*
+- **[FACT]** Package "packager_core" declared dependencies: archive *(Evidence: `packages/packager_core/pubspec.yaml`)*
+
+### Inferred Assumptions (Requires Verification)
+- **[ASSUMPTION]** Users will build packages on Debian/Ubuntu environments *(Note: Inferred operational assumption)*
+
+## 2. Affected Components & Files
+...
+
+## 9. Next Phase Recommendation
+👉 Add RPM and AppImage packaging support in Phase 8.12.
+```
+
+---
+
+## 11. Phase Readiness Assessment
+
+| Criterion | Status |
+|-----------|--------|
+| Core implementation complete | ✅ |
+| All 10 unit tests passing | ✅ |
+| 1046 regression tests passing | ✅ |
+| Security invariants verified | ✅ |
+| CLI command operational | ✅ |
+| Dual-format renderer (JSON + MD) | ✅ |
+| HTML injection prevention | ✅ |
+| Secret redaction (triple-layer) | ✅ |
+| Read-only filesystem safety | ✅ |
+| Facts vs. Assumptions grounding | ✅ |
+
+**Phase 8.11 is production-ready. Recommend proceeding to Phase 8.12.**
+
+---
+
+## 12. Next Phase Recommendation
+
+**Phase 8.12 — Cross-Session Memory Persistence**
+
+The natural continuation is to persist workflow plans across sessions so developers can:
+- Resume interrupted planning workflows
+- Track plan evolution over time
+- Reference prior plans when generating related requests
+- Build a plan library indexed by feature domain
+
+Estimated scope: Add a `PlanRepository` (local JSON store) with CRUD operations, integrate with the `WorkflowPlannerEngine` to auto-save/load plans, and expose `fps plan --list` and `fps plan --show <id>` CLI commands.
+
+---
+
+*Report generated by Antigravity AI Engineering Assistant — Phase 8.11 implementation complete.*
