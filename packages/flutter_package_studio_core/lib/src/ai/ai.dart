@@ -10,3 +10,6 @@ export 'context/project_context_models.dart';
 export 'context/sensitive_file_filter.dart';
 export 'context/project_context_engine.dart';
 export 'context/project_context_renderer.dart';
+export 'review/code_review_models.dart';
+export 'review/code_review_engine.dart';
+export 'review/code_review_renderer.dart';
