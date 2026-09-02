@@ -1,0 +1,104 @@
+================================================================================
+PHASE 8.5 IMPLEMENTATION & VERIFICATION REPORT: AI DEBUGGING & FAILURE DIAGNOSIS
+================================================================================
+Date: 2026-09-02
+Phase: Phase 8.5 — AI Debugging & Failure Diagnosis (Milestone 8)
+Verdict: READY FOR PHASE 8.6 (100% Gate Clearance across 11 Verification Gates)
+Monorepo Test Count: 1,337 tests total (984 core + 353 CLI) across Monorepo (100% Pass Rate)
+
+────────────────────────────────────────────────────────────────────────────────
+1. OBJECTIVE & ARCHITECTURAL OVERVIEW
+────────────────────────────────────────────────────────────────────────────────
+Phase 8.5 implements the AI Debugging & Failure Diagnosis engine in
+flutter_package_studio_core, building strictly on top of Phase 8.1 (AI Assistant Core),
+Phase 8.2 (Project Context & Codebase Intelligence), Phase 8.3 (AI Code Analysis &
+Review Engine), and Phase 8.4 (AI Test Generation & Test Intelligence):
+
+1. Structured Diagnosis Domain Models:
+   - Built in `packages/flutter_package_studio_core/lib/src/ai/diagnosis/failure_diagnosis_models.dart`.
+   - `CauseCertainty` enum: `confirmed`, `probable`, `possible`.
+   - `DiagnosedCause`: Description, `CauseCertainty`, and rationale.
+   - `EvidenceType`: `stackTrace`, `testFailure`, `analyzerOutput`, `cliError`,
+     `buildError`, `historicalReport`, `generalLog`.
+   - `DiagnosisEvidenceItem` & `FailureEvidenceBundle`: Pluggable evidence intake.
+   - `VerificationStep`: Concrete step number, action command, and expected outcome.
+   - `FailureDiagnosis`: All 7 required fields (`problem`, `likelyCauses`, `citedEvidence`,
+     `affectedComponents`, `recommendedFix`, `risk`, `verificationSteps`).
+   - `DiagnosisRequest` & `DiagnosisResult`.
+
+2. Failure Diagnosis Engine & Evidence Pipeline:
+   - Built in `packages/flutter_package_studio_core/lib/src/ai/diagnosis/failure_diagnosis_engine.dart`.
+   - Scopes failure evidence and inspects relevant source code via Phase 8.2 context layer.
+   - Narrows affected components (packages and file paths).
+   - Ingests and cites prior phase verification reports (`report/phase_8_x_verification_report.txt`).
+   - Enforces tiered cause synthesis, preventing cause certainty from collapsing into free text.
+   - Emits structured remediation recommendations and human verification steps.
+
+3. Pure Dual-Format Renderer & CLI Command:
+   - Built `FailureDiagnosisRenderer` in `packages/flutter_package_studio_core/lib/src/ai/diagnosis/failure_diagnosis_renderer.dart`.
+   - Built and registered `DebugCommand` in `packages/flutter_package_studio_cli/lib/src/commands/debug_command.dart`
+     accessible via `fps debug` with `--error`, `--stack-trace`, `--file`, `--package`, `--dir`, `--budget`, `--output`, `--write`, `--json`.
+
+────────────────────────────────────────────────────────────────────────────────
+2. BASELINE RECONCILIATION & TEST-COUNT METRICS
+────────────────────────────────────────────────────────────────────────────────
+- Baseline at Phase 8.4 close: 1,322 tests (974 core + 348 CLI)
+- Net additions (core / CLI): +15 tests (+10 core / +5 CLI)
+- Total monorepo test count: 1,337 tests (984 core + 353 CLI) (100% Pass Rate)
+
+────────────────────────────────────────────────────────────────────────────────
+3. FILES CREATED & MODIFIED
+────────────────────────────────────────────────────────────────────────────────
+[CREATED FILES]:
+- `packages/flutter_package_studio_core/lib/src/ai/diagnosis/failure_diagnosis_models.dart`
+- `packages/flutter_package_studio_core/lib/src/ai/diagnosis/failure_diagnosis_engine.dart`
+- `packages/flutter_package_studio_core/lib/src/ai/diagnosis/failure_diagnosis_renderer.dart`
+- `packages/flutter_package_studio_core/test/ai/failure_diagnosis_engine_test.dart`
+- `packages/flutter_package_studio_cli/lib/src/commands/debug_command.dart`
+- `packages/flutter_package_studio_cli/test/cli_debug_test.dart`
+- `phase_8_5_verification_report.txt`
+
+[MODIFIED FILES]:
+- `packages/flutter_package_studio_core/lib/src/ai/ai.dart`
+- `packages/flutter_package_studio_cli/lib/flutter_package_studio_cli.dart`
+- `packages/flutter_package_studio_cli/lib/src/commands/placeholder_commands.dart`
+
+────────────────────────────────────────────────────────────────────────────────
+4. DETAILED VERIFICATION PASS (11 GATES)
+────────────────────────────────────────────────────────────────────────────────
+1.  Diagnosis model conformance                              : PASS
+2.  Certainty-tiering correctness (confirmed/probable/possible): PASS
+3.  Evidence pipeline (stack trace/test/analyzer/CLI ingestion): PASS
+4.  Historical-report integration                              : PASS
+5.  Affected-component identification                          : PASS
+6.  No-execution safety (no subprocess, no file writes)        : PASS
+7.  Sensitive-file exclusion (input AND provider-call verified): PASS
+8.  Remediation/verification plan quality                      : PASS
+9.  AI provider failure handled safely                         : PASS
+10. JSON/Markdown output validity                               : PASS
+11. Phase 8.1–8.4 regression                                   : PASS
+
+Verification Methods for Safety Gates:
+- Gate 6 (No-Execution Safety): Static code audit of `packages/flutter_package_studio_core/lib/src/ai/diagnosis/` confirms 0 invocations of `Process.run`, `Process.start`, `File.writeAsString`, or file mutation methods; runtime test in `test/ai/failure_diagnosis_engine_test.dart` (Test 6) compared all fixture workspace file contents before and after diagnosis, proving byte-for-byte identical state.
+- Gate 7 (Sensitive-File Exclusion): Verified via test 7 in `test/ai/failure_diagnosis_engine_test.dart`. `MockAiProvider.recordedRequests` was inspected to assert that contents of `.env` (`PROD_AUTH_TOKEN`) and `credentials.json` (`my_super_secret_api_key`) were completely absent from the outbound prompt transmitted to the AI provider.
+
+────────────────────────────────────────────────────────────────────────────────
+5. CODE QUALITY GATES
+────────────────────────────────────────────────────────────────────────────────
+- dart analyze: 0 issues found (Clean)
+- dart format check: 0 changed files (Clean)
+- Full monorepo test run: 1,337 / 1,337 passed (100%)
+
+────────────────────────────────────────────────────────────────────────────────
+6. KNOWN LIMITATIONS / DEFERRED ITEMS
+────────────────────────────────────────────────────────────────────────────────
+- Automated code patching and iterative remediation loops are deferred to Phase 8.6 (Interactive Assistant Workflows) in accordance with the read-only safety invariant of Phase 8.5.
+
+────────────────────────────────────────────────────────────────────────────────
+7. FINAL ASSESSMENT
+────────────────────────────────────────────────────────────────────────────────
+- All verification gates passed: YES (100%)
+- Existing functionality preserved: YES (Zero regressions)
+- Unresolved blockers: NONE
+- Ready for Phase 8.6: YES
+================================================================================
