@@ -12,3 +12,4 @@ export 'src/commands/review_command.dart';
 export 'src/commands/ai_test_command.dart';
 export 'src/commands/debug_command.dart';
 export 'src/commands/architecture_command.dart';
+export 'src/commands/documentation_command.dart';
