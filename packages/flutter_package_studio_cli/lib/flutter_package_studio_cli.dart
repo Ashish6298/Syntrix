@@ -17,4 +17,5 @@ export 'src/commands/dependency_command.dart';
 export 'src/commands/security_command.dart';
 export 'src/commands/release_readiness_command.dart';
 export 'src/commands/plan_command.dart';
+export 'src/commands/memory_command.dart';
 

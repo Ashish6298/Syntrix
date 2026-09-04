@@ -1,0 +1,147 @@
+# Phase 8.12 — AI Engineering Session & Knowledge Memory: Implementation Report
+
+**Generated**: 2026-09-04  
+**Phase**: Milestone 8, Phase 8.12  
+**Author**: Antigravity AI Engineering Assistant  
+**Status**: ✅ COMPLETE — All 10 Tests Pass | 1056 Total Core Tests Passing | 388 Total CLI Tests Passing | 0 Regressions
+
+---
+
+## 1. Executive Summary
+
+Phase 8.12 implements **AI Engineering Session & Knowledge Memory** — a persistent, project-scoped engineering memory subsystem that retains project-level architectural decisions, known limitations, resolved defects, release notes, test histories, and implementation reports. This subsystem enables the AI Assistant and human engineers to query historical context (e.g. *"Why did we choose this architecture?"*) and retrieve grounded engineering decisions backed by verifiable file/code evidence references, conflict detection, expiration handling, and full secret redaction.
+
+---
+
+## 2. Master Prompt (Paragraph Form)
+
+You are the **AI Engineering Session & Knowledge Memory Assistant** for Flutter Package Studio — a project-level engineering intelligence responsible for retaining, indexing, querying, and synthesizing documented engineering decisions across project sessions. When an engineer or subsystem poses a query such as "Why did we choose this architecture?", you do not guess or provide generic advice; instead, you search the project's persistent knowledge memory store for documented architectural decisions, known limitations, resolved bugs, release histories, and implementation reports. You ground all explanations in concrete evidence references — linking statements directly to file paths, line ranges, or documentation artifacts. When new decisions or requirements are recorded, you perform conflict detection against historical records to identify contradictory architectural choices (e.g., opposing state management paradigms or incompatible packaging constraints) and flag them with explicit severity levels. Under no circumstances may personal memory or untracked state outside the project workspace be stored. Furthermore, all persisted records, outbound queries, and synthesized outputs must be strictly scrubbed for API tokens, passwords, and sensitive credentials using `[REDACTED_SECRET]`. When outputting results, conform to structured JSON schemas or clear, deterministic Markdown reports.
+
+---
+
+## 3. Architecture Overview
+
+```
+MemoryQueryRequest / MemoryRecordRequest
+                  │
+                  ▼
+         SessionMemoryEngine
+                  │
+                  ├─► Persistence Layer: .fps/memory/sessions.json
+                  │         ├─ Project-scoped JSON storage
+                  │         ├─ Isolated engineering sessions (MemorySession)
+                  │         └─ Versioned knowledge entries (KnowledgeEntry)
+                  │
+                  ├─► Evidence References (EvidenceReference)
+                  │         ├─ File paths & URI targets
+                  │         ├─ Symbol locations & line ranges
+                  │         └─ Grounded context descriptions
+                  │
+                  ├─► Conflict Detection Engine
+                  │         ├─ Topic overlap & semantic keyword analysis
+                  │         ├─ Negation & contradiction pairing
+                  │         └─ Explicit approval vs. rejection classification
+                  │
+                  ├─► Expiration & Purge Management
+                  │         ├─ Relative timestamp checking (isExpired)
+                  │         └─ Batch purging across sessions (purgeExpired)
+                  │
+                  ├─► Secret Redactor (SecretRedactor)
+                  │         ├─ On ingest / save
+                  │         ├─ On storage deserialization
+                  │         └─ On synthesis & export rendering
+                  │
+                  └─► SessionMemoryRenderer
+                            ├─ renderQueryJson() / renderQueryMarkdown()
+                            └─ renderSessionJson() / renderSessionMarkdown()
+```
+
+---
+
+## 4. Files Created / Modified
+
+### New Files (Phase 8.12 Core)
+
+| File | Purpose |
+|------|---------|
+| `packages/flutter_package_studio_core/lib/src/ai/memory/session_memory_models.dart` | Domain models: `KnowledgeEntryType`, `EvidenceReference`, `KnowledgeEntry`, `ConflictReport`, `MemorySession`, `MemoryQueryRequest`, `MemoryQueryResult` |
+| `packages/flutter_package_studio_core/lib/src/ai/memory/session_memory_engine.dart` | Persistent session memory engine: session management, conflict detection, keyword querying, and expiration purging |
+| `packages/flutter_package_studio_core/lib/src/ai/memory/session_memory_renderer.dart` | Pure dual-format renderer (JSON & Markdown) with HTML escaping and mandatory secret scrubbing |
+| `packages/flutter_package_studio_core/test/ai/session_memory_engine_test.dart` | 10 comprehensive unit & integration tests covering full lifecycle, types, evidence, conflicts, and safety invariants |
+
+### New Files (Phase 8.12 CLI)
+
+| File | Command |
+|------|---------|
+| `packages/flutter_package_studio_cli/lib/src/commands/memory_command.dart` | CLI entry point: `fps memory` (`query`, `record`, `sessions`, `purge`) |
+
+### Modified Files (Phase 8.12 Exports & Registrations)
+
+| File | Change |
+|------|--------|
+| `packages/flutter_package_studio_core/lib/src/ai/ai.dart` | Exported `session_memory_models.dart`, `session_memory_engine.dart`, and `session_memory_renderer.dart` |
+| `packages/flutter_package_studio_core/lib/flutter_package_studio_core.dart` | Exported `src/ai/ai.dart` from core library barrel |
+| `packages/flutter_package_studio_cli/lib/flutter_package_studio_cli.dart` | Exported `src/commands/memory_command.dart` from CLI library barrel |
+
+---
+
+## 5. Key Engineering Decisions & Invariants
+
+### 5.1 Project-Scoped Knowledge vs. Personal Memory
+As required by the milestone specification, all knowledge memory is strictly scoped to the repository (`.fps/memory/sessions.json`). It retains only project-level engineering facts, architectural decisions, limitations, and defect histories — avoiding personal user memory or arbitrary state.
+
+### 5.2 8 Specialized Knowledge Entry Types
+The subsystem supports 8 dedicated engineering knowledge categories:
+1. `decision` — Formal engineering and design choices.
+2. `limitation` — Documented bounds, constraints, and known system limitations.
+3. `architecture` — Subsystem boundaries, architectural patterns, and structural rules.
+4. `bug` — Known, tracked, and resolved defects.
+5. `releaseHistory` — Release transitions and changelog milestones.
+6. `testHistory` — Test execution records, benchmarks, and regression suites.
+7. `implementationReport` — Milestone and phase implementation reports.
+8. `repeatedIssue` — Recurring pitfalls, flaky dependencies, and repeated issues.
+
+### 5.3 Deterministic Conflict Detection
+When recording a new knowledge entry, the engine cross-references existing entries across all sessions in the workspace. If high topic overlap is detected alongside contradicting statements (e.g. opposing requirements, adoption vs. rejection keywords), a `ConflictReport` is generated with a `critical` or `warning` severity rating.
+
+### 5.4 Grounded Evidence References
+Every `KnowledgeEntry` supports multiple `EvidenceReference` items that anchor assertions directly to concrete files, line ranges, or documents in the monorepo workspace.
+
+### 5.5 Expiration & Clean Versioning
+Entries support optional `expiresAt` timestamps. Expired entries are filtered out of standard queries by default, and `purgeExpired()` allows clean batch removal of obsolete records. Entries can also spawn bumped versions via `createUpdatedVersion()`.
+
+### 5.6 Non-Negotiable Secret Redaction
+All ingested text, persisted JSON storage files, query responses, and rendered markdown documents undergo automated secret scrubbing via `SecretRedactor` to prevent credential exposure.
+
+---
+
+## 6. Test Suite & Verification Results
+
+### Dedicated Phase 8.12 Test Suite (`session_memory_engine_test.dart`)
+
+```
+00:00 +0: Phase 8.12 — AI Engineering Session & Knowledge Memory Tests 1. Session Lifecycle: SessionMemoryEngine creates, persists, and restores sessions
+00:00 +1: Phase 8.12 — AI Engineering Session & Knowledge Memory Tests 2. Knowledge Types: supports all 8 required project engineering knowledge categories
+00:00 +2: Phase 8.12 — AI Engineering Session & Knowledge Memory Tests 3. Evidence Grounding: records and restores concrete evidence references
+00:00 +3: Phase 8.12 — AI Engineering Session & Knowledge Memory Tests 4. Conflict Detection: flags contradictions between opposing architectural choices
+00:00 +4: Phase 8.12 — AI Engineering Session & Knowledge Memory Tests 5. Expiration & Versioning: respects expiresAt and purges outdated entries
+00:00 +5: Phase 8.12 — AI Engineering Session & Knowledge Memory Tests 6. Example Query: "Why did we choose this architecture?" resolves documented engineering decisions
+00:00 +6: Phase 8.12 — AI Engineering Session & Knowledge Memory Tests 7. Secret Redaction: sensitive tokens are never written to disk or exposed in query outputs
+00:00 +7: Phase 8.12 — AI Engineering Session & Knowledge Memory Tests 8. Read-Only Query Invariant: querying memory does not modify project workspace files
+00:00 +8: Phase 8.12 — AI Engineering Session & Knowledge Memory Tests 9. Fail-Closed Error Containment: gracefully handles corrupted JSON storage file
+00:00 +9: Phase 8.12 — AI Engineering Session & Knowledge Memory Tests 10. Capability Alignment: verifies AssistantCapability.crossSessionMemory is registered
+00:00 +10: All tests passed!
+```
+
+### Full Repository Regression Verification
+
+- **`flutter_package_studio_core`**: **1056 / 1056 tests passed (0 failures, 0 regressions)**
+- **`flutter_package_studio_cli`**: **388 / 388 tests passed (0 failures, 0 regressions)**
+
+---
+
+## 7. Readiness for Next Phase
+
+### Phase 8.13 — AI-Assisted Controlled Code Modification: **READY TO PROCEED ✅**
+
+Phase 8.12 is completely verified, robust, and passes all test suites. The project memory foundation is fully operational to ground upcoming controlled code modifications and patches in documented architectural decisions and constraints.

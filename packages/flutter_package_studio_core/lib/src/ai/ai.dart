@@ -38,4 +38,7 @@ export 'release/release_readiness_renderer.dart';
 export 'planner/workflow_planner_models.dart';
 export 'planner/workflow_planner_engine.dart';
 export 'planner/workflow_planner_renderer.dart';
+export 'memory/session_memory_models.dart';
+export 'memory/session_memory_engine.dart';
+export 'memory/session_memory_renderer.dart';
 
