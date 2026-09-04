@@ -19,4 +19,5 @@ export 'src/commands/release_readiness_command.dart';
 export 'src/commands/plan_command.dart';
 export 'src/commands/memory_command.dart';
 export 'src/commands/modify_command.dart';
+export 'src/commands/ai_command.dart';
 

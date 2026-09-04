@@ -44,4 +44,7 @@ export 'memory/session_memory_renderer.dart';
 export 'modification/code_modification_models.dart';
 export 'modification/code_modification_engine.dart';
 export 'modification/code_modification_renderer.dart';
+export 'command_center/command_center_models.dart';
+export 'command_center/command_center_engine.dart';
+export 'command_center/command_center_renderer.dart';
 

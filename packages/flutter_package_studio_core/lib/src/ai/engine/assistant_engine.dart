@@ -296,6 +296,14 @@ class AssistantEngine {
         }
 
         if (!jsonMap.containsKey('objective') || !hasSteps) {
+          if (jsonMap.containsKey('summary')) {
+            final obj = jsonMap['summary'].toString();
+            final rawSteps = (jsonMap['steps'] as List<dynamic>?) ?? const [];
+            final steps = rawSteps.isNotEmpty
+                ? rawSteps.map((s) => PlanStep.fromJson(s as Map<String, dynamic>)).toList()
+                : [PlanStep(sequence: 1, title: 'Engineering Step', description: obj)];
+            return PlanningPayload(objective: obj, steps: steps);
+          }
           throw AiInvalidResponseException(
               'Planning payload missing required "objective" or "steps"/"implementationSteps" properties.');
         }

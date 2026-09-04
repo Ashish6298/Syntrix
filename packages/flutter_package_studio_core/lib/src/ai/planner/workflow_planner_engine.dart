@@ -319,6 +319,26 @@ class WorkflowPlannerEngine {
           'Engineering implementation assumes Dart 3.5+ compatibility.'));
     }
 
+    final rawSteps = decoded['implementationSteps'] ?? decoded['steps'];
+    final parsedSteps = <WorkflowImplementationStep>[];
+    if (rawSteps is List && rawSteps.isNotEmpty) {
+      for (final s in rawSteps) {
+        if (s is Map<String, dynamic>) {
+          parsedSteps.add(WorkflowImplementationStep.fromJson(s));
+        }
+      }
+    }
+    if (parsedSteps.isEmpty) {
+      parsedSteps.add(WorkflowImplementationStep(
+        stepNumber: 1,
+        title: 'Initial Engineering Preparation',
+        description: 'Prepare implementation plan for ${request.request}',
+        targetComponent: request.targetPackage ?? 'core',
+        estimatedFiles: ['lib/src/main.dart'],
+        dependencies: const [],
+      ));
+    }
+
     final objective = SecretRedactor.redact(
         decoded['objective'] as String? ?? request.request);
     final scope = SecretRedactor.redact(
@@ -345,10 +365,7 @@ class WorkflowPlannerEngine {
       dependencies: parseList(decoded['dependencies'], (e) => e.toString()),
       architectureChanges: decoded['architectureChanges'] as String? ??
           'Modular subsystem architecture.',
-      implementationSteps: parseList(
-          decoded['implementationSteps'],
-          (e) =>
-              WorkflowImplementationStep.fromJson(e as Map<String, dynamic>)),
+      implementationSteps: parsedSteps,
       tests: parseList(decoded['tests'],
           (e) => WorkflowTestRequirement.fromJson(e as Map<String, dynamic>)),
       securityChecks: parseList(decoded['securityChecks'], (e) => e.toString()),
