@@ -129,8 +129,10 @@ class SensitiveFileFilter {
       );
     }
 
-    // 3. Credential stores (credentials.json, .netrc, pub/npm/git token stores)
+    // 3. Credential stores (credentials.json, secrets.json, .netrc, pub/npm/git token stores)
     if (filename == 'credentials.json' ||
+        filename == 'secrets.json' ||
+        filename.startsWith('secrets.') ||
         filename == 'service_account.json' ||
         filename == 'client_secret.json' ||
         filename == '.netrc' ||

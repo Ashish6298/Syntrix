@@ -22,6 +22,16 @@ class SecretRedactor {
     r'(AKIA[0-9A-Z]{16})',
   );
 
+  static final RegExp _awsSecretPattern = RegExp(
+    r'''(?<=aws_secret_key=)([^"'\s\n\r]{16,})''',
+    caseSensitive: false,
+  );
+
+  static final RegExp _genericAssignmentPattern = RegExp(
+    r'''(?<=(?:api_key|apikey|secret|token|password|auth_key|private_key)=)([^"'\s\n\r]{8,})''',
+    caseSensitive: false,
+  );
+
   static final RegExp _slackTokenPattern = RegExp(
     r'(xox[baprs]-[0-9A-Za-z]{10,48})',
   );
@@ -73,6 +83,8 @@ class SecretRedactor {
     sanitized = sanitized.replaceAll(_jwtPattern, '[REDACTED_JWT_TOKEN]');
 
     // Password and secret field assignments (in JSON, YAML, or properties)
+    sanitized = sanitized.replaceAll(_awsSecretPattern, '[REDACTED_AWS_SECRET]');
+    sanitized = sanitized.replaceAll(_genericAssignmentPattern, '[REDACTED_SECRET]');
     sanitized =
         sanitized.replaceAll(_passwordFieldPattern, '[REDACTED_PASSWORD]');
     sanitized = sanitized.replaceAll(_secretFieldPattern, '[REDACTED_SECRET]');
