@@ -29,3 +29,7 @@ export 'dependency/enterprise_dependency_renderer.dart';
 export 'security/enterprise_security_compliance_models.dart';
 export 'security/enterprise_security_compliance_engine.dart';
 export 'security/enterprise_security_compliance_renderer.dart';
+
+export 'organization/enterprise_organization_models.dart';
+export 'organization/enterprise_organization_engine.dart';
+export 'organization/enterprise_organization_renderer.dart';

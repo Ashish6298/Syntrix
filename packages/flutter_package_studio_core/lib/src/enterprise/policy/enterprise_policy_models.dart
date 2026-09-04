@@ -407,7 +407,7 @@ class EnterprisePolicyDocument {
     this.version = '1.0.0',
     this.organizationId = 'default_org',
     this.organizationName = 'Enterprise Default Organization',
-    this.profile = EnterprisePolicyProfile.standard,
+    this.profile = EnterprisePolicyProfile.custom,
     this.enforcementMode = PolicyEnforcementMode.strict,
     this.releasePolicy = const ReleasePolicyConfig(),
     this.securityPolicy = const SecurityPolicyConfig(),
