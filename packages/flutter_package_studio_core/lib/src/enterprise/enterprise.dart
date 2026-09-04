@@ -33,3 +33,8 @@ export 'security/enterprise_security_compliance_renderer.dart';
 export 'organization/enterprise_organization_models.dart';
 export 'organization/enterprise_organization_engine.dart';
 export 'organization/enterprise_organization_renderer.dart';
+
+export 'credentials/enterprise_credential_models.dart';
+export 'credentials/enterprise_credential_provider.dart';
+export 'credentials/enterprise_credential_manager.dart';
+export 'credentials/enterprise_credential_renderer.dart';
