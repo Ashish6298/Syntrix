@@ -38,3 +38,8 @@ export 'credentials/enterprise_credential_models.dart';
 export 'credentials/enterprise_credential_provider.dart';
 export 'credentials/enterprise_credential_manager.dart';
 export 'credentials/enterprise_credential_renderer.dart';
+
+export 'workers/enterprise_worker_models.dart';
+export 'workers/enterprise_worker_executor.dart';
+export 'workers/enterprise_worker_manager.dart';
+export 'workers/enterprise_worker_renderer.dart';
