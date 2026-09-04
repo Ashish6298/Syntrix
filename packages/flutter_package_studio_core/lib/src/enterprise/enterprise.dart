@@ -25,3 +25,7 @@ export 'approval/enterprise_approval_renderer.dart';
 export 'dependency/enterprise_dependency_models.dart';
 export 'dependency/enterprise_dependency_engine.dart';
 export 'dependency/enterprise_dependency_renderer.dart';
+
+export 'security/enterprise_security_compliance_models.dart';
+export 'security/enterprise_security_compliance_engine.dart';
+export 'security/enterprise_security_compliance_renderer.dart';
