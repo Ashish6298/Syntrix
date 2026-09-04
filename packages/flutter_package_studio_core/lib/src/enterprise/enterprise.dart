@@ -21,3 +21,7 @@ export 'audit/enterprise_audit_renderer.dart';
 export 'approval/enterprise_approval_models.dart';
 export 'approval/enterprise_approval_engine.dart';
 export 'approval/enterprise_approval_renderer.dart';
+
+export 'dependency/enterprise_dependency_models.dart';
+export 'dependency/enterprise_dependency_engine.dart';
+export 'dependency/enterprise_dependency_renderer.dart';
