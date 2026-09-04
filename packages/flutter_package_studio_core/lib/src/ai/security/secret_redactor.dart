@@ -28,7 +28,7 @@ class SecretRedactor {
   );
 
   static final RegExp _genericAssignmentPattern = RegExp(
-    r'''(?<=(?:api_key|apikey|secret|token|password|auth_key|private_key)=)([^"'\s\n\r]{8,})''',
+    r'''(?<=(?:api_key|apikey|secret|token|password|auth_key|private_key|key|--key)=)([^"'\s\n\r]{8,})''',
     caseSensitive: false,
   );
 
