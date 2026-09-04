@@ -41,4 +41,7 @@ export 'planner/workflow_planner_renderer.dart';
 export 'memory/session_memory_models.dart';
 export 'memory/session_memory_engine.dart';
 export 'memory/session_memory_renderer.dart';
+export 'modification/code_modification_models.dart';
+export 'modification/code_modification_engine.dart';
+export 'modification/code_modification_renderer.dart';
 

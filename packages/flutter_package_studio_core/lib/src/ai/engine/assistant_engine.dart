@@ -271,9 +271,30 @@ class AssistantEngine {
         return ExplanationPayload.fromJson(jsonMap);
 
       case AssistantMode.planning:
-        // Accept both 'steps' (legacy) and 'implementationSteps' (Phase 8.11 domain key).
+        // Accept (objective + steps/implementationSteps) for workflow planning OR (summary/objective + patches) for code modification.
         final hasSteps = jsonMap.containsKey('steps') ||
             jsonMap.containsKey('implementationSteps');
+        final hasPatches = jsonMap.containsKey('patches');
+        final hasObjectiveOrSummary = jsonMap.containsKey('objective') || jsonMap.containsKey('summary');
+
+        if (hasPatches && hasObjectiveOrSummary) {
+          // Normalize to PlanningPayload for code modification proposals
+          final obj = (jsonMap['objective'] ?? jsonMap['summary'] ?? 'Code modification proposal').toString();
+          final rawPatches = (jsonMap['patches'] as List<dynamic>?) ?? const [];
+          final steps = rawPatches.map((p) {
+            final pMap = p is Map<String, dynamic> ? p : <String, dynamic>{};
+            return PlanStep(
+              sequence: 1,
+              title: pMap['description']?.toString() ?? 'Patch ${pMap["relativePath"] ?? ""}',
+              description: pMap['diff']?.toString() ?? '',
+            );
+          }).toList();
+          return PlanningPayload(
+            objective: obj,
+            steps: steps,
+          );
+        }
+
         if (!jsonMap.containsKey('objective') || !hasSteps) {
           throw AiInvalidResponseException(
               'Planning payload missing required "objective" or "steps"/"implementationSteps" properties.');
