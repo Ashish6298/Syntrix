@@ -21,3 +21,4 @@ export 'src/repository/repository.dart';
 export 'src/example/example.dart';
 export 'src/github/github.dart';
 export 'src/ai/ai.dart';
+export 'src/enterprise/enterprise.dart';
