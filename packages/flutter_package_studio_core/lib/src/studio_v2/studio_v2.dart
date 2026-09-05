@@ -52,3 +52,7 @@ export 'persistence/studio_persistence_renderer.dart';
 export 'export/studio_export_models.dart';
 export 'export/studio_export_engine.dart';
 export 'export/studio_export_renderer.dart';
+
+export 'comparison/studio_comparison_models.dart';
+export 'comparison/studio_comparison_engine.dart';
+export 'comparison/studio_comparison_renderer.dart';
