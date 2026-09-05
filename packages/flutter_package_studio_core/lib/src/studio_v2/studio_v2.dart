@@ -32,3 +32,7 @@ export 'scene/studio_scene_renderer.dart';
 export 'codegen/studio_codegen_models.dart';
 export 'codegen/studio_codegen_engine.dart';
 export 'codegen/studio_codegen_renderer.dart';
+
+export 'diagnostics/studio_diagnostics_models.dart';
+export 'diagnostics/studio_diagnostics_engine.dart';
+export 'diagnostics/studio_diagnostics_renderer.dart';
