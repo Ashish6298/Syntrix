@@ -28,3 +28,7 @@ export 'themes/studio_theme_renderer.dart';
 export 'scene/studio_scene_models.dart';
 export 'scene/studio_scene_engine.dart';
 export 'scene/studio_scene_renderer.dart';
+
+export 'codegen/studio_codegen_models.dart';
+export 'codegen/studio_codegen_engine.dart';
+export 'codegen/studio_codegen_renderer.dart';
