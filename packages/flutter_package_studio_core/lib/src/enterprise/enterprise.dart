@@ -55,3 +55,7 @@ export 'observability/enterprise_observability_renderer.dart';
 export 'reliability/enterprise_reliability_models.dart';
 export 'reliability/enterprise_reliability_engine.dart';
 export 'reliability/enterprise_reliability_renderer.dart';
+
+export 'reporting/enterprise_reporting_models.dart';
+export 'reporting/enterprise_reporting_engine.dart';
+export 'reporting/enterprise_reporting_renderer.dart';
