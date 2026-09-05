@@ -36,3 +36,7 @@ export 'codegen/studio_codegen_renderer.dart';
 export 'diagnostics/studio_diagnostics_models.dart';
 export 'diagnostics/studio_diagnostics_engine.dart';
 export 'diagnostics/studio_diagnostics_renderer.dart';
+
+export 'profiler/studio_profiler_models.dart';
+export 'profiler/studio_profiler_engine.dart';
+export 'profiler/studio_profiler_renderer.dart';
