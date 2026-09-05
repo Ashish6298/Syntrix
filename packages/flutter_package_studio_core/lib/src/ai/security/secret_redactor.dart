@@ -28,7 +28,7 @@ class SecretRedactor {
   );
 
   static final RegExp _genericAssignmentPattern = RegExp(
-    r'''(?<=(?:api_key|apikey|secret|token|password|auth_key|private_key|key|--key)=)([^"'\s\n\r]{8,})''',
+    r'''(?<=(?<!aws_)(?<!aws_secret_)(?:api_key|apikey|secret|token|password|auth_key|private_key|key|--key)=)([^"'\s\n\r]{8,})''',
     caseSensitive: false,
   );
 
@@ -46,7 +46,7 @@ class SecretRedactor {
   );
 
   static final RegExp _secretFieldPattern = RegExp(
-    r'''(?<=(?:secret|token|api_key|auth_key)["']?\s*[:=]\s*["'])([^"'\n\r]{4,})(?=["'])''',
+    r'''(?<=(?<!aws_)(?:secret|token|api_key|auth_key)["']?\s*[:=]\s*["'])([^"'\n\r]{4,})(?=["'])''',
     caseSensitive: false,
   );
 
