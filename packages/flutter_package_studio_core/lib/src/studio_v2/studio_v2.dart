@@ -16,3 +16,7 @@ export 'explorer/studio_explorer_renderer.dart';
 export 'inspector/studio_inspector_models.dart';
 export 'inspector/studio_inspector_engine.dart';
 export 'inspector/studio_inspector_renderer.dart';
+
+export 'preview/studio_preview_models.dart';
+export 'preview/studio_preview_engine.dart';
+export 'preview/studio_preview_renderer.dart';
