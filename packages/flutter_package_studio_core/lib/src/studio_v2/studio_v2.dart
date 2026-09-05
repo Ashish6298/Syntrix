@@ -40,3 +40,7 @@ export 'diagnostics/studio_diagnostics_renderer.dart';
 export 'profiler/studio_profiler_models.dart';
 export 'profiler/studio_profiler_engine.dart';
 export 'profiler/studio_profiler_renderer.dart';
+
+export 'presets/studio_preset_models.dart';
+export 'presets/studio_preset_engine.dart';
+export 'presets/studio_preset_renderer.dart';
