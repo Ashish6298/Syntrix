@@ -12,3 +12,7 @@ export 'workspace/studio_workspace_renderer.dart';
 export 'explorer/studio_explorer_models.dart';
 export 'explorer/studio_explorer_engine.dart';
 export 'explorer/studio_explorer_renderer.dart';
+
+export 'inspector/studio_inspector_models.dart';
+export 'inspector/studio_inspector_engine.dart';
+export 'inspector/studio_inspector_renderer.dart';
