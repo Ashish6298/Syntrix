@@ -44,3 +44,7 @@ export 'profiler/studio_profiler_renderer.dart';
 export 'presets/studio_preset_models.dart';
 export 'presets/studio_preset_engine.dart';
 export 'presets/studio_preset_renderer.dart';
+
+export 'persistence/studio_persistence_models.dart';
+export 'persistence/studio_persistence_engine.dart';
+export 'persistence/studio_persistence_renderer.dart';
