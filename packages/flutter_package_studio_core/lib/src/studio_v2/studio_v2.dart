@@ -20,3 +20,7 @@ export 'inspector/studio_inspector_renderer.dart';
 export 'preview/studio_preview_models.dart';
 export 'preview/studio_preview_engine.dart';
 export 'preview/studio_preview_renderer.dart';
+
+export 'themes/studio_theme_models.dart';
+export 'themes/studio_theme_engine.dart';
+export 'themes/studio_theme_renderer.dart';
