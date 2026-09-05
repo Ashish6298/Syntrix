@@ -1,0 +1,153 @@
+/// Workspace orchestration engine and interactive state manager for Phase 10.2.
+library;
+
+import 'package:flutter_package_studio_core/src/logging/logger.dart';
+import 'package:flutter_package_studio_core/src/studio_v2/studio_v2_models.dart';
+import 'package:flutter_package_studio_core/src/studio_v2/studio_v2_controller.dart';
+import 'package:flutter_package_studio_core/src/studio_v2/workspace/studio_workspace_models.dart';
+
+/// Central Unified Studio Workspace Engine coordinating quadrant zones and capabilities.
+class StudioWorkspaceEngine {
+  final Logger _logger = Logger('StudioWorkspaceEngine');
+  final StudioV2Controller controller;
+
+  UnifiedWorkspaceSession _session;
+  final List<void Function(UnifiedWorkspaceSession)> _sessionListeners = [];
+
+  UnifiedWorkspaceSession get session => _session;
+
+  StudioWorkspaceEngine({
+    required this.controller,
+    UnifiedWorkspaceSession? initialSession,
+  }) : _session = initialSession ??
+            UnifiedWorkspaceSession(
+              sessionId: 'ws_session_${DateTime.now().millisecondsSinceEpoch}',
+              activeLoaderId: controller.state.activeConfiguration.targetLoaderId,
+              activeThemeId: controller.state.activeConfiguration.selectedThemeId,
+              configuration: controller.state.activeConfiguration,
+              lastRefreshedAt: DateTime.now(),
+            ) {
+    // Listen to parent controller state updates to keep session synchronized
+    controller.addListener((v2State) {
+      _session = _session.copyWith(
+        activeLoaderId: v2State.activeConfiguration.targetLoaderId,
+        activeThemeId: v2State.activeConfiguration.selectedThemeId,
+        configuration: v2State.activeConfiguration,
+        lastRefreshedAt: DateTime.now(),
+      );
+      _notify();
+    });
+  }
+
+  void addSessionListener(void Function(UnifiedWorkspaceSession) listener) {
+    _sessionListeners.add(listener);
+  }
+
+  void removeSessionListener(void Function(UnifiedWorkspaceSession) listener) {
+    _sessionListeners.remove(listener);
+  }
+
+  void _notify() {
+    for (final listener in _sessionListeners) {
+      listener(_session);
+    }
+  }
+
+  /// Select active loader and update workspace state.
+  void selectLoader(String loaderId) {
+    _logger.info('Selecting loader: $loaderId');
+    controller.updateConfiguration((cfg) => cfg.copyWith(targetLoaderId: loaderId));
+  }
+
+  /// Select active theme and update workspace state.
+  void selectTheme(String themeId) {
+    _logger.info('Selecting theme: $themeId');
+    controller.updateConfiguration((cfg) => cfg.copyWith(selectedThemeId: themeId));
+  }
+
+  /// Update animation parameters (speed, intensity, scale).
+  void updateAnimationConfig({double? speed, double? intensity, double? scale}) {
+    controller.updateConfiguration((cfg) => cfg.copyWith(
+          animationSpeed: speed ?? cfg.animationSpeed,
+          intensity: intensity ?? cfg.intensity,
+          scale: scale ?? cfg.scale,
+        ));
+  }
+
+  /// Update particle parameters (count, size, opacity).
+  void updateParticleConfig({int? count, double? size, double? opacity}) {
+    controller.updateConfiguration((cfg) => cfg.copyWith(
+          particleCount: count ?? cfg.particleCount,
+          particleSize: size ?? cfg.particleSize,
+          particleOpacity: opacity ?? cfg.particleOpacity,
+        ));
+  }
+
+  /// Update physics parameters (gravity, velocity).
+  void updatePhysicsConfig({double? gravity, double? velocity}) {
+    controller.updateConfiguration((cfg) => cfg.copyWith(
+          gravity: gravity ?? cfg.gravity,
+          velocity: velocity ?? cfg.velocity,
+        ));
+  }
+
+  /// Update rendering & shader flags.
+  void updateRenderingConfig({bool? shadersEnabled, bool? isInteractive}) {
+    controller.updateConfiguration((cfg) => cfg.copyWith(
+          shadersEnabled: shadersEnabled ?? cfg.shadersEnabled,
+          isInteractive: isInteractive ?? cfg.isInteractive,
+        ));
+  }
+
+  /// Switch the active tab in the bottom-right output console.
+  void switchOutputTab(WorkspaceOutputTab tab) {
+    _session = _session.copyWith(
+      activeOutputTab: tab,
+      lastRefreshedAt: DateTime.now(),
+    );
+    _logger.info('Switched workspace output tab to: ${tab.label}');
+    _notify();
+  }
+
+  /// Inject live performance metrics (FPS, frame time, particle load).
+  void updateLivePerformanceTelemetry({
+    required double fps,
+    required double frameTimeMs,
+    required int activeParticleCount,
+  }) {
+    _session = _session.copyWith(
+      liveFps: fps,
+      frameTimeMs: frameTimeMs,
+      activeParticleCount: activeParticleCount,
+      lastRefreshedAt: DateTime.now(),
+    );
+    _notify();
+  }
+
+  /// Generate production-ready Flutter code for currently configured loader.
+  String generateFlutterCode() {
+    final cfg = _session.configuration;
+    final buffer = StringBuffer();
+
+    buffer.writeln('// Production-ready Flutter Widget generated by Syntrix Studio v2');
+    buffer.writeln('import \'package:flutter/material.dart\';');
+    buffer.writeln();
+    buffer.writeln('Widget buildConfiguredLoader() {');
+    buffer.writeln('  return Container(');
+    buffer.writeln('    alignment: Alignment.center,');
+    buffer.writeln('    child: ConfiguredLoader(');
+    buffer.writeln('      loaderId: \'${cfg.targetLoaderId}\',');
+    buffer.writeln('      themeId: \'${cfg.selectedThemeId}\',');
+    buffer.writeln('      speed: ${cfg.animationSpeed},');
+    buffer.writeln('      intensity: ${cfg.intensity},');
+    buffer.writeln('      scale: ${cfg.scale},');
+    buffer.writeln('      particleCount: ${cfg.particleCount},');
+    buffer.writeln('      isInteractive: ${cfg.isInteractive},');
+    buffer.writeln('      shadersEnabled: ${cfg.shadersEnabled},');
+    buffer.writeln('    ),');
+    buffer.writeln('  );');
+    buffer.writeln('}');
+
+    return buffer.toString();
+  }
+}
