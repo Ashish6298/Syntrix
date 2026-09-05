@@ -60,3 +60,7 @@ export 'comparison/studio_comparison_renderer.dart';
 export 'interaction/studio_interaction_models.dart';
 export 'interaction/studio_interaction_engine.dart';
 export 'interaction/studio_interaction_renderer.dart';
+
+export 'environment/studio_environment_models.dart';
+export 'environment/studio_environment_engine.dart';
+export 'environment/studio_environment_renderer.dart';
