@@ -8,3 +8,7 @@ export 'studio_v2_renderer.dart';
 export 'workspace/studio_workspace_models.dart';
 export 'workspace/studio_workspace_engine.dart';
 export 'workspace/studio_workspace_renderer.dart';
+
+export 'explorer/studio_explorer_models.dart';
+export 'explorer/studio_explorer_engine.dart';
+export 'explorer/studio_explorer_renderer.dart';
