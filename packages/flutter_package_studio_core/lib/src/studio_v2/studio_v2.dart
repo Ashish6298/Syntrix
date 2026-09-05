@@ -56,3 +56,7 @@ export 'export/studio_export_renderer.dart';
 export 'comparison/studio_comparison_models.dart';
 export 'comparison/studio_comparison_engine.dart';
 export 'comparison/studio_comparison_renderer.dart';
+
+export 'interaction/studio_interaction_models.dart';
+export 'interaction/studio_interaction_engine.dart';
+export 'interaction/studio_interaction_renderer.dart';
