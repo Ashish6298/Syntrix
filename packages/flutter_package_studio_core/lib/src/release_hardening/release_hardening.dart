@@ -13,3 +13,6 @@ export 'regression_renderer.dart';
 export 'platform_verification_models.dart';
 export 'platform_verification_engine.dart';
 export 'platform_verification_renderer.dart';
+export 'performance_certification_models.dart';
+export 'performance_certification_engine.dart';
+export 'performance_certification_renderer.dart';
