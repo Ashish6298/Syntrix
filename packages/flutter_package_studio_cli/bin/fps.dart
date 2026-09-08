@@ -38,8 +38,22 @@ Future<void> main(List<String> arguments) async {
   registry.register(TemplateCommand());
   registry.register(PluginCommand());
   registry.register(RegistryCommand());
+  registry.register(ProjectCommand());
+  registry.register(ReviewCommand());
+  registry.register(DebugCommand());
+  registry.register(AiTestCommand());
+  registry.register(ArchitectureCommand());
+  registry.register(DocumentationCommand());
+  registry.register(DependencyCommand());
+  registry.register(SecurityCommand());
+  registry.register(ReleaseReadinessCommand());
+  registry.register(PlanCommand());
+  registry.register(MemoryCommand());
+  registry.register(ModifyCommand());
+  registry.register(AiCommand());
 
   // 5. Run Command
   final exitCode = await registry.run(arguments);
   io.exit(exitCode);
 }
+
