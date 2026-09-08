@@ -22,3 +22,6 @@ export 'documentation_certification_renderer.dart';
 export 'pub_forensic_models.dart';
 export 'pub_forensic_engine.dart';
 export 'pub_forensic_renderer.dart';
+export 'release_candidate_models.dart';
+export 'release_candidate_engine.dart';
+export 'release_candidate_renderer.dart';
