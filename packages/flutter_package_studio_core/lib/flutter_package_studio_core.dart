@@ -23,3 +23,4 @@ export 'src/github/github.dart';
 export 'src/ai/ai.dart';
 export 'src/enterprise/enterprise.dart';
 export 'src/studio_v2/studio_v2.dart';
+export 'src/release_hardening/release_hardening.dart';
