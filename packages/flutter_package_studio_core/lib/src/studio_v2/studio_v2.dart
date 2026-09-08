@@ -73,3 +73,11 @@ export 'extension/studio_extension_models.dart';
 export 'extension/studio_prebuilt_extensions.dart';
 export 'extension/studio_extension_engine.dart';
 export 'extension/studio_extension_renderer.dart';
+
+export 'ux_hardening/studio_ux_models.dart';
+export 'ux_hardening/studio_ux_engine.dart';
+export 'ux_hardening/studio_ux_renderer.dart';
+
+export 'integration_testing/studio_integration_models.dart';
+export 'integration_testing/studio_integration_engine.dart';
+export 'integration_testing/studio_integration_renderer.dart';
