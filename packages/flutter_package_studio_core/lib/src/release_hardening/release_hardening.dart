@@ -10,3 +10,6 @@ export 'breaking_change_renderer.dart';
 export 'regression_models.dart';
 export 'regression_engine.dart';
 export 'regression_renderer.dart';
+export 'platform_verification_models.dart';
+export 'platform_verification_engine.dart';
+export 'platform_verification_renderer.dart';
