@@ -16,3 +16,6 @@ export 'platform_verification_renderer.dart';
 export 'performance_certification_models.dart';
 export 'performance_certification_engine.dart';
 export 'performance_certification_renderer.dart';
+export 'documentation_certification_models.dart';
+export 'documentation_certification_engine.dart';
+export 'documentation_certification_renderer.dart';
