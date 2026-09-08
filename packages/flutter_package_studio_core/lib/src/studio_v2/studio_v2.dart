@@ -68,3 +68,8 @@ export 'environment/studio_environment_renderer.dart';
 export 'validation/studio_validation_models.dart';
 export 'validation/studio_validation_engine.dart';
 export 'validation/studio_validation_renderer.dart';
+
+export 'extension/studio_extension_models.dart';
+export 'extension/studio_prebuilt_extensions.dart';
+export 'extension/studio_extension_engine.dart';
+export 'extension/studio_extension_renderer.dart';
