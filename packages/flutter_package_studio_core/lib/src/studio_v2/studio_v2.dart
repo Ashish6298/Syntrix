@@ -81,3 +81,7 @@ export 'ux_hardening/studio_ux_renderer.dart';
 export 'integration_testing/studio_integration_models.dart';
 export 'integration_testing/studio_integration_engine.dart';
 export 'integration_testing/studio_integration_renderer.dart';
+
+export 'release_candidate/release_candidate_models.dart';
+export 'release_candidate/release_candidate_engine.dart';
+export 'release_candidate/release_candidate_renderer.dart';
