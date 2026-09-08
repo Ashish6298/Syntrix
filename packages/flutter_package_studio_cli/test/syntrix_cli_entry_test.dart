@@ -43,10 +43,12 @@ void main() {
     test('getBanner contains SYNTRIX and primary commands', () {
       final banner = CommandRegistry.getBanner();
       expect(banner, contains('SYNTRIX'));
-      expect(banner, contains('1. syntrix --version'));
-      expect(banner, contains('2. syntrix --help'));
+      expect(banner, contains('syntrix --version'));
+      expect(banner, contains('syntrix --help'));
       expect(banner, contains('syntrix --audit'));
+      expect(banner, contains('syntrix create'));
     });
+
 
     test('Running syntrix with empty arguments prints banner and exits 0', () async {
       final exitCode = await registry.run([]);

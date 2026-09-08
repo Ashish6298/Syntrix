@@ -57,21 +57,18 @@ class CommandRegistry {
   SYNTRIX — Enterprise-Grade Tools & AI Studio for Flutter & Dart
 ========================================================================
 
-Welcome to Syntrix! Get started with the following commands:
-
-  1. syntrix --version
-     Display the installed Syntrix CLI version.
-
-  2. syntrix --help
-     View all available commands, options, and workflows.
+Welcome to Syntrix!
 
 Quick Actions:
+  • syntrix --version  Display the installed Syntrix CLI version
   • syntrix --audit    Run automated audit checks on current package
   • syntrix create     Create a new production-ready Flutter package
   • syntrix --help     Explore all commands (audit, create, template, plugin, etc.)
 
 ''';
   }
+
+
 
   /// Runs the CLI application with the given [arguments].
   ///
