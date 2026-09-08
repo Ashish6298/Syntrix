@@ -7,3 +7,6 @@ export 'api_freeze_renderer.dart';
 export 'breaking_change_models.dart';
 export 'breaking_change_engine.dart';
 export 'breaking_change_renderer.dart';
+export 'regression_models.dart';
+export 'regression_engine.dart';
+export 'regression_renderer.dart';
