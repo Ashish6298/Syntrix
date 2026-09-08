@@ -19,3 +19,6 @@ export 'performance_certification_renderer.dart';
 export 'documentation_certification_models.dart';
 export 'documentation_certification_engine.dart';
 export 'documentation_certification_renderer.dart';
+export 'pub_forensic_models.dart';
+export 'pub_forensic_engine.dart';
+export 'pub_forensic_renderer.dart';
