@@ -172,6 +172,9 @@ class ReleaseReadinessAssessment {
   /// Error message if synthesis degraded or failed.
   final String? errorMessage;
 
+  /// Whether the assessment execution completed without fatal failures.
+  bool get isSuccess => errorMessage == null;
+
   /// Whether AI narrative synthesis was executed or degraded to status-only.
   final bool isAiSynthesized;
 

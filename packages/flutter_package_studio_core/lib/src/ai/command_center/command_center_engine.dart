@@ -399,7 +399,7 @@ class CommandCenterEngine {
       structuredPayload: res,
       durationMs: sw.elapsedMilliseconds,
       timestamp: now,
-      isSuccess: res.status != ReleaseReadinessStatus.notReady,
+      isSuccess: res.isSuccess,
       errorMessage: res.errorMessage,
     );
   }
