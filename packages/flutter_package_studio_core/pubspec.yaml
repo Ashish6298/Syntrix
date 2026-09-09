@@ -1,7 +1,9 @@
-name: flutter_package_studio_core
+﻿name: flutter_package_studio_core
 description: Core architectural library for Flutter Package Studio containing DI, logging, configuration, validation, utilities, and errors.
 version: 1.0.0
-publish_to: none
+homepage: https://github.com/Ashish6298/Syntrix
+repository: https://github.com/Ashish6298/Syntrix/tree/main/packages/flutter_package_studio_core
+issue_tracker: https://github.com/Ashish6298/Syntrix/issues
 resolution: workspace
 
 environment:
@@ -11,8 +13,8 @@ dependencies:
   path: ^1.9.0
   yaml: ^3.1.2
   meta: ^1.11.0
+  crypto: ^3.0.3
 
-  crypto: any
 dev_dependencies:
   test: ^1.24.0
   mocktail: ^1.0.3

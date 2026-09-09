@@ -1,7 +1,9 @@
-name: flutter_package_studio_cli
-description: CLI application for Flutter Package Studio.
+﻿name: flutter_package_studio_cli
+description: Enterprise CLI studio and AI engineering toolkit for Flutter and Dart packages.
 version: 1.0.0
-publish_to: none
+homepage: https://github.com/Ashish6298/Syntrix
+repository: https://github.com/Ashish6298/Syntrix/tree/main/packages/flutter_package_studio_cli
+issue_tracker: https://github.com/Ashish6298/Syntrix/issues
 resolution: workspace
 
 environment:
@@ -9,6 +11,7 @@ environment:
 
 dependencies:
   args: ^2.4.2
+  path: ^1.9.0
   flutter_package_studio_core:
     path: ../flutter_package_studio_core
 
@@ -16,7 +19,6 @@ dev_dependencies:
   test: ^1.24.0
   mocktail: ^1.0.3
 
-  path: any
 executables:
   fps: fps
   syntrix: fps
