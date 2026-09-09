@@ -34,8 +34,8 @@ jobs:
         run: dart analyze --fatal-infos --fatal-warnings
 
       - name: 🧪 Run all test suites & generate coverage
-        run: dart test --coverage=coverage packages/flutter_package_studio_core packages/flutter_package_studio_cli
+        run: dart test --coverage=coverage
 
       - name: 🛡️ Audit & Security verification dry-run
         run: |
-          dart packages/flutter_package_studio_cli/bin/fps.dart --audit
+          dart bin/fps.dart --audit

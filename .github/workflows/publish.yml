@@ -23,10 +23,5 @@ jobs:
       - name: 📦 Install dependencies
         run: dart pub get
 
-      - name: 🧪 Verify core package publication dry-run
-        working-directory: packages/flutter_package_studio_core
-        run: dart pub publish --dry-run
-
-      - name: 🧪 Verify CLI package publication dry-run
-        working-directory: packages/flutter_package_studio_cli
+      - name: 🧪 Verify syntrix package publication dry-run
         run: dart pub publish --dry-run
