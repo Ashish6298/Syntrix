@@ -1,8 +1,24 @@
-name: flutter_package_studio_workspace
+﻿name: syntrix
+description: Enterprise CLI studio & AI engineering toolkit for Flutter and Dart packages. Plan-first composable blueprints, deterministic 5-profile audits, living docs, and pre-publish gates.
 version: 1.0.0
+homepage: https://github.com/Ashish6298/Syntrix
+repository: https://github.com/Ashish6298/Syntrix
+issue_tracker: https://github.com/Ashish6298/Syntrix/issues
+
 environment:
   sdk: '>=3.5.0 <4.0.0'
 
-workspace:
-  - packages/flutter_package_studio_core
-  - packages/flutter_package_studio_cli
+dependencies:
+  args: ^2.4.2
+  path: ^1.9.0
+  yaml: ^3.1.2
+  meta: ^1.11.0
+  crypto: ^3.0.3
+
+dev_dependencies:
+  test: ^1.24.0
+  mocktail: ^1.0.3
+
+executables:
+  syntrix: fps
+  fps: fps

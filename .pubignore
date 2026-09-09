@@ -1,0 +1,12 @@
+﻿# Files not to include in pub.dev package archive
+.github/
+packages/
+doc/
+doc/api/
+coverage/
+report/
+reports/
+tool/
+test/
+*.lcov
+*.log

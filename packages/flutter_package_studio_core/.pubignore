@@ -1,4 +1,0 @@
-﻿# Files not to include in pub publication archive
-doc/api/
-test/
-.dart_tool/

@@ -1,0 +1,167 @@
+import 'package:syntrix/src/studio_v2/studio_v2.dart';
+import 'package:test/test.dart';
+
+void main() {
+  group('Phase 10.2: Unified Studio Workspace Models', () {
+    test('UnifiedWorkspaceSession serialization and deserialization', () {
+      final session = UnifiedWorkspaceSession(
+        sessionId: 'ws_test_sess_01',
+        activeLoaderId: 'galaxy_orbit',
+        activeThemeId: 'nebula_storm',
+        activeOutputTab: WorkspaceOutputTab.codeGen,
+        liveFps: 59.4,
+        frameTimeMs: 16.8,
+        activeParticleCount: 350,
+        configuration: const StudioConfigurationDescriptor(
+          targetLoaderId: 'galaxy_orbit',
+          selectedThemeId: 'nebula_storm',
+          animationSpeed: 1.5,
+          particleCount: 350,
+        ),
+        lastRefreshedAt: DateTime.parse('2026-09-05T12:00:00Z'),
+      );
+
+      final json = session.toJson();
+      final restored = UnifiedWorkspaceSession.fromJson(json);
+
+      expect(restored.sessionId, equals('ws_test_sess_01'));
+      expect(restored.activeLoaderId, equals('galaxy_orbit'));
+      expect(restored.activeThemeId, equals('nebula_storm'));
+      expect(restored.activeOutputTab, equals(WorkspaceOutputTab.codeGen));
+      expect(restored.liveFps, equals(59.4));
+      expect(restored.configuration.animationSpeed, equals(1.5));
+    });
+  });
+
+  group('Phase 10.2: Studio Workspace Engine Operations', () {
+    test(
+        'Selects loader, theme, and mutates animation/particle/physics configurations',
+        () {
+      final controller = StudioV2Controller();
+      final workspaceEngine = StudioWorkspaceEngine(controller: controller);
+
+      UnifiedWorkspaceSession? notifiedSession;
+      workspaceEngine.addSessionListener((session) {
+        notifiedSession = session;
+      });
+
+      // 1. Select Loader & Theme
+      workspaceEngine.selectLoader('infinite_universe');
+      expect(
+          workspaceEngine.session.activeLoaderId, equals('infinite_universe'));
+      expect(controller.state.activeConfiguration.targetLoaderId,
+          equals('infinite_universe'));
+
+      workspaceEngine.selectTheme('solar_flare');
+      expect(workspaceEngine.session.activeThemeId, equals('solar_flare'));
+      expect(controller.state.activeConfiguration.selectedThemeId,
+          equals('solar_flare'));
+
+      // 2. Update Animation Config
+      workspaceEngine.updateAnimationConfig(
+          speed: 2.0, intensity: 1.5, scale: 1.2);
+      expect(workspaceEngine.session.configuration.animationSpeed, equals(2.0));
+      expect(workspaceEngine.session.configuration.intensity, equals(1.5));
+      expect(workspaceEngine.session.configuration.scale, equals(1.2));
+
+      // 3. Update Particle Config
+      workspaceEngine.updateParticleConfig(count: 600, size: 3.5, opacity: 0.9);
+      expect(workspaceEngine.session.configuration.particleCount, equals(600));
+      expect(workspaceEngine.session.configuration.particleSize, equals(3.5));
+      expect(
+          workspaceEngine.session.configuration.particleOpacity, equals(0.9));
+
+      // 4. Update Physics Config
+      workspaceEngine.updatePhysicsConfig(gravity: 12.5, velocity: 2.2);
+      expect(workspaceEngine.session.configuration.gravity, equals(12.5));
+      expect(workspaceEngine.session.configuration.velocity, equals(2.2));
+
+      // 5. Update Rendering & Shaders
+      workspaceEngine.updateRenderingConfig(
+          shadersEnabled: false, isInteractive: true);
+      expect(workspaceEngine.session.configuration.shadersEnabled, isFalse);
+      expect(workspaceEngine.session.configuration.isInteractive, isTrue);
+
+      expect(notifiedSession, isNotNull);
+    });
+
+    test('Switches output tab and updates live performance telemetry', () {
+      final controller = StudioV2Controller();
+      final workspaceEngine = StudioWorkspaceEngine(controller: controller);
+
+      workspaceEngine.switchOutputTab(WorkspaceOutputTab.performanceMetrics);
+      expect(workspaceEngine.session.activeOutputTab,
+          equals(WorkspaceOutputTab.performanceMetrics));
+
+      workspaceEngine.updateLivePerformanceTelemetry(
+        fps: 58.2,
+        frameTimeMs: 17.1,
+        activeParticleCount: 450,
+      );
+
+      expect(workspaceEngine.session.liveFps, equals(58.2));
+      expect(workspaceEngine.session.frameTimeMs, equals(17.1));
+      expect(workspaceEngine.session.activeParticleCount, equals(450));
+    });
+
+    test('Generates production-ready Flutter code conforming to configuration',
+        () {
+      final controller = StudioV2Controller();
+      final workspaceEngine = StudioWorkspaceEngine(controller: controller);
+
+      workspaceEngine.selectLoader('quantum_void');
+      workspaceEngine.selectTheme('cyber_galaxy');
+      workspaceEngine.updateAnimationConfig(speed: 1.8);
+      workspaceEngine.updateParticleConfig(count: 320);
+
+      final code = workspaceEngine.generateFlutterCode();
+      expect(
+          code,
+          contains(
+              '// Production-ready Flutter Widget generated by Syntrix Studio v2'));
+      expect(code, contains('loaderId: \'quantum_void\''));
+      expect(code, contains('themeId: \'cyber_galaxy\''));
+      expect(code, contains('speed: 1.8'));
+      expect(code, contains('particleCount: 320'));
+    });
+  });
+
+  group('Phase 10.2: Studio Workspace Renderer', () {
+    test('Renders ASCII 4-quadrant layout, Markdown summary, and JSON data',
+        () {
+      final controller = StudioV2Controller();
+      final workspaceEngine = StudioWorkspaceEngine(controller: controller);
+
+      workspaceEngine.selectLoader('infinite_universe');
+      workspaceEngine.selectTheme('deep_space');
+      workspaceEngine.updateLivePerformanceTelemetry(
+        fps: 60.0,
+        frameTimeMs: 16.6,
+        activeParticleCount: 200,
+      );
+
+      // 1. ASCII layout
+      final ascii =
+          StudioWorkspaceRenderer.renderAsciiWorkspace(workspaceEngine.session);
+      expect(ascii, contains('STUDIO v2 UNIFIED TOOLBAR'));
+      expect(ascii, contains('NAVIGATION & SELECTION'));
+      expect(ascii, contains('LIVE PREVIEW VIEWPORT'));
+      expect(ascii, contains('CONFIGURATION INSPECTOR'));
+      expect(ascii, contains('WORKSPACE OUTPUT'));
+      expect(ascii, contains('infinite_universe'));
+
+      // 2. Markdown status report
+      final markdown = StudioWorkspaceRenderer.renderMarkdown(
+          workspaceEngine.session, workspaceEngine);
+      expect(markdown, contains('# Unified Studio Workspace Status'));
+      expect(markdown, contains('**Active Loader:** `infinite_universe`'));
+      expect(markdown, contains('60 FPS'));
+      expect(markdown, contains('```dart'));
+
+      // 3. JSON schema
+      final json = StudioWorkspaceRenderer.renderJson(workspaceEngine.session);
+      expect(json, contains('"active_loader_id": "infinite_universe"'));
+      expect(json, contains('"live_fps": 60.0'));
+    });
+  });
+}
