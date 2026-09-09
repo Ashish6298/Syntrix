@@ -1,4 +1,4 @@
-﻿# ==========================================
+# ==========================================
 # SYNTRIX (FLUTTER PACKAGE STUDIO) .GITIGNORE
 # ==========================================
 
@@ -27,13 +27,14 @@ packages/*/doc/api/
 docs/_site/
 .docusaurus/
 
-# Coverage, Test & Audit Reports
-coverage/
-coverage.lcov
-report/
-reports/
-audit-report.json
-test-results.json
+# Coverage, Test & Audit Reports (root-only output directories)
+/coverage/
+/coverage.lcov
+/report/
+/reports/
+/audit-report.json
+/test-results.json
+packages/*/coverage/
 *.lcov
 *.g.dart
 *.freezed.dart
