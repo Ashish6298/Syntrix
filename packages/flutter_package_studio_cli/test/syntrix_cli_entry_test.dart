@@ -83,10 +83,75 @@ environment:
       tempDir.deleteSync(recursive: true);
     });
 
-    test('Running syntrix --help outputs runner usage', () async {
-      // args CommandRunner handles --help by printing usage and returning null/0
+    test('getHelp contains all categories and commands', () {
+      final help = CommandRegistry.getHelp(enableColor: false);
+      expect(help, contains('Global options'));
+      expect(help, contains('Package & templates'));
+      expect(help, contains('AI engineering'));
+      expect(help, contains('Analysis & audit'));
+      expect(help, contains('Release & publishing'));
+
+      // Check commands exist in help
+      expect(help, contains('create'));
+      expect(help, contains('template'));
+      expect(help, contains('plugin'));
+      expect(help, contains('registry'));
+
+      expect(help, contains('ai'));
+      expect(help, contains('review'));
+      expect(help, contains('debug'));
+      expect(help, contains('plan'));
+      expect(help, contains('modify'));
+      expect(help, contains('doc'));
+      expect(help, contains('docs'));
+      expect(help, contains('memory'));
+      expect(help, contains('project'));
+
+      expect(help, contains('audit'));
+      expect(help, contains('architecture'));
+      expect(help, contains('deps'));
+      expect(help, contains('security'));
+      expect(help, contains('test'));
+      expect(help, contains('release-readiness'));
+
+      expect(help, contains('release'));
+      expect(help, contains('publish'));
+    });
+
+    test('Running syntrix --help outputs custom styled help and exits 0', () async {
       final exitCode = await registry.run(['--help']);
-      expect(exitCode, isIn([0, 64]));
+      expect(exitCode, 0);
+    });
+
+    test('Deep execution test for all registered commands in help list', () async {
+      // 1. Package & templates
+      expect(await registry.run(['template', 'list']), 0);
+      expect(await registry.run(['plugin', 'list']), 0);
+      expect(await registry.run(['registry', 'list']), 0);
+
+      // 2. AI engineering
+      expect(await registry.run(['project', '--help']), 0);
+      expect(await registry.run(['project', 'context', '--help']), 0);
+      expect(await registry.run(['docs']), 0);
+      expect(await registry.run(['doc', '--help']), 0);
+      expect(await registry.run(['ai', '--help']), 0);
+      expect(await registry.run(['review', '--help']), 0);
+      expect(await registry.run(['debug', '--help']), 0);
+      expect(await registry.run(['plan', '--help']), 0);
+      expect(await registry.run(['modify', '--help']), 0);
+      expect(await registry.run(['memory', '--help']), 0);
+
+      // 3. Analysis & audit
+      expect(await registry.run(['architecture', '--help']), 0);
+      expect(await registry.run(['deps', '--help']), 0);
+      expect(await registry.run(['security', '--help']), 0);
+      expect(await registry.run(['test', '--help']), 0);
+      expect(await registry.run(['release-readiness', '--help']), 0);
+
+      // 4. Release & publishing
+      expect(await registry.run(['release']), 0);
+      expect(await registry.run(['publish']), 0);
     });
   });
 }
+

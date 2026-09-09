@@ -105,15 +105,112 @@ class CommandRegistry {
     return buffer.toString();
   }
 
+  /// Formats and returns the stylized terminal SYNTRIX help output matching the approved design.
+  static String getHelp({bool enableColor = true}) {
+    String hex(String hexCode, String text, {bool bold = false}) {
+      if (!enableColor) return text;
+      final clean = hexCode.replaceAll('#', '');
+      final r = int.parse(clean.substring(0, 2), radix: 16);
+      final g = int.parse(clean.substring(2, 4), radix: 16);
+      final b = int.parse(clean.substring(4, 6), radix: 16);
+      final boldCode = bold ? '\x1B[1m' : '';
+      return '\x1B[38;2;$r;$g;${b}m$boldCode$text\x1B[0m';
+    }
 
+    final purple = (String t) => hex('#AFA9EC', t);
+    final purpleDim = (String t) => hex('#7F77DD', t, bold: true);
+    final muted = (String t) => hex('#8a8d90', t);
+    final desc = (String t) => hex('#9a9d9f', t);
+    final footer = (String t) => hex('#5f6265', t);
+    final white = (String t) => hex('#f2f1ec', t, bold: true);
 
+    final glyph = purpleDim('⬢');
+
+    String pad(String label, int width) {
+      return label + ' ' * (width - label.length > 0 ? width - label.length : 1);
+    }
+
+    final buffer = StringBuffer();
+    buffer.writeln();
+    buffer.writeln('  $glyph  ${white('S Y N T R I X')}');
+    buffer.writeln(
+        '     ${muted('Enterprise-grade tools & AI engineering for Flutter & Dart packages')}');
+    buffer.writeln();
+
+    buffer.writeln('  ${muted('Usage')}');
+    buffer.writeln(
+        '    ${desc('syntrix')} ${purple('<command>')} ${desc('[arguments]')}');
+    buffer.writeln();
+
+    void printSection(String title, List<List<String>> items, int keyWidth) {
+      buffer.writeln('  ${muted(title)}');
+      for (final pair in items) {
+        final key = pair[0];
+        final description = pair[1];
+        buffer.writeln('    ${purple(pad(key, keyWidth))}${desc(description)}');
+      }
+      buffer.writeln();
+    }
+
+    final globalOptions = [
+      ['-h, --help', 'print this usage information'],
+      ['-V, --version', 'print the current Syntrix CLI version'],
+      ['-v, --verbose', 'enable verbose logging output'],
+      ['--audit', 'run the package audit engine against current directory'],
+    ];
+    printSection('Global options', globalOptions, 16);
+
+    final packageAndTemplates = [
+      ['create', 'create a new production-ready Flutter package template'],
+      ['template', 'discover, compose, test, and publish templates'],
+      ['plugin', 'manage Flutter Package Studio plugins and extensions'],
+      ['registry', 'manage remote template registries for the marketplace'],
+    ];
+    printSection('Package & templates', packageAndTemplates, 12);
+
+    final aiEngineering = [
+      ['ai', 'unified AI command center for review, debug, test, and plan'],
+      ['review', 'generate structured AI code review findings'],
+      ['debug', 'diagnose defects with tiered certainty causes'],
+      ['plan', 'convert requests into structured 9-stage implementation plans'],
+      ['modify', 'propose, preview, and apply AI-assisted code modifications'],
+      ['doc', 'generate grounded docs or verify doc consistency'],
+      ['docs', 'generate API documentation and site assets'],
+      ['memory', 'query and manage persistent engineering session memory'],
+      ['project', 'inspect and analyze project workspace context'],
+    ];
+    printSection('AI engineering', aiEngineering, 12);
+
+    final analysisAudit = [
+      ['audit', 'audit package structure, standards, and compatibility'],
+      ['architecture', 'analyze circular dependencies and layering violations'],
+      ['deps', 'analyze dependency versions, conflicts, and upgrade risk'],
+      ['security', 'analyze secret exposures and credential handling risks'],
+      ['test', 'analyze coverage gaps and generate candidate test proposals'],
+      ['release-readiness', 'evaluate release candidate readiness across all gates'],
+    ];
+    printSection('Analysis & audit', analysisAudit, 20);
+
+    final releasePublishing = [
+      ['release', 'orchestrate versioning, changelogs, and release tags'],
+      ['publish', 'publish the package to pub.dev or private servers'],
+    ];
+    printSection('Release & publishing', releasePublishing, 12);
+
+    buffer.writeln('     ${footer('─' * 64)}');
+    buffer.writeln(
+        '     ${footer('Run "syntrix help <command>" for details on any command.')}');
+    buffer.writeln();
+
+    return buffer.toString();
+  }
 
   /// Runs the CLI application with the given [arguments].
   ///
   /// Catch and handle exceptions gracefully to prevent application crashes.
   Future<int> run(List<String> arguments) async {
     try {
-      // If run with no arguments, display the Syntrix welcome banner with the 2 primary commands.
+      // If run with no arguments, display the Syntrix welcome banner.
       if (arguments.isEmpty) {
         print(getBanner());
         return 0;
@@ -121,6 +218,15 @@ class CommandRegistry {
 
       if (arguments.contains('--version') || arguments.contains('-V')) {
         print('Syntrix CLI v$version (Flutter Package Studio)');
+        return 0;
+      }
+
+      // Top-level help interception for exact custom formatting
+      if (arguments.length == 1 &&
+          (arguments.contains('--help') ||
+              arguments.contains('-h') ||
+              arguments.contains('help'))) {
+        print(getHelp());
         return 0;
       }
 
@@ -133,7 +239,6 @@ class CommandRegistry {
       }
 
       final argResults = runner.parse(arguments);
-
 
       // Update verbosity level if verbose flag is set.
       if (argResults['verbose'] == true) {
@@ -161,4 +266,5 @@ class CommandRegistry {
     }
   }
 }
+
 
