@@ -1,41 +1,74 @@
-# ==========================================
-# FLUTTER PACKAGE STUDIO — MONOREPO .GITIGNORE
+﻿# ==========================================
+# SYNTRIX (FLUTTER PACKAGE STUDIO) .GITIGNORE
 # ==========================================
 
-# Dart & Flutter generated files
+# Dart & Flutter Build & Cache
 .dart_tool/
 .packages
 .pub/
 pubspec.lock
 build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter_plugins
+.flutter_plugins_dependencies
 
-# Documentation & API outputs
+# AI & IDE Extension Caches
+.qodo/
+.gemini/
+.claude/
+.copilot/
+.cursor/
+.continue/
+
+# Documentation & API Exports
 doc/api/
 packages/*/doc/api/
+docs/_site/
+.docusaurus/
 
-# Coverage & Test reports
+# Coverage, Test & Audit Reports
 coverage/
 coverage.lcov
+report/
+reports/
+audit-report.json
+test-results.json
+*.lcov
 *.g.dart
+*.freezed.dart
 
-# Sensitive/Confidential Environment & Credentials
+# Sensitive, Confidential & Private Files
 .env
 .env.*
+!.env.example
 *.pem
 *.key
 *.p12
 *.pfx
+*.keystore
+*.jks
 secrets.yaml
+secrets.json
 credentials.json
 github_token.txt
+api_keys.yaml
+token.json
+service-account*.json
+*.private
 
-# Local Developer Overrides & CLI Cache
+# Local CLI State, Overrides & Memory
 local_config.yaml
 fps.yaml
 .fps/
+.syntrix/
+syntrix_memory.json
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# IDE & Code Editor files
+# IDE & Editor Configurations
 .idea/
 .vscode/
 *.swp
@@ -44,13 +77,24 @@ fps.yaml
 *.ntvs*
 *.njsproj
 *.sln
+*.sublime-workspace
+*.sublime-project
 
-# OS Generated Files
+# OS System Files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 desktop.ini
 
-# Temporary & System artifacts
+# Temporary, Scratch & Cache Artifacts
 tmp/
 temp/
 *.tmp
+*.bak
+*.swp
+*~
+*.orig
