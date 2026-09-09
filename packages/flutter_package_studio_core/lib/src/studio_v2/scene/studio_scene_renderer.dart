@@ -9,7 +9,8 @@ import 'package:flutter_package_studio_core/src/studio_v2/scene/studio_scene_eng
 class StudioSceneRenderer {
   /// Render scene as structured JSON.
   static String renderJson(VisualSceneDescriptor scene, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(scene.toJson());
   }
 
@@ -17,7 +18,8 @@ class StudioSceneRenderer {
   static String renderAsciiSceneTree(VisualSceneDescriptor scene) {
     final buffer = StringBuffer();
 
-    buffer.writeln('Scene: ${scene.name} (${scene.width.toInt()}x${scene.height.toInt()})');
+    buffer.writeln(
+        'Scene: ${scene.name} (${scene.width.toInt()}x${scene.height.toInt()})');
     final count = scene.layers.length;
 
     for (int i = 0; i < count; i++) {
@@ -26,16 +28,19 @@ class StudioSceneRenderer {
       final branch = isLast ? '└──' : '├──';
       final vis = layer.isVisible ? '✓' : '✗';
 
-      buffer.writeln('$branch ${layer.name} [z:${layer.zIndex}, op:${layer.opacity.toStringAsFixed(2)}, vis:$vis]');
+      buffer.writeln(
+          '$branch ${layer.name} [z:${layer.zIndex}, op:${layer.opacity.toStringAsFixed(2)}, vis:$vis]');
       final indent = isLast ? '    ' : '│   ';
-      buffer.writeln('$indent└── Ref: ${layer.componentReference} (${layer.layerType.displayName})');
+      buffer.writeln(
+          '$indent└── Ref: ${layer.componentReference} (${layer.layerType.displayName})');
     }
 
     return buffer.toString();
   }
 
   /// Render scene hierarchy as clean Markdown documentation.
-  static String renderMarkdown(VisualSceneDescriptor scene, StudioSceneBuilderEngine engine) {
+  static String renderMarkdown(
+      VisualSceneDescriptor scene, StudioSceneBuilderEngine engine) {
     final buffer = StringBuffer();
 
     buffer.writeln('# Visual Scene Builder: ${scene.name}');
@@ -48,10 +53,12 @@ class StudioSceneRenderer {
 
     buffer.writeln('## Layer Hierarchy');
     buffer.writeln();
-    buffer.writeln('| Z-Index | Layer Name | Type | Component Reference | Opacity | Visible |');
+    buffer.writeln(
+        '| Z-Index | Layer Name | Type | Component Reference | Opacity | Visible |');
     buffer.writeln('|:---:|---|---|---|:---:|:---:|');
     for (final l in scene.layers) {
-      buffer.writeln('| `${l.zIndex}` | **${l.name}** | `${l.layerType.displayName}` | `${l.componentReference}` | `${(l.opacity * 100).toInt()}%` | ${l.isVisible ? "✓" : "✗"} |');
+      buffer.writeln(
+          '| `${l.zIndex}` | **${l.name}** | `${l.layerType.displayName}` | `${l.componentReference}` | `${(l.opacity * 100).toInt()}%` | ${l.isVisible ? "✓" : "✗"} |');
     }
     buffer.writeln();
 

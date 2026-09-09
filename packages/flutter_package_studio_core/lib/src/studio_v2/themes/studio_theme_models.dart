@@ -1,8 +1,6 @@
 /// Domain models and theme palette descriptors for Phase 10.6: Theme & Visual System Studio.
 library;
 
-import 'dart:convert';
-
 /// Representation of a color in HEX format for theme palettes.
 class ThemeColorDefinition {
   final String role; // primary, accent, background, glow, particle
@@ -82,7 +80,8 @@ class StudioThemeDescriptor {
       backgroundColor: backgroundColor ?? this.backgroundColor,
       particleGlowColor: particleGlowColor ?? this.particleGlowColor,
       defaultParticleSize: defaultParticleSize ?? this.defaultParticleSize,
-      defaultParticleOpacity: defaultParticleOpacity ?? this.defaultParticleOpacity,
+      defaultParticleOpacity:
+          defaultParticleOpacity ?? this.defaultParticleOpacity,
       supportedLoaderIds: supportedLoaderIds ?? this.supportedLoaderIds,
       visualProperties: visualProperties ?? this.visualProperties,
       isCustom: isCustom ?? this.isCustom,
@@ -109,18 +108,22 @@ class StudioThemeDescriptor {
       name: json['name'] as String? ?? 'Unnamed Theme',
       description: json['description'] as String? ?? '',
       palette: (json['palette'] as List<dynamic>?)
-              ?.map((c) => ThemeColorDefinition.fromJson(c as Map<String, dynamic>))
+              ?.map((c) =>
+                  ThemeColorDefinition.fromJson(c as Map<String, dynamic>))
               .toList() ??
           const [],
       backgroundColor: json['background_color'] as String? ?? '#0B0D1B',
       particleGlowColor: json['particle_glow_color'] as String? ?? '#4F46E5',
-      defaultParticleSize: (json['default_particle_size'] as num?)?.toDouble() ?? 2.0,
-      defaultParticleOpacity: (json['default_particle_opacity'] as num?)?.toDouble() ?? 0.8,
+      defaultParticleSize:
+          (json['default_particle_size'] as num?)?.toDouble() ?? 2.0,
+      defaultParticleOpacity:
+          (json['default_particle_opacity'] as num?)?.toDouble() ?? 0.8,
       supportedLoaderIds: (json['supported_loader_ids'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           const [],
-      visualProperties: (json['visual_properties'] as Map<String, dynamic>?) ?? const {},
+      visualProperties:
+          (json['visual_properties'] as Map<String, dynamic>?) ?? const {},
       isCustom: json['is_custom'] as bool? ?? false,
     );
   }

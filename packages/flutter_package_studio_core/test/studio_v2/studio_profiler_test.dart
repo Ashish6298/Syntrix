@@ -3,7 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   group('Phase 10.10: Performance Profiler Models', () {
-    test('FrameSubsystemTimings, PerformanceSnapshot, and PerformanceDeltaComparison JSON roundtrip', () {
+    test(
+        'FrameSubsystemTimings, PerformanceSnapshot, and PerformanceDeltaComparison JSON roundtrip',
+        () {
       const timings = FrameSubsystemTimings(
         animationProcessingMs: 1.5,
         particleProcessingMs: 4.2,
@@ -42,7 +44,9 @@ void main() {
   });
 
   group('Phase 10.10: Studio Profiler Engine Operations', () {
-    test('Captures snapshots, switches profiler modes, and computes comparison deltas', () {
+    test(
+        'Captures snapshots, switches profiler modes, and computes comparison deltas',
+        () {
       final controller = StudioV2Controller();
       final profiler = StudioProfilerEngine(controller: controller);
 
@@ -88,7 +92,9 @@ void main() {
   });
 
   group('Phase 10.10: Studio Profiler Renderer', () {
-    test('Renders ASCII Profiler Breakdown, Markdown Comparison, and JSON state', () {
+    test(
+        'Renders ASCII Profiler Breakdown, Markdown Comparison, and JSON state',
+        () {
       final controller = StudioV2Controller();
       final profiler = StudioProfilerEngine(controller: controller);
 
@@ -105,7 +111,8 @@ void main() {
       );
 
       // 1. ASCII Wireframe
-      final ascii = StudioProfilerRenderer.renderAsciiProfiler(snapA, mode: ProfilerMode.live);
+      final ascii = StudioProfilerRenderer.renderAsciiProfiler(snapA,
+          mode: ProfilerMode.live);
       expect(ascii, contains('PERFORMANCE PROFILER: [MODE: LIVE        ]'));
       expect(ascii, contains('Subsystem Frame Processing Breakdown:'));
       expect(ascii, contains('Animation Processing:'));
@@ -114,7 +121,8 @@ void main() {
 
       // 2. Markdown Comparison Sheet
       final comparison = profiler.compareSnapshots(snapA, snapB);
-      final markdown = StudioProfilerRenderer.renderComparisonMarkdown(comparison);
+      final markdown =
+          StudioProfilerRenderer.renderComparisonMarkdown(comparison);
       expect(markdown, contains('# Performance Snapshot Comparison'));
       expect(markdown, contains('## Subsystem Timings Breakdown'));
       expect(markdown, contains('**FPS**'));

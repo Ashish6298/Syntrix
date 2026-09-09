@@ -15,7 +15,8 @@ class EnterpriseCredentialRenderer {
   }
 
   /// Renders structured Markdown credential registry report.
-  String renderMarkdown(List<CredentialReference> references, {List<SecretAvailabilityResult>? availabilityChecks}) {
+  String renderMarkdown(List<CredentialReference> references,
+      {List<SecretAvailabilityResult>? availabilityChecks}) {
     final buffer = StringBuffer();
 
     buffer.writeln('# Enterprise Credential References Report');
@@ -25,14 +26,16 @@ class EnterpriseCredentialRenderer {
     buffer.writeln();
 
     buffer.writeln('## Security Guarantee');
-    buffer.writeln('> 🛡️ **Zero Secret Exposure Guarantee**: Plaintext values are never stored or displayed. References only provide non-sensitive metadata for execution boundary injection.');
+    buffer.writeln(
+        '> 🛡️ **Zero Secret Exposure Guarantee**: Plaintext values are never stored or displayed. References only provide non-sensitive metadata for execution boundary injection.');
     buffer.writeln();
 
     if (availabilityChecks != null && availabilityChecks.isNotEmpty) {
       buffer.writeln('## Secret Availability Checks');
       for (final check in availabilityChecks) {
         final icon = check.isAvailable ? '✅' : '❌';
-        buffer.writeln('- $icon **`${check.key}`**: ${check.isAvailable ? "Available" : "Missing"} via `${check.providerType.displayName}`');
+        buffer.writeln(
+            '- $icon **`${check.key}`**: ${check.isAvailable ? "Available" : "Missing"} via `${check.providerType.displayName}`');
       }
       buffer.writeln();
     }
@@ -43,13 +46,15 @@ class EnterpriseCredentialRenderer {
     } else {
       for (final ref in references) {
         buffer.writeln('### 🔑 Reference: `${ref.key}`');
-        buffer.writeln('- **Provider**: `${ref.providerType.displayName}` (`${ref.providerId}`)');
+        buffer.writeln(
+            '- **Provider**: `${ref.providerType.displayName}` (`${ref.providerId}`)');
         buffer.writeln('- **Allowed Scope**: `${ref.scope.id}`');
         if (ref.description.isNotEmpty) {
           buffer.writeln('- **Description**: ${ref.description}');
         }
         if (ref.expiresAt != null) {
-          buffer.writeln('- **Expires**: `${ref.expiresAt!.toIso8601String()}`');
+          buffer
+              .writeln('- **Expires**: `${ref.expiresAt!.toIso8601String()}`');
         }
         buffer.writeln();
       }

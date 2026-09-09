@@ -71,7 +71,8 @@ void main() {
         notifiedState = state;
       });
 
-      expect(previewEngine.state.playbackState, equals(LivePreviewPlaybackState.playing));
+      expect(previewEngine.state.playbackState,
+          equals(LivePreviewPlaybackState.playing));
 
       // Pause
       previewEngine.pause();
@@ -83,21 +84,25 @@ void main() {
 
       // Restart animation
       previewEngine.restartAnimation();
-      expect(previewEngine.state.playbackState, equals(LivePreviewPlaybackState.playing));
+      expect(previewEngine.state.playbackState,
+          equals(LivePreviewPlaybackState.playing));
 
       // Reset
-      controller.updateConfiguration((cfg) => cfg.copyWith(animationSpeed: 3.5));
+      controller
+          .updateConfiguration((cfg) => cfg.copyWith(animationSpeed: 3.5));
       previewEngine.resetConfiguration();
       expect(previewEngine.state.configuration.animationSpeed, equals(1.0));
 
       // Viewport mode
       previewEngine.setViewportMode(PreviewViewportMode.fullscreen);
-      expect(previewEngine.state.viewportMode, equals(PreviewViewportMode.fullscreen));
+      expect(previewEngine.state.viewportMode,
+          equals(PreviewViewportMode.fullscreen));
 
       expect(notifiedState, isNotNull);
     });
 
-    test('Frame timing sampling records metrics and calculates FPS dynamically', () {
+    test('Frame timing sampling records metrics and calculates FPS dynamically',
+        () {
       final controller = StudioV2Controller();
       final previewEngine = StudioLivePreviewEngine(controller: controller);
 
@@ -119,7 +124,8 @@ void main() {
   });
 
   group('Phase 10.5: Studio Preview Renderer', () {
-    test('Renders ASCII Viewport wireframe, Markdown telemetry, and JSON state', () {
+    test('Renders ASCII Viewport wireframe, Markdown telemetry, and JSON state',
+        () {
       final controller = StudioV2Controller();
       final previewEngine = StudioLivePreviewEngine(controller: controller);
 
@@ -133,13 +139,18 @@ void main() {
       ));
 
       // 1. ASCII Viewport
-      final ascii = StudioPreviewRenderer.renderAsciiViewport(previewEngine.state);
+      final ascii =
+          StudioPreviewRenderer.renderAsciiViewport(previewEngine.state);
       expect(ascii, contains('LIVE PREVIEW VIEWPORT'));
       expect(ascii, contains('Telemetry: FPS:'));
-      expect(ascii, contains('Controls:  [Pause/Play] [Restart] [Reset] [Toggle Fullscreen]'));
+      expect(
+          ascii,
+          contains(
+              'Controls:  [Pause/Play] [Restart] [Reset] [Toggle Fullscreen]'));
 
       // 2. Markdown Report
-      final markdown = StudioPreviewRenderer.renderMarkdown(previewEngine.state);
+      final markdown =
+          StudioPreviewRenderer.renderMarkdown(previewEngine.state);
       expect(markdown, contains('# Live Preview Engine Telemetry'));
       expect(markdown, contains('**Current Framerate**'));
       expect(markdown, contains('FPS'));

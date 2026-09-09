@@ -1,8 +1,6 @@
 /// Domain models for Phase 9.7: Enterprise Security Policy & Compliance Engine.
 library;
 
-import 'dart:convert';
-
 /// Standard Enterprise Compliance Profiles.
 enum EnterpriseComplianceProfile {
   standard,
@@ -37,7 +35,8 @@ enum EnterpriseComplianceProfile {
   static EnterpriseComplianceProfile fromString(String? val) {
     if (val == null) return EnterpriseComplianceProfile.standard;
     return EnterpriseComplianceProfile.values.firstWhere(
-      (e) => e.name.toLowerCase() == val.toLowerCase() ||
+      (e) =>
+          e.name.toLowerCase() == val.toLowerCase() ||
           e.displayName.toLowerCase() == val.toLowerCase(),
       orElse: () => EnterpriseComplianceProfile.custom,
     );
@@ -139,7 +138,8 @@ class EnterpriseSecurityCompliancePolicy {
   });
 
   /// Factory creating compliance policies by predefined profile presets.
-  factory EnterpriseSecurityCompliancePolicy.fromProfile(EnterpriseComplianceProfile profile) {
+  factory EnterpriseSecurityCompliancePolicy.fromProfile(
+      EnterpriseComplianceProfile profile) {
     switch (profile) {
       case EnterpriseComplianceProfile.financial:
       case EnterpriseComplianceProfile.government:
@@ -215,24 +215,41 @@ class EnterpriseSecurityCompliancePolicy {
         'prohibited_network_endpoints': prohibitedNetworkEndpoints,
       };
 
-  factory EnterpriseSecurityCompliancePolicy.fromJson(Map<String, dynamic> json) {
+  factory EnterpriseSecurityCompliancePolicy.fromJson(
+      Map<String, dynamic> json) {
     return EnterpriseSecurityCompliancePolicy(
-      profile: EnterpriseComplianceProfile.fromString(json['profile'] as String?),
+      profile:
+          EnterpriseComplianceProfile.fromString(json['profile'] as String?),
       requireZeroSecrets: json['require_zero_secrets'] as bool? ?? true,
-      requireEncryptedArtifacts: json['require_encrypted_artifacts'] as bool? ?? false,
-      enforceSensitiveFileExclusion: json['enforce_sensitive_file_exclusion'] as bool? ?? true,
-      requireCredentialIsolation: json['require_credential_isolation'] as bool? ?? true,
-      enforceSourceExposureRules: json['enforce_source_exposure_rules'] as bool? ?? true,
-      requireFormalSecurityReview: json['require_formal_security_review'] as bool? ?? false,
-      maxAllowedCriticalFindings: json['max_allowed_critical_findings'] as int? ?? 0,
+      requireEncryptedArtifacts:
+          json['require_encrypted_artifacts'] as bool? ?? false,
+      enforceSensitiveFileExclusion:
+          json['enforce_sensitive_file_exclusion'] as bool? ?? true,
+      requireCredentialIsolation:
+          json['require_credential_isolation'] as bool? ?? true,
+      enforceSourceExposureRules:
+          json['enforce_source_exposure_rules'] as bool? ?? true,
+      requireFormalSecurityReview:
+          json['require_formal_security_review'] as bool? ?? false,
+      maxAllowedCriticalFindings:
+          json['max_allowed_critical_findings'] as int? ?? 0,
       maxAllowedHighFindings: json['max_allowed_high_findings'] as int? ?? 0,
-      maxAllowedMediumFindings: json['max_allowed_medium_findings'] as int? ?? 5,
-      mandatorySecurityGates: (json['mandatory_security_gates'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          const ['secret_detection', 'sensitive_file_filter', 'dependency_security_audit'],
+      maxAllowedMediumFindings:
+          json['max_allowed_medium_findings'] as int? ?? 5,
+      mandatorySecurityGates:
+          (json['mandatory_security_gates'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toList() ??
+              const [
+                'secret_detection',
+                'sensitive_file_filter',
+                'dependency_security_audit'
+              ],
       prohibitedNetworkEndpoints:
-          (json['prohibited_network_endpoints'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+          (json['prohibited_network_endpoints'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toList() ??
+              const [],
     );
   }
 }
@@ -288,25 +305,36 @@ class SecurityComplianceAssessmentResult {
         'timestamp': timestamp.toIso8601String(),
       };
 
-  factory SecurityComplianceAssessmentResult.fromJson(Map<String, dynamic> json) {
+  factory SecurityComplianceAssessmentResult.fromJson(
+      Map<String, dynamic> json) {
     return SecurityComplianceAssessmentResult(
       isCompliant: json['is_compliant'] as bool? ?? false,
       isBlocked: json['is_blocked'] as bool? ?? true,
       targetProject: json['target_project'] as String? ?? 'unknown',
-      profile: EnterpriseComplianceProfile.fromString(json['profile'] as String?),
+      profile:
+          EnterpriseComplianceProfile.fromString(json['profile'] as String?),
       controlFindings: (json['control_findings'] as List<dynamic>?)
-              ?.map((f) => ComplianceControlFinding.fromJson(f as Map<String, dynamic>))
+              ?.map((f) =>
+                  ComplianceControlFinding.fromJson(f as Map<String, dynamic>))
               .toList() ??
           const [],
-      passedGates: (json['passed_gates'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
-      failedGates: (json['failed_gates'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+      passedGates: (json['passed_gates'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      failedGates: (json['failed_gates'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
       totalControlsEvaluated: json['total_controls_evaluated'] as int? ?? 0,
       criticalViolations: json['critical_violations'] as int? ?? 0,
       highViolations: json['high_violations'] as int? ?? 0,
       mediumViolations: json['medium_violations'] as int? ?? 0,
       summary: json['summary'] as String? ?? '',
       durationMs: json['duration_ms'] as int? ?? 0,
-      timestamp: json['timestamp'] is String ? DateTime.parse(json['timestamp'] as String) : DateTime.now(),
+      timestamp: json['timestamp'] is String
+          ? DateTime.parse(json['timestamp'] as String)
+          : DateTime.now(),
     );
   }
 }

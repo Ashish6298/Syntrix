@@ -32,7 +32,8 @@ void main() {
   });
 
   group('Phase 10.6: Studio Theme Engine Operations', () {
-    test('Browses default themes and applies theme to controller workspace', () {
+    test('Browses default themes and applies theme to controller workspace',
+        () {
       final controller = StudioV2Controller();
       final themeEngine = StudioThemeEngine(controller: controller);
 
@@ -40,10 +41,12 @@ void main() {
 
       // Apply theme
       themeEngine.applyTheme('cyber_galaxy');
-      expect(controller.state.activeConfiguration.selectedThemeId, equals('cyber_galaxy'));
+      expect(controller.state.activeConfiguration.selectedThemeId,
+          equals('cyber_galaxy'));
 
       themeEngine.applyTheme('aurora_cosmos');
-      expect(controller.state.activeConfiguration.selectedThemeId, equals('aurora_cosmos'));
+      expect(controller.state.activeConfiguration.selectedThemeId,
+          equals('aurora_cosmos'));
     });
 
     test('Duplicates theme creating custom variation', () {
@@ -82,21 +85,24 @@ void main() {
   });
 
   group('Phase 10.6: Studio Theme Renderer', () {
-    test('Renders ASCII Theme Card, Markdown Catalog, and JSON Theme Array', () {
+    test('Renders ASCII Theme Card, Markdown Catalog, and JSON Theme Array',
+        () {
       final controller = StudioV2Controller();
       final themeEngine = StudioThemeEngine(controller: controller);
 
       final theme = themeEngine.getTheme('cyber_galaxy')!;
 
       // 1. ASCII Card
-      final card = StudioThemeRenderer.renderThemeCardAscii(theme, isActive: true);
+      final card =
+          StudioThemeRenderer.renderThemeCardAscii(theme, isActive: true);
       expect(card, contains('Cyber Galaxy'));
       expect(card, contains('ACTIVE'));
       expect(card, contains('Palette Swatch:'));
       expect(card, contains('Background:  #090A1A'));
 
       // 2. Markdown Catalog
-      final catalogMd = StudioThemeRenderer.renderMarkdownCatalog(themeEngine.allThemes, themeEngine);
+      final catalogMd = StudioThemeRenderer.renderMarkdownCatalog(
+          themeEngine.allThemes, themeEngine);
       expect(catalogMd, contains('# Theme & Visual System Studio Catalog'));
       expect(catalogMd, contains('Deep Space'));
       expect(catalogMd, contains('Cyber Galaxy'));

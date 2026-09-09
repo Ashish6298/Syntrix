@@ -29,7 +29,8 @@ class EnterpriseApprovalEngine {
     _loadHistory();
   }
 
-  File get _historyFile => File(p.join(_projectRoot, '.fps', 'approval', 'approval_history.jsonl'));
+  File get _historyFile =>
+      File(p.join(_projectRoot, '.fps', 'approval', 'approval_history.jsonl'));
 
   /// Creates a new formal release approval request.
   Future<ApprovalRequest> createApprovalRequest({
@@ -42,15 +43,19 @@ class EnterpriseApprovalEngine {
     Map<String, dynamic> metadata = const {},
   }) async {
     final now = DateTime.now();
-    final requestId = 'appr_${now.millisecondsSinceEpoch}_${candidateName}_$candidateVersion';
+    final requestId =
+        'appr_${now.millisecondsSinceEpoch}_${candidateName}_$candidateVersion';
 
     // Verify pre-approval technical gates
-    final missingGates = policy.requiredPreApprovalGates.where(
-      (gate) => !satisfiedTechnicalGates.contains(gate),
-    ).toList();
+    final missingGates = policy.requiredPreApprovalGates
+        .where(
+          (gate) => !satisfiedTechnicalGates.contains(gate),
+        )
+        .toList();
 
     if (missingGates.isNotEmpty) {
-      _logger.warning('Creating approval request with missing technical gates: $missingGates');
+      _logger.warning(
+          'Creating approval request with missing technical gates: $missingGates');
     }
 
     final request = ApprovalRequest(
@@ -70,7 +75,8 @@ class EnterpriseApprovalEngine {
 
     _requests[requestId] = request;
     _persistRequest(request);
-    _logger.info('Created release approval request: $requestId for $candidateName@$candidateVersion');
+    _logger.info(
+        'Created release approval request: $requestId for $candidateName@$candidateVersion');
 
     return request;
   }
@@ -88,7 +94,8 @@ class EnterpriseApprovalEngine {
     }
 
     if (req.status != ApprovalStatus.pending) {
-      throw StateError('Cannot vote on request in terminal status "${req.status.name}".');
+      throw StateError(
+          'Cannot vote on request in terminal status "${req.status.name}".');
     }
 
     if (req.isExpired) {
@@ -98,7 +105,8 @@ class EnterpriseApprovalEngine {
       return expired;
     }
 
-    final voterRole = voter.roles.isNotEmpty ? voter.roles.first : EnterpriseRole.readOnly;
+    final voterRole =
+        voter.roles.isNotEmpty ? voter.roles.first : EnterpriseRole.readOnly;
     final vote = ApprovalVote(
       voterId: voter.id,
       voterDisplayName: voter.displayName,
@@ -116,18 +124,21 @@ class EnterpriseApprovalEngine {
     if (action == ApprovalVoteAction.reject) {
       newStatus = ApprovalStatus.rejected;
     } else if (action == ApprovalVoteAction.override &&
-        (voter.hasRole(EnterpriseRole.administrator) && req.policy.allowAdminOverride)) {
+        (voter.hasRole(EnterpriseRole.administrator) &&
+            req.policy.allowAdminOverride)) {
       newStatus = ApprovalStatus.approved;
     } else {
       // Check approval counts
       final revCount = updatedVotes
           .where((v) =>
-              (v.voterRole == EnterpriseRole.reviewer || v.voterRole == EnterpriseRole.developer) &&
+              (v.voterRole == EnterpriseRole.reviewer ||
+                  v.voterRole == EnterpriseRole.developer) &&
               v.action == ApprovalVoteAction.approve)
           .length;
       final relCount = updatedVotes
           .where((v) =>
-              (v.voterRole == EnterpriseRole.releaseManager || v.voterRole == EnterpriseRole.administrator) &&
+              (v.voterRole == EnterpriseRole.releaseManager ||
+                  v.voterRole == EnterpriseRole.administrator) &&
               v.action == ApprovalVoteAction.approve)
           .length;
 
@@ -144,7 +155,8 @@ class EnterpriseApprovalEngine {
 
     _requests[requestId] = updated;
     _persistRequest(updated);
-    _logger.info('Submitted vote on $requestId by ${voter.displayName} -> ${action.label}. Status: ${newStatus.label}');
+    _logger.info(
+        'Submitted vote on $requestId by ${voter.displayName} -> ${action.label}. Status: ${newStatus.label}');
 
     return updated;
   }
@@ -156,7 +168,8 @@ class EnterpriseApprovalEngine {
     required String reason,
   }) async {
     final req = _requests[requestId];
-    if (req == null) throw StateError('Approval request "$requestId" not found.');
+    if (req == null)
+      throw StateError('Approval request "$requestId" not found.');
 
     final cancelled = req.copyWith(
       status: ApprovalStatus.cancelled,
@@ -180,7 +193,8 @@ class EnterpriseApprovalEngine {
     }
 
     final req = _requests[requestId];
-    if (req == null) throw StateError('Approval request "$requestId" not found.');
+    if (req == null)
+      throw StateError('Approval request "$requestId" not found.');
 
     final vote = ApprovalVote(
       voterId: adminActor.id,
@@ -199,7 +213,8 @@ class EnterpriseApprovalEngine {
 
     _requests[requestId] = overridden;
     _persistRequest(overridden);
-    _logger.info('Admin override executed on $requestId by ${adminActor.displayName}: $reason');
+    _logger.info(
+        'Admin override executed on $requestId by ${adminActor.displayName}: $reason');
     return overridden;
   }
 
@@ -238,7 +253,8 @@ class EnterpriseApprovalEngine {
       if (!file.parent.existsSync()) {
         file.parent.createSync(recursive: true);
       }
-      file.writeAsStringSync('${jsonEncode(request.toJson())}\n', mode: FileMode.append, flush: true);
+      file.writeAsStringSync('${jsonEncode(request.toJson())}\n',
+          mode: FileMode.append, flush: true);
     } catch (e) {
       _logger.warning('Failed to persist approval record: $e');
     }

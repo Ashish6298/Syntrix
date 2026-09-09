@@ -9,18 +9,26 @@ void main() {
   buf.writeln('  ⬢   S Y N T R I X');
   buf.writeln('`');
   buf.writeln();
-  buf.writeln('**Enterprise-Grade Tools & AI Studio for Flutter and Dart Packages**');
+  buf.writeln(
+      '**Enterprise-Grade Tools & AI Studio for Flutter and Dart Packages**');
   buf.writeln();
-  buf.writeln('*A deterministic, plan-first engineering platform for scaffolding, auditing, documenting, testing, certifying, and publishing production-ready Flutter and Dart packages.*');
+  buf.writeln(
+      '*A deterministic, plan-first engineering platform for scaffolding, auditing, documenting, testing, certifying, and publishing production-ready Flutter and Dart packages.*');
   buf.writeln();
   buf.writeln('---');
   buf.writeln();
-  buf.writeln('[![Dart](https://img.shields.io/badge/Dart-3.5%2B-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)');
-  buf.writeln('[![Flutter](https://img.shields.io/badge/Flutter-3.24%2B-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)');
-  buf.writeln('[![Architecture](https://img.shields.io/badge/Architecture-Dart_Workspace-blue?style=for-the-badge&logo=dart)](https://dart.dev/tools/pub/workspaces)');
-  buf.writeln('[![Tests](https://img.shields.io/badge/Tests-400%2B_Passing-success?style=for-the-badge&logo=checkmarx&logoColor=white)](#testing--verification)');
-  buf.writeln('[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)');
-  buf.writeln('[![Zero Telemetry](https://img.shields.io/badge/Privacy-Zero_Telemetry-9cf?style=for-the-badge)](#security--engineering-safety)');
+  buf.writeln(
+      '[![Dart](https://img.shields.io/badge/Dart-3.5%2B-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)');
+  buf.writeln(
+      '[![Flutter](https://img.shields.io/badge/Flutter-3.24%2B-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)');
+  buf.writeln(
+      '[![Architecture](https://img.shields.io/badge/Architecture-Dart_Workspace-blue?style=for-the-badge&logo=dart)](https://dart.dev/tools/pub/workspaces)');
+  buf.writeln(
+      '[![Tests](https://img.shields.io/badge/Tests-400%2B_Passing-success?style=for-the-badge&logo=checkmarx&logoColor=white)](#testing--verification)');
+  buf.writeln(
+      '[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)');
+  buf.writeln(
+      '[![Zero Telemetry](https://img.shields.io/badge/Privacy-Zero_Telemetry-9cf?style=for-the-badge)](#security--engineering-safety)');
   buf.writeln();
   buf.writeln('</div>');
   buf.writeln();
@@ -29,118 +37,184 @@ void main() {
   buf.writeln('## 🧭 Navigation Matrix');
   buf.writeln();
   buf.writeln('`');
-  buf.writeln('┌───────────────────────────────────────────────────────────────────────────────────────────────────┐');
-  buf.writeln('│                                       SYNTRIX ARCHITECTURE                                        │');
-  buf.writeln('├───────────────────────────────────┬───────────────────────────────────┬───────────────────────────┤');
-  buf.writeln('│ 01. Why Syntrix? (vs flutter create) │ 02. Architecture & Design         │ 03. Template Engineering  │');
-  buf.writeln('│ 04. Deterministic Audit Engine    │ 05. AI Command Center             │ 06. Documentation System  │');
-  buf.writeln('│ 07. Testing & Quality Gates       │ 08. Complete CLI Reference        │ 09. Quick Start Guide     │');
-  buf.writeln('└───────────────────────────────────┴───────────────────────────────────┴───────────────────────────┘');
+  buf.writeln(
+      '┌───────────────────────────────────────────────────────────────────────────────────────────────────┐');
+  buf.writeln(
+      '│                                       SYNTRIX ARCHITECTURE                                        │');
+  buf.writeln(
+      '├───────────────────────────────────┬───────────────────────────────────┬───────────────────────────┤');
+  buf.writeln(
+      '│ 01. Why Syntrix? (vs flutter create) │ 02. Architecture & Design         │ 03. Template Engineering  │');
+  buf.writeln(
+      '│ 04. Deterministic Audit Engine    │ 05. AI Command Center             │ 06. Documentation System  │');
+  buf.writeln(
+      '│ 07. Testing & Quality Gates       │ 08. Complete CLI Reference        │ 09. Quick Start Guide     │');
+  buf.writeln(
+      '└───────────────────────────────────┴───────────────────────────────────┴───────────────────────────┘');
   buf.writeln('`');
   buf.writeln();
   buf.writeln('| Section | Focus Areas | Primary Target |');
   buf.writeln('| :--- | :--- | :--- |');
-  buf.writeln('| **[What is Syntrix?](#what-is-syntrix)** | Overview, design philosophy, and core execution model | Architecture & Concept |');
-  buf.writeln('| **[Why Syntrix over lutter create?](#why-syntrix-over-flutter-create)** | Feature-by-feature comparison matrix vs traditional tooling | Decision Makers & Engineers |');
-  buf.writeln('| **[Architecture at a Glance](#architecture-at-a-glance)** | Workspace structure, DI, logging, and decoupling | Core Contributors |');
-  buf.writeln('| **[01. Template & Package Engineering](#01-template--package-engineering)** | Discovery, composition, schema validation, and customization | Package Authors |');
-  buf.writeln('| **[02. Deterministic Audit & Analysis](#02-deterministic-audit--analysis)** | Structural audits, architectural layering, dependency risk | QA & Security Leads |');
-  buf.writeln('| **[03. AI Engineering Command Center](#03-ai-engineering-command-center)** | Review, debug, plan, modify, docs, and memory | AI-Assisted Workflows |');
-  buf.writeln('| **[04. Documentation Engine](#04-documentation-engine)** | Markdown, Mermaid diagrams, API references, websites | Documentation Teams |');
-  buf.writeln('| **[05. Testing & Certification](#05-testing--certification)** | Test scaffolding, regression baselines, release hardening | Release Engineers |');
-  buf.writeln('| **[Complete CLI Reference](#complete-cli-reference)** | All 5 command categories, flags, and JSON output | Terminal Users |');
-  buf.writeln('| **[Quick Start Guide](#quick-start-guide)** | Global activation, scaffolding, auditing, and publishing | New Users |');
+  buf.writeln(
+      '| **[What is Syntrix?](#what-is-syntrix)** | Overview, design philosophy, and core execution model | Architecture & Concept |');
+  buf.writeln(
+      '| **[Why Syntrix over lutter create?](#why-syntrix-over-flutter-create)** | Feature-by-feature comparison matrix vs traditional tooling | Decision Makers & Engineers |');
+  buf.writeln(
+      '| **[Architecture at a Glance](#architecture-at-a-glance)** | Workspace structure, DI, logging, and decoupling | Core Contributors |');
+  buf.writeln(
+      '| **[01. Template & Package Engineering](#01-template--package-engineering)** | Discovery, composition, schema validation, and customization | Package Authors |');
+  buf.writeln(
+      '| **[02. Deterministic Audit & Analysis](#02-deterministic-audit--analysis)** | Structural audits, architectural layering, dependency risk | QA & Security Leads |');
+  buf.writeln(
+      '| **[03. AI Engineering Command Center](#03-ai-engineering-command-center)** | Review, debug, plan, modify, docs, and memory | AI-Assisted Workflows |');
+  buf.writeln(
+      '| **[04. Documentation Engine](#04-documentation-engine)** | Markdown, Mermaid diagrams, API references, websites | Documentation Teams |');
+  buf.writeln(
+      '| **[05. Testing & Certification](#05-testing--certification)** | Test scaffolding, regression baselines, release hardening | Release Engineers |');
+  buf.writeln(
+      '| **[Complete CLI Reference](#complete-cli-reference)** | All 5 command categories, flags, and JSON output | Terminal Users |');
+  buf.writeln(
+      '| **[Quick Start Guide](#quick-start-guide)** | Global activation, scaffolding, auditing, and publishing | New Users |');
   buf.writeln();
   buf.writeln('---');
   buf.writeln();
   buf.writeln('## What is Syntrix?');
   buf.writeln();
-  buf.writeln('**Syntrix** (also known as *Flutter Package Studio*) is a complete engineering workbench for Flutter and Dart package authors.');
+  buf.writeln(
+      '**Syntrix** (also known as *Flutter Package Studio*) is a complete engineering workbench for Flutter and Dart package authors.');
   buf.writeln();
-  buf.writeln('Standard package development often relies on fragile manual steps: running a basic generator, hand-editing configuration files, guessing dependency compatibility, manually writing Markdown docs, and hoping tests pass before publishing to pub.dev.');
+  buf.writeln(
+      'Standard package development often relies on fragile manual steps: running a basic generator, hand-editing configuration files, guessing dependency compatibility, manually writing Markdown docs, and hoping tests pass before publishing to pub.dev.');
   buf.writeln();
-  buf.writeln('Syntrix turns this ad-hoc process into a **deterministic, plan-first, enterprise-grade pipeline**:');
+  buf.writeln(
+      'Syntrix turns this ad-hoc process into a **deterministic, plan-first, enterprise-grade pipeline**:');
   buf.writeln();
-  buf.writeln('1. **Scaffold with Precision**: Compose multi-layer templates with strict schema validation and parameter substitution.');
-  buf.writeln('2. **Audit with Zero Guesswork**: 5-profile automated audits verifying structure, pedantic lints, public API doc coverage, platform compatibility, and repository assets.');
-  buf.writeln('3. **AI-Assisted Acceleration**: 13 integrated AI engineering tools spanning automated code reviews, root-cause debugging, 9-stage implementation planning, and persistent engineering session memory.');
-  buf.writeln('4. **Automated Documentation**: Generate comprehensive Markdown docs, interactive Mermaid diagrams, code examples, screenshot/GIF galleries, and static documentation sites.');
-  buf.writeln('5. **Rigorous Quality Gates**: Automated regression tracking, test project generation, dependency conflict analysis, and release certification before publishing.');
+  buf.writeln(
+      '1. **Scaffold with Precision**: Compose multi-layer templates with strict schema validation and parameter substitution.');
+  buf.writeln(
+      '2. **Audit with Zero Guesswork**: 5-profile automated audits verifying structure, pedantic lints, public API doc coverage, platform compatibility, and repository assets.');
+  buf.writeln(
+      '3. **AI-Assisted Acceleration**: 13 integrated AI engineering tools spanning automated code reviews, root-cause debugging, 9-stage implementation planning, and persistent engineering session memory.');
+  buf.writeln(
+      '4. **Automated Documentation**: Generate comprehensive Markdown docs, interactive Mermaid diagrams, code examples, screenshot/GIF galleries, and static documentation sites.');
+  buf.writeln(
+      '5. **Rigorous Quality Gates**: Automated regression tracking, test project generation, dependency conflict analysis, and release certification before publishing.');
   buf.writeln();
   buf.writeln('---');
   buf.writeln();
   buf.writeln('## Why Syntrix over flutter create?');
   buf.writeln();
-  buf.writeln('While flutter create --template=package provides a bare-bones skeleton, it leaves all heavy engineering, maintenance, testing, and documentation to the developer. Syntrix is engineered to fill this gap.');
+  buf.writeln(
+      'While flutter create --template=package provides a bare-bones skeleton, it leaves all heavy engineering, maintenance, testing, and documentation to the developer. Syntrix is engineered to fill this gap.');
   buf.writeln();
   buf.writeln('`');
   buf.writeln('Traditional Workflow (flutter create):');
-  buf.writeln('  flutter create ──► Manual Structure ──► Manual Docs ──► Manual Testing ──► Unverified pub.dev publish');
-  buf.writeln('                                                                                       ▲ (High Risk)');
+  buf.writeln(
+      '  flutter create ──► Manual Structure ──► Manual Docs ──► Manual Testing ──► Unverified pub.dev publish');
+  buf.writeln(
+      '                                                                                       ▲ (High Risk)');
   buf.writeln('Syntrix Engineering Pipeline:');
-  buf.writeln('  syntrix create ──► Template Composition ──► Deterministic Audit ──► AI Review ──► Release Gate ──► Certified Release');
-  buf.writeln('                                                                                                        ▲ (Zero Risk)');
+  buf.writeln(
+      '  syntrix create ──► Template Composition ──► Deterministic Audit ──► AI Review ──► Release Gate ──► Certified Release');
+  buf.writeln(
+      '                                                                                                        ▲ (Zero Risk)');
   buf.writeln('`');
   buf.writeln();
   buf.writeln('### Feature Comparison Matrix');
   buf.writeln();
-  buf.writeln('| Feature / Capability | lutter create | Mason / VeryGoodCli | **Syntrix (Flutter Package Studio)** |');
+  buf.writeln(
+      '| Feature / Capability | lutter create | Mason / VeryGoodCli | **Syntrix (Flutter Package Studio)** |');
   buf.writeln('| :--- | :---: | :---: | :---: |');
-  buf.writeln('| **Scaffolding Core** | Basic skeleton | Brick-based scaffolding | **Multi-layered, composable template engine** |');
-  buf.writeln('| **Execution Model** | Direct write | Direct write | **Plan-First (Preview before mutation)** |');
-  buf.writeln('| **Audit Engine** | ❌ None | ❌ None | **✅ 5-Profile deterministic audit (basic, standard, strict, elease)** |');
-  buf.writeln('| **AI Command Center** | ❌ None | ❌ None | **✅ 13 AI tools (Review, Debug, Plan, Modify, Memory, etc.)** |');
-  buf.writeln('| **Architectural Analysis** | ❌ None | ❌ None | **✅ Circular dependency detection & layer violation checks** |');
-  buf.writeln('| **Dependency Risk Engine** | ❌ None | ❌ None | **✅ Dependency conflict analysis & upgrade risk scoring** |');
-  buf.writeln('| **Security & Secret Scanner**| ❌ None | ❌ None | **✅ Hardcoded secrets & credential exposure detection** |');
-  buf.writeln('| **Documentation Pipeline** | Minimal README | Static template | **✅ Mermaid diagrams, API references, Examples, Site builder** |');
-  buf.writeln('| **Media & Asset Management**| ❌ None | ❌ None | **✅ Automated screenshot managers & GIF pipelines** |');
-  buf.writeln('| **Testing Infrastructure** | 1 sample test | Standard test setup | **✅ Automated test project generators & regression baselines** |');
-  buf.writeln('| **Release Hardening** | ❌ None | ❌ None | **✅ Release readiness evaluation & gate certification** |');
-  buf.writeln('| **JSON Machine Output** | ❌ None | ❌ None | **✅ --json flag on all commands for CI/CD automation** |');
-  buf.writeln('| **Safety Guarantees** | ❌ None | ❌ None | **✅ Path traversal prevention & atomic write rollback** |');
+  buf.writeln(
+      '| **Scaffolding Core** | Basic skeleton | Brick-based scaffolding | **Multi-layered, composable template engine** |');
+  buf.writeln(
+      '| **Execution Model** | Direct write | Direct write | **Plan-First (Preview before mutation)** |');
+  buf.writeln(
+      '| **Audit Engine** | ❌ None | ❌ None | **✅ 5-Profile deterministic audit (basic, standard, strict, elease)** |');
+  buf.writeln(
+      '| **AI Command Center** | ❌ None | ❌ None | **✅ 13 AI tools (Review, Debug, Plan, Modify, Memory, etc.)** |');
+  buf.writeln(
+      '| **Architectural Analysis** | ❌ None | ❌ None | **✅ Circular dependency detection & layer violation checks** |');
+  buf.writeln(
+      '| **Dependency Risk Engine** | ❌ None | ❌ None | **✅ Dependency conflict analysis & upgrade risk scoring** |');
+  buf.writeln(
+      '| **Security & Secret Scanner**| ❌ None | ❌ None | **✅ Hardcoded secrets & credential exposure detection** |');
+  buf.writeln(
+      '| **Documentation Pipeline** | Minimal README | Static template | **✅ Mermaid diagrams, API references, Examples, Site builder** |');
+  buf.writeln(
+      '| **Media & Asset Management**| ❌ None | ❌ None | **✅ Automated screenshot managers & GIF pipelines** |');
+  buf.writeln(
+      '| **Testing Infrastructure** | 1 sample test | Standard test setup | **✅ Automated test project generators & regression baselines** |');
+  buf.writeln(
+      '| **Release Hardening** | ❌ None | ❌ None | **✅ Release readiness evaluation & gate certification** |');
+  buf.writeln(
+      '| **JSON Machine Output** | ❌ None | ❌ None | **✅ --json flag on all commands for CI/CD automation** |');
+  buf.writeln(
+      '| **Safety Guarantees** | ❌ None | ❌ None | **✅ Path traversal prevention & atomic write rollback** |');
   buf.writeln();
   buf.writeln('---');
   buf.writeln();
   buf.writeln('## Architecture at a Glance');
   buf.writeln();
-  buf.writeln('Syntrix is built as a modular Dart workspace targeting modern **Dart SDK >=3.5.0 <4.0.0** and **Flutter >=3.24.0**.');
+  buf.writeln(
+      'Syntrix is built as a modular Dart workspace targeting modern **Dart SDK >=3.5.0 <4.0.0** and **Flutter >=3.24.0**.');
   buf.writeln();
   buf.writeln('`');
   buf.writeln('Syntrix/');
   buf.writeln('├── packages/');
-  buf.writeln('│   ├── flutter_package_studio_core/    # Core architectural library (DI, Engine, AI, Audits)');
+  buf.writeln(
+      '│   ├── flutter_package_studio_core/    # Core architectural library (DI, Engine, AI, Audits)');
   buf.writeln('│   │   ├── lib/');
   buf.writeln('│   │   │   ├── src/');
-  buf.writeln('│   │   │   │   ├── ai/                 # AI engineering, planning, review & debugging');
-  buf.writeln('│   │   │   │   ├── catalog/            # Built-in template repository & manifest schemas');
-  buf.writeln('│   │   │   │   ├── compatibility/      # Flutter & Dart SDK matrix compatibility engine');
-  buf.writeln('│   │   │   │   ├── di/                 # IoC container & dependency injection');
-  buf.writeln('│   │   │   │   ├── enterprise/         # Architecture, security & dependency analyzers');
-  buf.writeln('│   │   │   │   ├── logging/            # ANSI truecolor structured logger');
-  buf.writeln('│   │   │   │   ├── release_hardening/  # Audit profiles, quality gates & release certs');
-  buf.writeln('│   │   │   │   ├── repository/         # GitHub & Git workflow integrations');
-  buf.writeln('│   │   │   │   ├── studio_v2/          # V2 Pipeline orchestration & documentation');
-  buf.writeln('│   │   │   │   ├── template/           # Template composition, tokens & customization');
-  buf.writeln('│   │   │   │   ├── validation/         # Path safety, semver & parameter validators');
-  buf.writeln('│   │   │   │   └── wizard/             # Interactive terminal configuration wizard');
+  buf.writeln(
+      '│   │   │   │   ├── ai/                 # AI engineering, planning, review & debugging');
+  buf.writeln(
+      '│   │   │   │   ├── catalog/            # Built-in template repository & manifest schemas');
+  buf.writeln(
+      '│   │   │   │   ├── compatibility/      # Flutter & Dart SDK matrix compatibility engine');
+  buf.writeln(
+      '│   │   │   │   ├── di/                 # IoC container & dependency injection');
+  buf.writeln(
+      '│   │   │   │   ├── enterprise/         # Architecture, security & dependency analyzers');
+  buf.writeln(
+      '│   │   │   │   ├── logging/            # ANSI truecolor structured logger');
+  buf.writeln(
+      '│   │   │   │   ├── release_hardening/  # Audit profiles, quality gates & release certs');
+  buf.writeln(
+      '│   │   │   │   ├── repository/         # GitHub & Git workflow integrations');
+  buf.writeln(
+      '│   │   │   │   ├── studio_v2/          # V2 Pipeline orchestration & documentation');
+  buf.writeln(
+      '│   │   │   │   ├── template/           # Template composition, tokens & customization');
+  buf.writeln(
+      '│   │   │   │   ├── validation/         # Path safety, semver & parameter validators');
+  buf.writeln(
+      '│   │   │   │   └── wizard/             # Interactive terminal configuration wizard');
   buf.writeln('│   │   │   └── flutter_package_studio_core.dart');
-  buf.writeln('│   │   ├── test/                       # 400+ comprehensive core unit & integration tests');
+  buf.writeln(
+      '│   │   ├── test/                       # 400+ comprehensive core unit & integration tests');
   buf.writeln('│   │   └── pubspec.yaml');
   buf.writeln('│   │');
-  buf.writeln('│   └── flutter_package_studio_cli/     # Native CLI application (syntrix and ps)');
+  buf.writeln(
+      '│   └── flutter_package_studio_cli/     # Native CLI application (syntrix and ps)');
   buf.writeln('│       ├── bin/');
-  buf.writeln('│       │   └── fps.dart                # Executable entry point');
+  buf.writeln(
+      '│       │   └── fps.dart                # Executable entry point');
   buf.writeln('│       ├── lib/');
   buf.writeln('│       │   ├── src/');
-  buf.writeln('│       │   │   ├── base_command.dart   # Command abstraction with DI injection');
-  buf.writeln('│       │   │   ├── command_registry.dart # Stylized splash, help & dynamic registration');
-  buf.writeln('│       │   │   └── commands/           # 25+ production CLI commands');
+  buf.writeln(
+      '│       │   │   ├── base_command.dart   # Command abstraction with DI injection');
+  buf.writeln(
+      '│       │   │   ├── command_registry.dart # Stylized splash, help & dynamic registration');
+  buf.writeln(
+      '│       │   │   └── commands/           # 25+ production CLI commands');
   buf.writeln('│       │   └── flutter_package_studio_cli.dart');
-  buf.writeln('│       ├── test/                       # CLI integration & argument parsing tests');
+  buf.writeln(
+      '│       ├── test/                       # CLI integration & argument parsing tests');
   buf.writeln('│       └── pubspec.yaml');
   buf.writeln('│');
-  buf.writeln('├── pubspec.yaml                        # Dart workspace manifest');
+  buf.writeln(
+      '├── pubspec.yaml                        # Dart workspace manifest');
   buf.writeln('└── LICENSE                             # MIT License');
   buf.writeln('`');
   buf.writeln();
@@ -150,12 +224,17 @@ void main() {
   buf.writeln();
   buf.writeln('### 01. Template & Package Engineering');
   buf.writeln();
-  buf.writeln('Syntrix treats package generation as a verified mathematical pipeline.');
+  buf.writeln(
+      'Syntrix treats package generation as a verified mathematical pipeline.');
   buf.writeln();
-  buf.writeln('* **Composable Templates**: Combine multiple modular templates (e.g., core-engine + ui-components + plugin-ffi) into a unified workspace.');
-  buf.writeln('* **Schema Validation**: Every template is backed by a strict YAML schema validating required parameters, types, and constraints before touching the disk.');
-  buf.writeln('* **Smart Token Substitution**: Supports casing transformations (pascalCase, camelCase, snake_case, kebab-case, constantCase).');
-  buf.writeln('* **Path Safety**: Strict sanitization blocks path traversal attacks (../) and enforces absolute path normalization.');
+  buf.writeln(
+      '* **Composable Templates**: Combine multiple modular templates (e.g., core-engine + ui-components + plugin-ffi) into a unified workspace.');
+  buf.writeln(
+      '* **Schema Validation**: Every template is backed by a strict YAML schema validating required parameters, types, and constraints before touching the disk.');
+  buf.writeln(
+      '* **Smart Token Substitution**: Supports casing transformations (pascalCase, camelCase, snake_case, kebab-case, constantCase).');
+  buf.writeln(
+      '* **Path Safety**: Strict sanitization blocks path traversal attacks (../) and enforces absolute path normalization.');
   buf.writeln();
   buf.writeln('`ash');
   buf.writeln('# Discover available templates');
@@ -165,30 +244,44 @@ void main() {
   buf.writeln('syntrix template inspect flutter_enterprise_package');
   buf.writeln();
   buf.writeln('# Scaffold a new package interactively or via CLI');
-  buf.writeln('syntrix create my_awesome_package --template=flutter_enterprise_package --org=com.myorg');
+  buf.writeln(
+      'syntrix create my_awesome_package --template=flutter_enterprise_package --org=com.myorg');
   buf.writeln('`');
   buf.writeln();
   buf.writeln('---');
   buf.writeln();
   buf.writeln('### 02. Deterministic Audit & Analysis');
   buf.writeln();
-  buf.writeln('Run comprehensive automated quality and compliance checks across your package directory.');
+  buf.writeln(
+      'Run comprehensive automated quality and compliance checks across your package directory.');
   buf.writeln();
   buf.writeln('`');
-  buf.writeln('┌────────────────────────────────────────────────────────────────────────┐');
-  buf.writeln('│                        SYNTRIX AUDIT MATRIX                            │');
-  buf.writeln('├──────────────────────┬─────────────────────────────────────────────────┤');
-  buf.writeln('│ Profile: basic       │ Structure, valid pubspec, entrypoint existence │');
-  buf.writeln('│ Profile: standard    │ Basic + License, README, changelog, pedantic lints│');
-  buf.writeln('│ Profile: strict      │ Standard + 100% public API docs, example folder │');
-  buf.writeln('│ Profile: release     │ Strict + Zero warnings, clean git, passing tests│');
-  buf.writeln('└──────────────────────┴─────────────────────────────────────────────────┘');
+  buf.writeln(
+      '┌────────────────────────────────────────────────────────────────────────┐');
+  buf.writeln(
+      '│                        SYNTRIX AUDIT MATRIX                            │');
+  buf.writeln(
+      '├──────────────────────┬─────────────────────────────────────────────────┤');
+  buf.writeln(
+      '│ Profile: basic       │ Structure, valid pubspec, entrypoint existence │');
+  buf.writeln(
+      '│ Profile: standard    │ Basic + License, README, changelog, pedantic lints│');
+  buf.writeln(
+      '│ Profile: strict      │ Standard + 100% public API docs, example folder │');
+  buf.writeln(
+      '│ Profile: release     │ Strict + Zero warnings, clean git, passing tests│');
+  buf.writeln(
+      '└──────────────────────┴─────────────────────────────────────────────────┘');
   buf.writeln('`');
   buf.writeln();
-  buf.writeln('* **syntrix audit / syntrix --audit**: Executes multi-gate rule validation with actionable terminal reports and exit codes.');
-  buf.writeln('* **syntrix architecture**: Analyzes imports to detect circular dependencies and layering violations.');
-  buf.writeln('* **syntrix deps**: Evaluates outdated dependencies, version locks, and breaking upgrade risks.');
-  buf.writeln('* **syntrix security**: Scans package source for hardcoded secrets, private tokens, and unsafe API usages.');
+  buf.writeln(
+      '* **syntrix audit / syntrix --audit**: Executes multi-gate rule validation with actionable terminal reports and exit codes.');
+  buf.writeln(
+      '* **syntrix architecture**: Analyzes imports to detect circular dependencies and layering violations.');
+  buf.writeln(
+      '* **syntrix deps**: Evaluates outdated dependencies, version locks, and breaking upgrade risks.');
+  buf.writeln(
+      '* **syntrix security**: Scans package source for hardcoded secrets, private tokens, and unsafe API usages.');
   buf.writeln();
   buf.writeln('`ash');
   buf.writeln('# Run standard audit');
@@ -202,36 +295,52 @@ void main() {
   buf.writeln();
   buf.writeln('### 03. AI Engineering Command Center');
   buf.writeln();
-  buf.writeln('Syntrix embeds **13 AI-powered engineering tools** directly into your terminal, designed specifically for Dart and Flutter semantics.');
+  buf.writeln(
+      'Syntrix embeds **13 AI-powered engineering tools** directly into your terminal, designed specifically for Dart and Flutter semantics.');
   buf.writeln();
   buf.writeln('`');
   buf.writeln('                         ┌─────────────────────────┐');
   buf.writeln('                         │   SYNTRIX AI ENGINE     │');
   buf.writeln('                         └────────────┬────────────┘');
   buf.writeln('                                      │');
-  buf.writeln('       ┌──────────────┬───────────────┼───────────────┬──────────────┐');
-  buf.writeln('       ↓              ↓               ↓               ↓              ↓');
-  buf.writeln('  syntrix review  syntrix debug   syntrix plan    syntrix modify  syntrix memory');
-  buf.writeln('  Code quality &  Root cause &    9-stage task    Safe AST-aware  Session state &');
-  buf.writeln('  lint analysis   fix proposal    decomposition   code transforms context cache');
+  buf.writeln(
+      '       ┌──────────────┬───────────────┼───────────────┬──────────────┐');
+  buf.writeln(
+      '       ↓              ↓               ↓               ↓              ↓');
+  buf.writeln(
+      '  syntrix review  syntrix debug   syntrix plan    syntrix modify  syntrix memory');
+  buf.writeln(
+      '  Code quality &  Root cause &    9-stage task    Safe AST-aware  Session state &');
+  buf.writeln(
+      '  lint analysis   fix proposal    decomposition   code transforms context cache');
   buf.writeln('`');
   buf.writeln();
-  buf.writeln('* **syntrix review**: Deep semantic code review against Flutter best practices, performance bottlenecks, and memory leaks.');
-  buf.writeln('* **syntrix debug**: Evaluates stack traces, error outputs, and source context to identify root causes with tiered certainty.');
-  buf.writeln('* **syntrix plan**: Converts natural language feature requirements into structured 9-stage engineering execution plans.');
-  buf.writeln('* **syntrix modify**: Previews and applies safe, AST-grounded code transformations.');
-  buf.writeln('* **syntrix memory**: Maintains engineering session context and cross-session knowledge caches.');
+  buf.writeln(
+      '* **syntrix review**: Deep semantic code review against Flutter best practices, performance bottlenecks, and memory leaks.');
+  buf.writeln(
+      '* **syntrix debug**: Evaluates stack traces, error outputs, and source context to identify root causes with tiered certainty.');
+  buf.writeln(
+      '* **syntrix plan**: Converts natural language feature requirements into structured 9-stage engineering execution plans.');
+  buf.writeln(
+      '* **syntrix modify**: Previews and applies safe, AST-grounded code transformations.');
+  buf.writeln(
+      '* **syntrix memory**: Maintains engineering session context and cross-session knowledge caches.');
   buf.writeln();
   buf.writeln('---');
   buf.writeln();
   buf.writeln('### 04. Automated Documentation System');
   buf.writeln();
-  buf.writeln('Produce publication-grade documentation automatically without manual drafting.');
+  buf.writeln(
+      'Produce publication-grade documentation automatically without manual drafting.');
   buf.writeln();
-  buf.writeln('* **API Reference Generator**: Parses Dart docstrings and builds searchable reference documents.');
-  buf.writeln('* **Mermaid Diagram Generator**: Reverse-engineers classes, state machines, and dependency graphs into interactive Mermaid syntax.');
-  buf.writeln('* **Code Example Builder**: Validates and formats working runnable examples directly from your test suite.');
-  buf.writeln('* **Static Site Builder**: Assembles markdown, diagrams, and API docs into an exportable static web documentation portal.');
+  buf.writeln(
+      '* **API Reference Generator**: Parses Dart docstrings and builds searchable reference documents.');
+  buf.writeln(
+      '* **Mermaid Diagram Generator**: Reverse-engineers classes, state machines, and dependency graphs into interactive Mermaid syntax.');
+  buf.writeln(
+      '* **Code Example Builder**: Validates and formats working runnable examples directly from your test suite.');
+  buf.writeln(
+      '* **Static Site Builder**: Assembles markdown, diagrams, and API docs into an exportable static web documentation portal.');
   buf.writeln();
   buf.writeln('`ash');
   buf.writeln('# Generate architecture documentation and Mermaid diagrams');
@@ -245,9 +354,12 @@ void main() {
   buf.writeln();
   buf.writeln('### 05. Testing, Quality & Release Certification');
   buf.writeln();
-  buf.writeln('* **Isolated Test Environments**: Generates hermetic test sandboxes without polluting the main workspace.');
-  buf.writeln('* **Regression Baseline Tracking**: Compares current test execution times and memory allocations against historical baselines.');
-  buf.writeln('* **Release Readiness Gate**: Evaluates package compliance against pub.dev score criteria, changelog consistency, and semantic version bumps before triggering syntrix publish.');
+  buf.writeln(
+      '* **Isolated Test Environments**: Generates hermetic test sandboxes without polluting the main workspace.');
+  buf.writeln(
+      '* **Regression Baseline Tracking**: Compares current test execution times and memory allocations against historical baselines.');
+  buf.writeln(
+      '* **Release Readiness Gate**: Evaluates package compliance against pub.dev score criteria, changelog consistency, and semantic version bumps before triggering syntrix publish.');
   buf.writeln();
   buf.writeln('---');
   buf.writeln('## Complete CLI Reference');
@@ -256,7 +368,8 @@ void main() {
   buf.writeln();
   buf.writeln('`');
   buf.writeln('  ⬢  S Y N T R I X');
-  buf.writeln('     Enterprise-grade tools & AI engineering for Flutter & Dart packages');
+  buf.writeln(
+      '     Enterprise-grade tools & AI engineering for Flutter & Dart packages');
   buf.writeln();
   buf.writeln('  Usage');
   buf.writeln('    syntrix <command> [arguments]');
@@ -265,49 +378,73 @@ void main() {
   buf.writeln('### Global Options');
   buf.writeln('| Flag | Abbreviation | Description |');
   buf.writeln('| :--- | :---: | :--- |');
-  buf.writeln('| --help | -h | Display usage information and available commands |');
+  buf.writeln(
+      '| --help | -h | Display usage information and available commands |');
   buf.writeln('| --version | -V | Print current Syntrix CLI version |');
   buf.writeln('| --verbose | -v | Enable verbose debug logging output |');
-  buf.writeln('| --audit | | Fast-action flag to audit package structure in current directory |');
+  buf.writeln(
+      '| --audit | | Fast-action flag to audit package structure in current directory |');
   buf.writeln();
   buf.writeln('### 1. Package & Templates');
   buf.writeln('| Command | Description |');
   buf.writeln('| :--- | :--- |');
-  buf.writeln('| syntrix create <name> | Scaffold a new production-ready Flutter/Dart package |');
-  buf.writeln('| syntrix template list | Discover and list installed and remote templates |');
-  buf.writeln('| syntrix template inspect <id> | Inspect metadata, inputs, and structure of a template |');
-  buf.writeln('| syntrix template compose | Combine multiple templates into a unified blueprint |');
+  buf.writeln(
+      '| syntrix create <name> | Scaffold a new production-ready Flutter/Dart package |');
+  buf.writeln(
+      '| syntrix template list | Discover and list installed and remote templates |');
+  buf.writeln(
+      '| syntrix template inspect <id> | Inspect metadata, inputs, and structure of a template |');
+  buf.writeln(
+      '| syntrix template compose | Combine multiple templates into a unified blueprint |');
   buf.writeln('| syntrix plugin | Manage Syntrix CLI plugins and extensions |');
-  buf.writeln('| syntrix registry | Manage remote template registries for the marketplace |');
+  buf.writeln(
+      '| syntrix registry | Manage remote template registries for the marketplace |');
   buf.writeln();
   buf.writeln('### 2. AI Engineering');
   buf.writeln('| Command | Description |');
   buf.writeln('| :--- | :--- |');
-  buf.writeln('| syntrix ai | Unified AI command center for review, debug, test, and plan |');
-  buf.writeln('| syntrix review | Generate structured AI code review findings for your package |');
-  buf.writeln('| syntrix debug | Diagnose defects and exceptions with tiered certainty causes |');
-  buf.writeln('| syntrix plan | Convert requests into structured 9-stage implementation plans |');
-  buf.writeln('| syntrix modify | Propose, preview, and apply AI-assisted code modifications |');
-  buf.writeln('| syntrix doc | Generate grounded documentation or verify doc consistency |');
-  buf.writeln('| syntrix docs | Generate API documentation, diagrams, and static site assets |');
-  buf.writeln('| syntrix memory | Query and manage persistent engineering session memory |');
-  buf.writeln('| syntrix project | Inspect and analyze project workspace context |');
+  buf.writeln(
+      '| syntrix ai | Unified AI command center for review, debug, test, and plan |');
+  buf.writeln(
+      '| syntrix review | Generate structured AI code review findings for your package |');
+  buf.writeln(
+      '| syntrix debug | Diagnose defects and exceptions with tiered certainty causes |');
+  buf.writeln(
+      '| syntrix plan | Convert requests into structured 9-stage implementation plans |');
+  buf.writeln(
+      '| syntrix modify | Propose, preview, and apply AI-assisted code modifications |');
+  buf.writeln(
+      '| syntrix doc | Generate grounded documentation or verify doc consistency |');
+  buf.writeln(
+      '| syntrix docs | Generate API documentation, diagrams, and static site assets |');
+  buf.writeln(
+      '| syntrix memory | Query and manage persistent engineering session memory |');
+  buf.writeln(
+      '| syntrix project | Inspect and analyze project workspace context |');
   buf.writeln();
   buf.writeln('### 3. Analysis & Audit');
   buf.writeln('| Command | Description |');
   buf.writeln('| :--- | :--- |');
-  buf.writeln('| syntrix audit | Audit package structure, standards, and compatibility |');
-  buf.writeln('| syntrix architecture | Analyze circular dependencies and layering violations |');
-  buf.writeln('| syntrix deps | Analyze dependency versions, conflicts, and upgrade risk |');
-  buf.writeln('| syntrix security | Scan for hardcoded secret exposures and credential handling risks |');
-  buf.writeln('| syntrix test | Analyze coverage gaps and generate candidate test proposals |');
-  buf.writeln('| syntrix release-readiness| Evaluate release candidate readiness across all quality gates |');
+  buf.writeln(
+      '| syntrix audit | Audit package structure, standards, and compatibility |');
+  buf.writeln(
+      '| syntrix architecture | Analyze circular dependencies and layering violations |');
+  buf.writeln(
+      '| syntrix deps | Analyze dependency versions, conflicts, and upgrade risk |');
+  buf.writeln(
+      '| syntrix security | Scan for hardcoded secret exposures and credential handling risks |');
+  buf.writeln(
+      '| syntrix test | Analyze coverage gaps and generate candidate test proposals |');
+  buf.writeln(
+      '| syntrix release-readiness| Evaluate release candidate readiness across all quality gates |');
   buf.writeln();
   buf.writeln('### 4. Release & Publishing');
   buf.writeln('| Command | Description |');
   buf.writeln('| :--- | :--- |');
-  buf.writeln('| syntrix release | Orchestrate semantic versioning, changelogs, and release tags |');
-  buf.writeln('| syntrix publish | Validate and publish the package to pub.dev or private servers |');
+  buf.writeln(
+      '| syntrix release | Orchestrate semantic versioning, changelogs, and release tags |');
+  buf.writeln(
+      '| syntrix publish | Validate and publish the package to pub.dev or private servers |');
   buf.writeln();
   buf.writeln('---');
   buf.writeln();
@@ -319,7 +456,8 @@ void main() {
   buf.writeln();
   buf.writeln('`ash');
   buf.writeln('# Activate globally from your workspace or pub.dev');
-  buf.writeln('dart pub global activate --source path ./packages/flutter_package_studio_cli');
+  buf.writeln(
+      'dart pub global activate --source path ./packages/flutter_package_studio_cli');
   buf.writeln();
   buf.writeln('# Verify installation');
   buf.writeln('syntrix --version');
@@ -327,7 +465,8 @@ void main() {
   buf.writeln();
   buf.writeln('### 2. Launch Welcome Hub');
   buf.writeln();
-  buf.writeln('Running syntrix without arguments opens the clean interactive dashboard:');
+  buf.writeln(
+      'Running syntrix without arguments opens the clean interactive dashboard:');
   buf.writeln();
   buf.writeln('`	ext');
   buf.writeln('                 ⬢  S Y N T R I X');
@@ -357,7 +496,8 @@ void main() {
   buf.writeln('syntrix create my_package \\');
   buf.writeln('  --template=flutter_enterprise_package \\');
   buf.writeln('  --org=com.syntrix \\');
-  buf.writeln('  --description=High-performance reactive caching layer for Flutter.');
+  buf.writeln(
+      '  --description=High-performance reactive caching layer for Flutter.');
   buf.writeln('`');
   buf.writeln();
   buf.writeln('### 4. Run Package Health Audit');
@@ -371,45 +511,58 @@ void main() {
   buf.writeln();
   buf.writeln('## Security & Engineering Safety');
   buf.writeln();
-  buf.writeln('Syntrix is engineered from the ground up with defensive safety guarantees:');
+  buf.writeln(
+      'Syntrix is engineered from the ground up with defensive safety guarantees:');
   buf.writeln();
-  buf.writeln('* **Preview-First Execution**: Destructive operations always provide dry-run / plan previews by default.');
-  buf.writeln('* **Path Traversal Guards**: Strict input validation prevents escaping target directories (../ attacks).');
-  buf.writeln('* **Zero Telemetry**: Syntrix does not collect, transmit, or store private codebase data or user telemetry.');
-  buf.writeln('* **Hermetic Execution**: Audits and sandboxes operate in isolated workspaces without modifying ambient system configurations.');
+  buf.writeln(
+      '* **Preview-First Execution**: Destructive operations always provide dry-run / plan previews by default.');
+  buf.writeln(
+      '* **Path Traversal Guards**: Strict input validation prevents escaping target directories (../ attacks).');
+  buf.writeln(
+      '* **Zero Telemetry**: Syntrix does not collect, transmit, or store private codebase data or user telemetry.');
+  buf.writeln(
+      '* **Hermetic Execution**: Audits and sandboxes operate in isolated workspaces without modifying ambient system configurations.');
   buf.writeln();
   buf.writeln('---');
   buf.writeln();
   buf.writeln('## Testing & Verification');
   buf.writeln();
-  buf.writeln('The Syntrix workspace includes an extensive suite of automated tests verifying every layer of the architecture:');
+  buf.writeln(
+      'The Syntrix workspace includes an extensive suite of automated tests verifying every layer of the architecture:');
   buf.writeln();
   buf.writeln('`ash');
   buf.writeln('# Run all workspace tests');
   buf.writeln('dart test');
   buf.writeln('`');
   buf.writeln();
-  buf.writeln('* **Core Test Suite**: 400+ unit and integration tests covering DI, template parsing, schema validation, AI planning, and release verification.');
-  buf.writeln('* **CLI Test Suite**: End-to-end command runner tests, option parsing, JSON output schema compliance, and exit code validation.');
+  buf.writeln(
+      '* **Core Test Suite**: 400+ unit and integration tests covering DI, template parsing, schema validation, AI planning, and release verification.');
+  buf.writeln(
+      '* **CLI Test Suite**: End-to-end command runner tests, option parsing, JSON output schema compliance, and exit code validation.');
   buf.writeln();
   buf.writeln('---');
   buf.writeln();
   buf.writeln('## Contributing');
   buf.writeln();
-  buf.writeln('We welcome contributions to Syntrix! Whether you are adding new template blueprints, refining audit rules, or enhancing AI tools:');
+  buf.writeln(
+      'We welcome contributions to Syntrix! Whether you are adding new template blueprints, refining audit rules, or enhancing AI tools:');
   buf.writeln();
   buf.writeln('1. Fork the repository');
-  buf.writeln('2. Create your feature branch (git checkout -b feature/amazing-feature)');
+  buf.writeln(
+      '2. Create your feature branch (git checkout -b feature/amazing-feature)');
   buf.writeln('3. Ensure all tests pass (dart test)');
-  buf.writeln('4. Commit your changes (git commit -m \'feat: add amazing feature\')');
-  buf.writeln('5. Push to the branch (git push origin feature/amazing-feature)');
+  buf.writeln(
+      '4. Commit your changes (git commit -m \'feat: add amazing feature\')');
+  buf.writeln(
+      '5. Push to the branch (git push origin feature/amazing-feature)');
   buf.writeln('6. Open a Pull Request');
   buf.writeln();
   buf.writeln('---');
   buf.writeln();
   buf.writeln('## License');
   buf.writeln();
-  buf.writeln('Syntrix (Flutter Package Studio) is distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.');
+  buf.writeln(
+      'Syntrix (Flutter Package Studio) is distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.');
   buf.writeln();
   buf.writeln('<div align=center>');
   buf.writeln();

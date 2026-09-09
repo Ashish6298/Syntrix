@@ -2,15 +2,16 @@
 library;
 
 import 'dart:convert';
-import 'package:flutter_package_studio_core/src/studio_v2/extension/studio_extension_models.dart';
 import 'package:flutter_package_studio_core/src/studio_v2/extension/studio_extension_engine.dart';
 
 /// Formatter generating ASCII Extension Registry wireframes, Markdown catalogs, and JSON schemas.
 class StudioExtensionRenderer {
   /// Render all registered extensions as structured JSON.
   static String renderJson(StudioExtensionEngine engine, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
-    final list = engine.registeredExtensions.values.map((e) => e.toJson()).toList();
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+    final list =
+        engine.registeredExtensions.values.map((e) => e.toJson()).toList();
     return encoder.convert({'extensions': list, 'count': list.length});
   }
 
@@ -31,7 +32,8 @@ class StudioExtensionRenderer {
     buffer.writeln('├──────────────────────────────────────┤');
     final totalTools = engine.getAllTools().length;
     final totalActions = engine.getAllActions().length;
-    buffer.writeln('│ Tools: $totalTools | Actions: $totalActions               │');
+    buffer.writeln(
+        '│ Tools: $totalTools | Actions: $totalActions               │');
     buffer.writeln('└──────────────────────────────────────┘');
 
     return buffer.toString();
@@ -43,13 +45,16 @@ class StudioExtensionRenderer {
 
     buffer.writeln('# Studio Extension Architecture Registry');
     buffer.writeln();
-    buffer.writeln('Active extensions installed: `${engine.registeredExtensions.length}`');
+    buffer.writeln(
+        'Active extensions installed: `${engine.registeredExtensions.length}`');
     buffer.writeln();
 
-    buffer.writeln('| Extension Name | Version | Author | Tools | Actions | Validators |');
+    buffer.writeln(
+        '| Extension Name | Version | Author | Tools | Actions | Validators |');
     buffer.writeln('|---|:---:|---|:---:|:---:|:---:|');
     for (final ext in engine.registeredExtensions.values) {
-      buffer.writeln('| **${ext.name}** | `v${ext.version}` | ${ext.author} | `${ext.tools.length}` | `${ext.actions.length}` | `${ext.validators.length}` |');
+      buffer.writeln(
+          '| **${ext.name}** | `v${ext.version}` | ${ext.author} | `${ext.tools.length}` | `${ext.actions.length}` | `${ext.validators.length}` |');
     }
     buffer.writeln();
 
@@ -62,7 +67,8 @@ class StudioExtensionRenderer {
       if (ext.tools.isNotEmpty) {
         buffer.writeln('**Tools:**');
         for (final t in ext.tools) {
-          buffer.writeln('- `${t.title}` (${t.category.label}) — ${t.description}');
+          buffer.writeln(
+              '- `${t.title}` (${t.category.label}) — ${t.description}');
         }
       }
       if (ext.actions.isNotEmpty) {

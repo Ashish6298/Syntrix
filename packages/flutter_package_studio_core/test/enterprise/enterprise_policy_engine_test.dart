@@ -10,7 +10,8 @@ void main() {
     late String rootPath;
 
     setUp(() {
-      tempDir = Directory.systemTemp.createTempSync('fps_enterprise_policy_test_');
+      tempDir =
+          Directory.systemTemp.createTempSync('fps_enterprise_policy_test_');
       rootPath = tempDir.path;
 
       // Scaffold project workspace
@@ -24,7 +25,8 @@ dependencies:
     sdk: flutter
 ''');
 
-      final libDir = Directory(p.join(rootPath, 'lib'))..createSync(recursive: true);
+      final libDir = Directory(p.join(rootPath, 'lib'))
+        ..createSync(recursive: true);
       File(p.join(libDir.path, 'main.dart')).writeAsStringSync('''
 void main() => print('Enterprise Ready');
 ''');
@@ -40,8 +42,11 @@ void main() => print('Enterprise Ready');
     // Test 1: Model Conformance & Predefined Profile Presets
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('1. Model Conformance: Predefined profiles configure declarative rules accurately', () {
-      final strictDoc = EnterprisePolicyDocument.fromProfile(EnterprisePolicyProfile.strict);
+    test(
+        '1. Model Conformance: Predefined profiles configure declarative rules accurately',
+        () {
+      final strictDoc =
+          EnterprisePolicyDocument.fromProfile(EnterprisePolicyProfile.strict);
       expect(strictDoc.profile, equals(EnterprisePolicyProfile.strict));
       expect(strictDoc.enforcementMode, equals(PolicyEnforcementMode.strict));
       expect(strictDoc.releasePolicy.requireSecurityAudit, isTrue);
@@ -50,10 +55,13 @@ void main() => print('Enterprise Ready');
       expect(strictDoc.releasePolicy.requireReleaseVerification, isTrue);
       expect(strictDoc.releasePolicy.requireChangelog, isTrue);
       expect(strictDoc.releasePolicy.requireGitTag, isTrue);
-      expect(strictDoc.aiUsagePolicy.allowExternalAiProvider, isFalse); // strict/gov/fin restricts external AI
+      expect(strictDoc.aiUsagePolicy.allowExternalAiProvider,
+          isFalse); // strict/gov/fin restricts external AI
 
-      final openSourceDoc = EnterprisePolicyDocument.fromProfile(EnterprisePolicyProfile.openSource);
-      expect(openSourceDoc.enforcementMode, equals(PolicyEnforcementMode.permissive));
+      final openSourceDoc = EnterprisePolicyDocument.fromProfile(
+          EnterprisePolicyProfile.openSource);
+      expect(openSourceDoc.enforcementMode,
+          equals(PolicyEnforcementMode.permissive));
       expect(openSourceDoc.aiUsagePolicy.allowExternalAiProvider, isTrue);
 
       // JSON roundtrip
@@ -68,7 +76,9 @@ void main() => print('Enterprise Ready');
     // Test 2: Hierarchical Policy Composition (Org -> Project -> Package)
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('2. Hierarchical Composition: child policy cleanly overrides and inherits parent rules', () {
+    test(
+        '2. Hierarchical Composition: child policy cleanly overrides and inherits parent rules',
+        () {
       const orgPolicy = EnterprisePolicyDocument(
         organizationId: 'acme_corp',
         organizationName: 'Acme Corporation',
@@ -96,8 +106,11 @@ void main() => print('Enterprise Ready');
     // Test 3: Policy File Resolution from Workspace
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('3. Policy File Discovery: loads policy from .fps/policy.json or enterprise_policy.json', () {
-      final fpsDir = Directory(p.join(rootPath, '.fps'))..createSync(recursive: true);
+    test(
+        '3. Policy File Discovery: loads policy from .fps/policy.json or enterprise_policy.json',
+        () {
+      final fpsDir = Directory(p.join(rootPath, '.fps'))
+        ..createSync(recursive: true);
       File(p.join(fpsDir.path, 'policy.json')).writeAsStringSync(jsonEncode({
         'organization_id': 'globex_corp',
         'profile': 'healthcare',
@@ -119,9 +132,12 @@ void main() => print('Enterprise Ready');
     // Test 4: Security Policy Enforcement (Blocked Sensitive Files)
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('4. Security Policy: detects plaintext .env and blocks operation in strict mode', () async {
+    test(
+        '4. Security Policy: detects plaintext .env and blocks operation in strict mode',
+        () async {
       // Inject uncommitted .env file
-      File(p.join(rootPath, '.env')).writeAsStringSync('API_SECRET=super_confidential_12345\n');
+      File(p.join(rootPath, '.env'))
+          .writeAsStringSync('API_SECRET=super_confidential_12345\n');
 
       final engine = EnterprisePolicyEngine(projectRoot: rootPath);
       final result = await engine.evaluatePolicy();
@@ -130,14 +146,19 @@ void main() => print('Enterprise Ready');
       expect(result.isBlocked, isTrue);
       expect(result.criticalCount, greaterThan(0));
       expect(result.failedGates, contains('security_policy'));
-      expect(result.findings.any((f) => f.ruleId == 'SEC_001_BLOCKED_SENSITIVE_FILE'), isTrue);
+      expect(
+          result.findings
+              .any((f) => f.ruleId == 'SEC_001_BLOCKED_SENSITIVE_FILE'),
+          isTrue);
     });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Test 5: Release Verification Gates Policy
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('5. Release Policy: verifies all mandatory release gates in operation context', () async {
+    test(
+        '5. Release Policy: verifies all mandatory release gates in operation context',
+        () async {
       final engine = EnterprisePolicyEngine(projectRoot: rootPath);
 
       // 1. All mandatory release gates passed
@@ -174,7 +195,9 @@ void main() => print('Enterprise Ready');
     // Test 6: AI Usage Policy Governance
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('6. AI Policy: validates allowed/blocked AI operations and capability boundaries', () async {
+    test(
+        '6. AI Policy: validates allowed/blocked AI operations and capability boundaries',
+        () async {
       final restrictedDoc = const EnterprisePolicyDocument(
         aiUsagePolicy: AiUsagePolicyConfig(
           allowAiAssistance: true,
@@ -188,20 +211,27 @@ void main() => print('Enterprise Ready');
       );
 
       // Allowed capability
-      final allowedRes = await engine.evaluatePolicy(operationName: 'ai_review');
+      final allowedRes =
+          await engine.evaluatePolicy(operationName: 'ai_review');
       expect(allowedRes.isCompliant, isTrue);
 
       // Disallowed capability
-      final disallowedRes = await engine.evaluatePolicy(operationName: 'ai_modify');
+      final disallowedRes =
+          await engine.evaluatePolicy(operationName: 'ai_modify');
       expect(disallowedRes.isCompliant, isFalse);
-      expect(disallowedRes.findings.any((f) => f.ruleId == 'AI_002_CAPABILITY_NOT_PERMITTED'), isTrue);
+      expect(
+          disallowedRes.findings
+              .any((f) => f.ruleId == 'AI_002_CAPABILITY_NOT_PERMITTED'),
+          isTrue);
     });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Test 7: Pure Dual-Format Renderer Conformance
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('7. Renderer Conformance: generates deterministic JSON and Markdown reports', () async {
+    test(
+        '7. Renderer Conformance: generates deterministic JSON and Markdown reports',
+        () async {
       final engine = EnterprisePolicyEngine(projectRoot: rootPath);
       final result = await engine.evaluatePolicy(operationName: 'analyze');
       const renderer = EnterprisePolicyRenderer();

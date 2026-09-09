@@ -3,7 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   group('Phase 10.20: Final Integration & Regression Testing Models', () {
-    test('SubsystemStageVerification and StudioFinalIntegrationReport JSON roundtrip', () {
+    test(
+        'SubsystemStageVerification and StudioFinalIntegrationReport JSON roundtrip',
+        () {
       const verification = SubsystemStageVerification(
         stage: StudioSubsystemPipelineStage.coreEngine,
         status: TestExecutionStatus.passed,
@@ -36,7 +38,8 @@ void main() {
       expect(restored.totalTestsPassed, equals(42));
       expect(restored.totalTestsFailed, equals(0));
       expect(restored.stageVerifications.length, equals(1));
-      expect(restored.stageVerifications.first.stage, equals(StudioSubsystemPipelineStage.coreEngine));
+      expect(restored.stageVerifications.first.stage,
+          equals(StudioSubsystemPipelineStage.coreEngine));
       expect(restored.testTypeBreakdown[IntegrationTestType.unit], equals(20));
     });
   });
@@ -72,15 +75,30 @@ void main() {
       expect(report.totalTestsFailed, equals(0));
 
       expect(report.testTypeBreakdown.length, equals(9));
-      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.unit), isTrue);
-      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.widget), isTrue);
-      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.integration), isTrue);
-      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.rendering), isTrue);
-      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.state), isTrue);
-      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.export), isTrue);
-      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.configuration), isTrue);
-      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.performance), isTrue);
-      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.regression), isTrue);
+      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.unit),
+          isTrue);
+      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.widget),
+          isTrue);
+      expect(
+          report.testTypeBreakdown.containsKey(IntegrationTestType.integration),
+          isTrue);
+      expect(
+          report.testTypeBreakdown.containsKey(IntegrationTestType.rendering),
+          isTrue);
+      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.state),
+          isTrue);
+      expect(report.testTypeBreakdown.containsKey(IntegrationTestType.export),
+          isTrue);
+      expect(
+          report.testTypeBreakdown
+              .containsKey(IntegrationTestType.configuration),
+          isTrue);
+      expect(
+          report.testTypeBreakdown.containsKey(IntegrationTestType.performance),
+          isTrue);
+      expect(
+          report.testTypeBreakdown.containsKey(IntegrationTestType.regression),
+          isTrue);
     });
   });
 
@@ -92,7 +110,8 @@ void main() {
       final report = intEngine.runCompleteIntegrationPipeline();
 
       // 1. ASCII Pipeline Matrix
-      final ascii = StudioFinalIntegrationRenderer.renderAsciiPipelineMatrix(report);
+      final ascii =
+          StudioFinalIntegrationRenderer.renderAsciiPipelineMatrix(report);
       expect(ascii, contains('Studio v2 Multi-Subsystem Integration Pipeline'));
       expect(ascii, contains('Core Engine'));
       expect(ascii, contains('Loaders'));
@@ -107,8 +126,10 @@ void main() {
 
       // 2. Markdown Report
       final markdown = StudioFinalIntegrationRenderer.renderMarkdown(report);
-      expect(markdown, contains('# Studio v2 Final Integration & Regression Test Report'));
-      expect(markdown, contains('**Pipeline Status:** `PASSED (100% Verified)`'));
+      expect(markdown,
+          contains('# Studio v2 Final Integration & Regression Test Report'));
+      expect(
+          markdown, contains('**Pipeline Status:** `PASSED (100% Verified)`'));
       expect(markdown, contains('## Subsystem Verification Matrix'));
       expect(markdown, contains('## Test Suite Category Breakdown'));
       expect(markdown, contains('| **Unit Tests** |'));

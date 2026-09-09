@@ -1,8 +1,6 @@
 /// Domain models and evaluation criteria for Phase 11.4: Platform Verification.
 library;
 
-import 'dart:convert';
-
 /// Supported target platforms.
 enum TargetPlatformType {
   android,
@@ -98,7 +96,9 @@ enum PlatformCheckStatus {
     }
   }
 
-  String get symbol => this == PlatformCheckStatus.verified ? '✓' : (this == PlatformCheckStatus.unsupported ? '○' : '✗');
+  String get symbol => this == PlatformCheckStatus.verified
+      ? '✓'
+      : (this == PlatformCheckStatus.unsupported ? '○' : '✗');
 }
 
 /// Item representing an individual platform test verification.
@@ -175,11 +175,13 @@ class PlatformVerificationReport {
     return PlatformVerificationReport(
       reportId: json['report_id'] as String? ?? 'platform_report_default',
       targetVersion: json['target_version'] as String? ?? '1.0.0',
-      isAllPlatformsVerified: json['is_all_platforms_verified'] as bool? ?? true,
+      isAllPlatformsVerified:
+          json['is_all_platforms_verified'] as bool? ?? true,
       totalPlatformsAudited: json['total_platforms_audited'] as int? ?? 0,
       totalChecksRun: json['total_checks_run'] as int? ?? 0,
       checkItems: (json['check_items'] as List<dynamic>?)
-              ?.map((i) => PlatformCheckItem.fromJson(i as Map<String, dynamic>))
+              ?.map(
+                  (i) => PlatformCheckItem.fromJson(i as Map<String, dynamic>))
               .toList() ??
           const [],
       verifiedAt: DateTime.parse(json['verified_at'] as String),

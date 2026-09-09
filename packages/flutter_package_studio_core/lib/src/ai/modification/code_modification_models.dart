@@ -21,9 +21,11 @@ enum FilePatchType {
     for (final val in FilePatchType.values) {
       if (val.name.toLowerCase() == clean) return val;
     }
-    if (clean == 'add' || clean == 'new' || clean == 'created') return FilePatchType.create;
+    if (clean == 'add' || clean == 'new' || clean == 'created')
+      return FilePatchType.create;
     if (clean == 'remove' || clean == 'deleted') return FilePatchType.delete;
-    if (clean == 'update' || clean == 'modified' || clean == 'edit') return FilePatchType.modify;
+    if (clean == 'update' || clean == 'modified' || clean == 'edit')
+      return FilePatchType.modify;
     return null;
   }
 }
@@ -49,7 +51,10 @@ class DiffHunk {
         oldLines: json['oldLines'] as int? ?? 0,
         newStart: json['newStart'] as int? ?? 1,
         newLines: json['newLines'] as int? ?? 0,
-        lines: (json['lines'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+        lines: (json['lines'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            const [],
       );
 
   Map<String, dynamic> toJson() => {
@@ -103,7 +108,8 @@ class FilePatch {
     this.hunks = const [],
     this.linesAdded = 0,
     this.linesRemoved = 0,
-  })  : relativePath = SecretRedactor.redact(relativePath.replaceAll('\\', '/')),
+  })  : relativePath =
+            SecretRedactor.redact(relativePath.replaceAll('\\', '/')),
         description = SecretRedactor.redact(description),
         diff = SecretRedactor.redact(diff);
 
@@ -112,7 +118,10 @@ class FilePatch {
     final pType = FilePatchType.tryParse(typeStr) ?? FilePatchType.modify;
 
     final rawHunks = json['hunks'] as List<dynamic>? ?? const [];
-    final hunks = rawHunks.whereType<Map<String, dynamic>>().map(DiffHunk.fromJson).toList();
+    final hunks = rawHunks
+        .whereType<Map<String, dynamic>>()
+        .map(DiffHunk.fromJson)
+        .toList();
 
     return FilePatch(
       relativePath: json['relativePath'] as String? ?? '',
@@ -197,18 +206,21 @@ class CodeModificationSafetyPolicy {
       if (_matchesGlob(clean, pattern)) {
         return (
           allowed: false,
-          reason: 'File path "$clean" matches prohibited security denylist pattern "$pattern".'
+          reason:
+              'File path "$clean" matches prohibited security denylist pattern "$pattern".'
         );
       }
     }
 
     // 2. Check allowlist (if not default '*')
     if (allowlist.isNotEmpty && !allowlist.contains('*')) {
-      final inAllowlist = allowlist.any((pattern) => _matchesGlob(clean, pattern));
+      final inAllowlist =
+          allowlist.any((pattern) => _matchesGlob(clean, pattern));
       if (!inAllowlist) {
         return (
           allowed: false,
-          reason: 'File path "$clean" is not present in the permitted allowlist: ${allowlist.join(", ")}.'
+          reason:
+              'File path "$clean" is not present in the permitted allowlist: ${allowlist.join(", ")}.'
         );
       }
     }
@@ -230,20 +242,24 @@ class CodeModificationSafetyPolicy {
           normalizedPath.contains('/$suffix') ||
           normalizedPath == suffix ||
           normalizedPath == suffix.replaceFirst('*.', '.') ||
-          (suffix.startsWith('*.') && normalizedPath.endsWith(suffix.substring(1)))) {
+          (suffix.startsWith('*.') &&
+              normalizedPath.endsWith(suffix.substring(1)))) {
         return true;
       }
     }
     if (normalizedPattern.endsWith('/**')) {
-      final prefix = normalizedPattern.substring(0, normalizedPattern.length - 3);
-      if (normalizedPath.startsWith('$prefix/') || normalizedPath == prefix) return true;
+      final prefix =
+          normalizedPattern.substring(0, normalizedPattern.length - 3);
+      if (normalizedPath.startsWith('$prefix/') || normalizedPath == prefix)
+        return true;
     }
     if (normalizedPattern.startsWith('*.')) {
       final ext = normalizedPattern.substring(1);
       if (normalizedPath.endsWith(ext) || normalizedPath == ext) return true;
     }
 
-    return normalizedPath == normalizedPattern || normalizedPath.contains(normalizedPattern);
+    return normalizedPath == normalizedPattern ||
+        normalizedPath.contains(normalizedPattern);
   }
 
   Map<String, dynamic> toJson() => {
@@ -296,7 +312,8 @@ class PatchValidationPipelineResult {
   });
 
   /// All verification gates passed.
-  bool get isAllPassed => patchValid && testsPassed && analyzerPassed && formatterPassed;
+  bool get isAllPassed =>
+      patchValid && testsPassed && analyzerPassed && formatterPassed;
 
   Map<String, dynamic> toJson() => {
         'patchValid': patchValid,
@@ -336,7 +353,8 @@ class CodeModificationPlanRequest {
         'requirement': SecretRedactor.redact(requirement),
         if (targetScope != null) 'targetScope': targetScope,
         'safetyPolicy': safetyPolicy.toJson(),
-        if (restrictedFileAllowlist.isNotEmpty) 'restrictedFileAllowlist': restrictedFileAllowlist,
+        if (restrictedFileAllowlist.isNotEmpty)
+          'restrictedFileAllowlist': restrictedFileAllowlist,
       };
 }
 
@@ -434,7 +452,10 @@ class CodeModificationProposal {
 
   factory CodeModificationProposal.fromJson(Map<String, dynamic> json) {
     final rawPatches = json['patches'] as List<dynamic>? ?? const [];
-    final patches = rawPatches.whereType<Map<String, dynamic>>().map(FilePatch.fromJson).toList();
+    final patches = rawPatches
+        .whereType<Map<String, dynamic>>()
+        .map(FilePatch.fromJson)
+        .toList();
 
     final rawFiles = json['affectedFiles'] as List<dynamic>? ?? const [];
     final affectedFiles = rawFiles.map((e) => e.toString()).toList();
@@ -451,17 +472,24 @@ class CodeModificationProposal {
       failureReason: valJson['failureReason'] as String?,
     );
 
-    final policyJson = json['safetyPolicy'] as Map<String, dynamic>? ?? const {};
+    final policyJson =
+        json['safetyPolicy'] as Map<String, dynamic>? ?? const {};
     final safetyPolicy = CodeModificationSafetyPolicy(
-      allowlist: (policyJson['allowlist'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const ['*'],
-      denylist: (policyJson['denylist'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+      allowlist: (policyJson['allowlist'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const ['*'],
+      denylist: (policyJson['denylist'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
           const ['.git/**', '**/*.env', 'build/**'],
       maxFilesLimit: policyJson['maxFilesLimit'] as int? ?? 10,
       maxTotalLinesChanged: policyJson['maxTotalLinesChanged'] as int? ?? 500,
       requireTestsPass: policyJson['requireTestsPass'] as bool? ?? true,
       requireAnalyzerPass: policyJson['requireAnalyzerPass'] as bool? ?? true,
       requireFormatterPass: policyJson['requireFormatterPass'] as bool? ?? true,
-      requireExplicitApproval: policyJson['requireExplicitApproval'] as bool? ?? true,
+      requireExplicitApproval:
+          policyJson['requireExplicitApproval'] as bool? ?? true,
     );
 
     return CodeModificationProposal(
@@ -474,9 +502,12 @@ class CodeModificationProposal {
       validation: validation,
       totalLinesAdded: json['totalLinesAdded'] as int? ?? 0,
       totalLinesRemoved: json['totalLinesRemoved'] as int? ?? 0,
-      isEligibleForApplication: json['isEligibleForApplication'] as bool? ?? false,
+      isEligibleForApplication:
+          json['isEligibleForApplication'] as bool? ?? false,
       durationMs: json['durationMs'] as int? ?? 0,
-      timestamp: json['timestamp'] != null ? DateTime.parse(json['timestamp'] as String) : DateTime.now(),
+      timestamp: json['timestamp'] != null
+          ? DateTime.parse(json['timestamp'] as String)
+          : DateTime.now(),
       errorMessage: json['errorMessage'] as String?,
       isSuccess: json['isSuccess'] as bool? ?? true,
     );
@@ -496,7 +527,8 @@ class CodeModificationProposal {
         'durationMs': durationMs,
         'timestamp': timestamp.toIso8601String(),
         'isSuccess': isSuccess,
-        if (errorMessage != null) 'errorMessage': SecretRedactor.redact(errorMessage!),
+        if (errorMessage != null)
+          'errorMessage': SecretRedactor.redact(errorMessage!),
       };
 }
 

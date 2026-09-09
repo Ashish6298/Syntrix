@@ -1,8 +1,6 @@
 /// Domain models and test matrix for Phase 10.20: Final Integration & Regression Testing.
 library;
 
-import 'dart:convert';
-
 /// Subsystems verified in the Studio v2 complete pipeline.
 enum StudioSubsystemPipelineStage {
   coreEngine,
@@ -68,7 +66,9 @@ enum TestExecutionStatus {
 
   String get label => name.toUpperCase();
 
-  String get symbol => this == TestExecutionStatus.passed ? '✓' : (this == TestExecutionStatus.warning ? '⚠' : '✗');
+  String get symbol => this == TestExecutionStatus.passed
+      ? '✓'
+      : (this == TestExecutionStatus.warning ? '⚠' : '✗');
 }
 
 /// Verification result for a single subsystem stage.
@@ -140,8 +140,10 @@ class StudioFinalIntegrationReport {
         'total_tests_run': totalTestsRun,
         'total_tests_passed': totalTestsPassed,
         'total_tests_failed': totalTestsFailed,
-        'stage_verifications': stageVerifications.map((s) => s.toJson()).toList(),
-        'test_type_breakdown': testTypeBreakdown.map((k, v) => MapEntry(k.id, v)),
+        'stage_verifications':
+            stageVerifications.map((s) => s.toJson()).toList(),
+        'test_type_breakdown':
+            testTypeBreakdown.map((k, v) => MapEntry(k.id, v)),
         'completed_at': completedAt.toIso8601String(),
       };
 
@@ -165,7 +167,8 @@ class StudioFinalIntegrationReport {
       totalTestsPassed: json['total_tests_passed'] as int? ?? 0,
       totalTestsFailed: json['total_tests_failed'] as int? ?? 0,
       stageVerifications: (json['stage_verifications'] as List<dynamic>?)
-              ?.map((s) => SubsystemStageVerification.fromJson(s as Map<String, dynamic>))
+              ?.map((s) => SubsystemStageVerification.fromJson(
+                  s as Map<String, dynamic>))
               .toList() ??
           const [],
       testTypeBreakdown: breakdown,

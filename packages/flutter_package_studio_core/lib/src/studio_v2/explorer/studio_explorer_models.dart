@@ -1,8 +1,6 @@
 /// Domain models and query criteria for Phase 10.3: Advanced Loader Explorer.
 library;
 
-import 'dart:convert';
-
 /// Loader categorization groupings.
 enum LoaderCategory {
   cosmic,
@@ -40,7 +38,8 @@ enum LoaderCategory {
   static LoaderCategory fromString(String? val) {
     if (val == null) return LoaderCategory.cosmic;
     return LoaderCategory.values.firstWhere(
-      (c) => c.name.toLowerCase() == val.toLowerCase() ||
+      (c) =>
+          c.name.toLowerCase() == val.toLowerCase() ||
           c.displayName.toLowerCase() == val.toLowerCase(),
       orElse: () => LoaderCategory.cosmic,
     );
@@ -126,7 +125,8 @@ class LoaderMetadataEntry {
               ?.map((e) => e.toString())
               .toList() ??
           const [],
-      defaultParameters: (json['default_parameters'] as Map<String, dynamic>?) ?? const {},
+      defaultParameters:
+          (json['default_parameters'] as Map<String, dynamic>?) ?? const {},
     );
   }
 }
@@ -166,10 +166,14 @@ class LoaderExplorerQuery {
 
     if (category != null && loader.category != category) return false;
     if (complexity != null && loader.complexity != complexity) return false;
-    if (requiresParticles != null && loader.hasParticles != requiresParticles) return false;
-    if (requiresPhysics != null && loader.hasPhysics != requiresPhysics) return false;
-    if (requiresShaders != null && loader.hasShaders != requiresShaders) return false;
-    if (requiresInteractive != null && loader.isInteractive != requiresInteractive) return false;
+    if (requiresParticles != null && loader.hasParticles != requiresParticles)
+      return false;
+    if (requiresPhysics != null && loader.hasPhysics != requiresPhysics)
+      return false;
+    if (requiresShaders != null && loader.hasShaders != requiresShaders)
+      return false;
+    if (requiresInteractive != null &&
+        loader.isInteractive != requiresInteractive) return false;
 
     return true;
   }

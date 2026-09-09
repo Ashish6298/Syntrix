@@ -10,7 +10,8 @@ void main() {
     setUp(() {
       final container = DependencyContainer();
       container.reset();
-      container.registerSingleton<Logger>(Logger('SyntrixTest', level: LogLevel.error));
+      container.registerSingleton<Logger>(
+          Logger('SyntrixTest', level: LogLevel.error));
 
       registry = CommandRegistry();
       registry.register(CreateCommand());
@@ -43,7 +44,8 @@ void main() {
     test('getBanner contains SYNTRIX and primary commands', () {
       final banner = CommandRegistry.getBanner(enableColor: false);
       expect(banner, contains('S Y N T R I X'));
-      expect(banner, contains('Enterprise tools & AI studio for Flutter and Dart'));
+      expect(banner,
+          contains('Enterprise tools & AI studio for Flutter and Dart'));
       expect(banner, contains('Quick Actions:'));
       expect(banner, contains('create'));
       expect(banner, contains('--audit'));
@@ -52,9 +54,8 @@ void main() {
       expect(banner, contains('--help'));
     });
 
-
-
-    test('Running syntrix with empty arguments prints banner and exits 0', () async {
+    test('Running syntrix with empty arguments prints banner and exits 0',
+        () async {
       final exitCode = await registry.run([]);
       expect(exitCode, 0);
     });
@@ -66,7 +67,8 @@ void main() {
 
     test('Running syntrix --audit executes audit command', () async {
       // Create a temporary valid package structure so audit completes
-      final tempDir = io.Directory.systemTemp.createTempSync('syntrix_audit_test');
+      final tempDir =
+          io.Directory.systemTemp.createTempSync('syntrix_audit_test');
       io.File('${tempDir.path}/pubspec.yaml').writeAsStringSync('''
 name: test_audit_pkg
 description: Test package for audit validation.
@@ -75,9 +77,11 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 ''');
       io.Directory('${tempDir.path}/lib').createSync();
-      io.File('${tempDir.path}/lib/test_audit_pkg.dart').writeAsStringSync('void main() {}');
+      io.File('${tempDir.path}/lib/test_audit_pkg.dart')
+          .writeAsStringSync('void main() {}');
 
-      final exitCode = await registry.run(['--audit', '--target', tempDir.path]);
+      final exitCode =
+          await registry.run(['--audit', '--target', tempDir.path]);
       expect(exitCode, 0);
 
       tempDir.deleteSync(recursive: true);
@@ -118,12 +122,14 @@ environment:
       expect(help, contains('publish'));
     });
 
-    test('Running syntrix --help outputs custom styled help and exits 0', () async {
+    test('Running syntrix --help outputs custom styled help and exits 0',
+        () async {
       final exitCode = await registry.run(['--help']);
       expect(exitCode, 0);
     });
 
-    test('Deep execution test for all registered commands in help list', () async {
+    test('Deep execution test for all registered commands in help list',
+        () async {
       // 1. Package & templates
       expect(await registry.run(['template', 'list']), 0);
       expect(await registry.run(['plugin', 'list']), 0);
@@ -154,4 +160,3 @@ environment:
     });
   });
 }
-

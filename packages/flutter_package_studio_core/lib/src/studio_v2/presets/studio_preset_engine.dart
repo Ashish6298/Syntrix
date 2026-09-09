@@ -25,7 +25,8 @@ class StudioPresetEngine {
     savePreset(StudioConfigurationPreset(
       presetId: 'preset_cosmic_vortex_ultra',
       name: 'Cosmic Vortex Ultra',
-      description: 'Ultra high-speed particle vortex with maximum gravity and shaders enabled.',
+      description:
+          'Ultra high-speed particle vortex with maximum gravity and shaders enabled.',
       targetLoaderId: 'infinite_universe',
       selectedThemeId: 'deep_space',
       configuration: const StudioConfigurationDescriptor(
@@ -50,7 +51,8 @@ class StudioPresetEngine {
     savePreset(StudioConfigurationPreset(
       presetId: 'preset_minimal_zen_pulse',
       name: 'Minimal Zen Pulse',
-      description: 'Slow-pulsing minimalist ring with lightweight rendering overhead.',
+      description:
+          'Slow-pulsing minimalist ring with lightweight rendering overhead.',
       targetLoaderId: 'pulsar_wave',
       selectedThemeId: 'milky_way',
       configuration: const StudioConfigurationDescriptor(
@@ -75,7 +77,8 @@ class StudioPresetEngine {
     savePreset(StudioConfigurationPreset(
       presetId: 'preset_cyber_matrix_rain',
       name: 'Cyber Matrix Rain',
-      description: 'Fast-paced cyber synthwave rain with high particle count and scanline shaders.',
+      description:
+          'Fast-paced cyber synthwave rain with high particle count and scanline shaders.',
       targetLoaderId: 'cyber_matrix',
       selectedThemeId: 'cyber_galaxy',
       configuration: const StudioConfigurationDescriptor(
@@ -144,7 +147,8 @@ class StudioPresetEngine {
     final preset = await storageDriver.getPreset(presetId);
     if (preset != null) {
       controller.updateConfiguration((_) => preset.configuration);
-      _logger.info('Loaded and applied preset "${preset.name}" ($presetId) to workspace.');
+      _logger.info(
+          'Loaded and applied preset "${preset.name}" ($presetId) to workspace.');
       return true;
     }
     return false;
@@ -197,18 +201,21 @@ class StudioPresetEngine {
   }
 
   /// Export a preset to a serialized JSON string.
-  Future<String> exportPresetToJson(String presetId, {bool pretty = true}) async {
+  Future<String> exportPresetToJson(String presetId,
+      {bool pretty = true}) async {
     final preset = await storageDriver.getPreset(presetId);
     if (preset == null) {
       throw ArgumentError('Preset "$presetId" not found for export.');
     }
 
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(preset.toJson());
   }
 
   /// Import a preset from a JSON string.
-  Future<StudioConfigurationPreset> importPresetFromJson(String jsonString) async {
+  Future<StudioConfigurationPreset> importPresetFromJson(
+      String jsonString) async {
     final map = jsonDecode(jsonString) as Map<String, dynamic>;
     final preset = StudioConfigurationPreset.fromJson(map);
     await savePreset(preset);

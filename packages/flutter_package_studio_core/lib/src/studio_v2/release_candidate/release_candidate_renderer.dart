@@ -7,8 +7,10 @@ import 'package:flutter_package_studio_core/src/studio_v2/release_candidate/rele
 /// Formatter generating ASCII Milestone 10 Release Gate dashboards, Markdown reports, and JSON schemas.
 class ReleaseCandidateRenderer {
   /// Render release candidate audit report as structured JSON.
-  static String renderJson(ReleaseCandidateAuditReport report, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+  static String renderJson(ReleaseCandidateAuditReport report,
+      {bool pretty = true}) {
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(report.toJson());
   }
 
@@ -29,7 +31,8 @@ class ReleaseCandidateRenderer {
     buffer.writeln('├─────────────────────────────────────────────┤');
     buffer.writeln('│ Milestone 10 Status: COMPLETE               │');
     buffer.writeln('│ Project Status:      RELEASE CANDIDATE (RC) │');
-    buffer.writeln('│ Target Release:      v${report.targetVersion.padRight(22)} │');
+    buffer.writeln(
+        '│ Target Release:      v${report.targetVersion.padRight(22)} │');
     buffer.writeln('└─────────────────────────────────────────────┘');
 
     return buffer.toString();
@@ -41,8 +44,10 @@ class ReleaseCandidateRenderer {
 
     buffer.writeln('# Milestone 10 — Release Candidate Audit Report');
     buffer.writeln();
-    buffer.writeln('**Milestone 10 Status:** `${report.isMilestone10Complete ? "COMPLETE" : "INCOMPLETE"}`  ');
-    buffer.writeln('**Project Status:** `${report.isReleaseCandidateReady ? "RELEASE CANDIDATE READY (RC)" : "NOT READY"}`  ');
+    buffer.writeln(
+        '**Milestone 10 Status:** `${report.isMilestone10Complete ? "COMPLETE" : "INCOMPLETE"}`  ');
+    buffer.writeln(
+        '**Project Status:** `${report.isReleaseCandidateReady ? "RELEASE CANDIDATE READY (RC)" : "NOT READY"}`  ');
     buffer.writeln('**Target Version:** `v${report.targetVersion}`  ');
     buffer.writeln('**Audited At:** ${report.auditedAt.toIso8601String()}');
     buffer.writeln();
@@ -52,7 +57,8 @@ class ReleaseCandidateRenderer {
     buffer.writeln('| Dimension | Evaluation | Verification Details |');
     buffer.writeln('|---|:---:|---|');
     for (final g in report.gates) {
-      buffer.writeln('| **${g.dimension.label}** | `${g.status.symbol}` | ${g.verificationDetails} |');
+      buffer.writeln(
+          '| **${g.dimension.label}** | `${g.status.symbol}` | ${g.verificationDetails} |');
     }
     buffer.writeln();
 

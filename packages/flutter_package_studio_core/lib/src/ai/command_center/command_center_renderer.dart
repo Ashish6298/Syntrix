@@ -56,15 +56,18 @@ class CommandCenterRenderer {
 
     buf.writeln('# AI Engineering Command Center — Execution Report');
     buf.writeln();
-    buf.writeln('**Capability**: `${_escapeHtml(response.capability.label)}`  ');
-    buf.writeln('**Status**: ${response.isSuccess ? "✅ SUCCESS" : "❌ FAILURE"}  ');
+    buf.writeln(
+        '**Capability**: `${_escapeHtml(response.capability.label)}`  ');
+    buf.writeln(
+        '**Status**: ${response.isSuccess ? "✅ SUCCESS" : "❌ FAILURE"}  ');
     buf.writeln('**Duration**: `${response.durationMs}ms`  ');
     buf.writeln('**Timestamp**: `${response.timestamp.toIso8601String()}`');
     buf.writeln();
 
     if (!response.isSuccess) {
       buf.writeln('## ❌ Execution Error');
-      buf.writeln(response.errorMessage ?? 'An unknown error occurred during Command Center execution.');
+      buf.writeln(response.errorMessage ??
+          'An unknown error occurred during Command Center execution.');
       return SecretRedactor.redact(buf.toString());
     }
 
@@ -85,11 +88,13 @@ class CommandCenterRenderer {
       } else if (payload is DiagnosisResult) {
         buf.writeln(const FailureDiagnosisRenderer().renderMarkdown(payload));
       } else if (payload is ArchitectureScanResult) {
-        buf.writeln(const ArchitectureAdvisorRenderer().renderMarkdown(payload));
+        buf.writeln(
+            const ArchitectureAdvisorRenderer().renderMarkdown(payload));
       } else if (payload is DocumentationGenerationResult) {
         buf.writeln(payload.markdownContent);
       } else if (payload is DocumentationConsistencyResult) {
-        buf.writeln(const DocumentationAssistantRenderer().renderConsistencyMarkdown(payload));
+        buf.writeln(const DocumentationAssistantRenderer()
+            .renderConsistencyMarkdown(payload));
       } else if (payload is DependencyAnalysisResult) {
         buf.writeln(const DependencyAdvisorRenderer().renderMarkdown(payload));
       } else if (payload is SecurityAnalysisResult) {

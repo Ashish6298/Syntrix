@@ -12,8 +12,10 @@ class PerformanceCertificationEngine {
   PerformanceCertificationEngine();
 
   /// Execute performance certification benchmarks across hardware tiers.
-  PerformanceCertificationReport runPerformanceCertification({String targetVersion = '1.0.0'}) {
-    _logger.info('Executing Phase 11.5: Performance Certification across all hardware tiers.');
+  PerformanceCertificationReport runPerformanceCertification(
+      {String targetVersion = '1.0.0'}) {
+    _logger.info(
+        'Executing Phase 11.5: Performance Certification across all hardware tiers.');
 
     final profiles = <PerformanceProfileMetrics>[
       // Low-end configuration (e.g. Budget Android / Older Dual-core machine)

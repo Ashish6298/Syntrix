@@ -17,7 +17,8 @@ class StudioValidationEngine {
     String packageName = 'flutter_package_studio_core',
     String packageVersion = '2.0.0',
   }) {
-    _logger.info('Running full automated validation suite for $packageName v$packageVersion');
+    _logger.info(
+        'Running full automated validation suite for $packageName v$packageVersion');
 
     final checks = <ValidationCheckItem>[
       const ValidationCheckItem(
@@ -41,7 +42,8 @@ class StudioValidationEngine {
         title: 'Widget Tests',
         category: StudioValidationCategory.tests,
         status: ValidationCheckStatus.pass,
-        details: 'Shell and UI components render cleanly without layout exceptions',
+        details:
+            'Shell and UI components render cleanly without layout exceptions',
         durationMs: 310.0,
       ),
       const ValidationCheckItem(
@@ -57,7 +59,8 @@ class StudioValidationEngine {
         title: 'Export Validation',
         category: StudioValidationCategory.api,
         status: ValidationCheckStatus.pass,
-        details: 'Deterministic export bundles verified in JSON, Dart, and Markdown',
+        details:
+            'Deterministic export bundles verified in JSON, Dart, and Markdown',
         durationMs: 85.0,
       ),
       const ValidationCheckItem(
@@ -65,7 +68,8 @@ class StudioValidationEngine {
         title: 'Configuration Validation',
         category: StudioValidationCategory.architecture,
         status: ValidationCheckStatus.pass,
-        details: 'All preset configurations parse and apply without constraint violation',
+        details:
+            'All preset configurations parse and apply without constraint violation',
         durationMs: 40.0,
       ),
       const ValidationCheckItem(
@@ -73,7 +77,8 @@ class StudioValidationEngine {
         title: 'Documentation Validation',
         category: StudioValidationCategory.documentation,
         status: ValidationCheckStatus.pass,
-        details: 'Public APIs and subsystem architectures documented with examples',
+        details:
+            'Public APIs and subsystem architectures documented with examples',
         durationMs: 65.0,
       ),
       const ValidationCheckItem(
@@ -81,7 +86,8 @@ class StudioValidationEngine {
         title: 'Platform Checks',
         category: StudioValidationCategory.compatibility,
         status: ValidationCheckStatus.pass,
-        details: 'Verified compatibility across Android, iOS, Web, Windows, macOS, Linux',
+        details:
+            'Verified compatibility across Android, iOS, Web, Windows, macOS, Linux',
         durationMs: 140.0,
       ),
       const ValidationCheckItem(
@@ -97,20 +103,23 @@ class StudioValidationEngine {
         title: 'Rendering Pass Checks',
         category: StudioValidationCategory.rendering,
         status: ValidationCheckStatus.pass,
-        details: 'Canvas passes and fragment shaders execute without raster drops',
+        details:
+            'Canvas passes and fragment shaders execute without raster drops',
         durationMs: 95.0,
       ),
     ];
 
     // Compute Category Summaries
-    final categorySummaries = <StudioValidationCategory, ValidationCheckStatus>{};
+    final categorySummaries =
+        <StudioValidationCategory, ValidationCheckStatus>{};
     for (final cat in StudioValidationCategory.values) {
       final matching = checks.where((c) => c.category == cat).toList();
       if (matching.isEmpty) {
         categorySummaries[cat] = ValidationCheckStatus.skipped;
       } else if (matching.any((c) => c.status == ValidationCheckStatus.fail)) {
         categorySummaries[cat] = ValidationCheckStatus.fail;
-      } else if (matching.any((c) => c.status == ValidationCheckStatus.warning)) {
+      } else if (matching
+          .any((c) => c.status == ValidationCheckStatus.warning)) {
         categorySummaries[cat] = ValidationCheckStatus.warning;
       } else {
         categorySummaries[cat] = ValidationCheckStatus.pass;
@@ -121,7 +130,8 @@ class StudioValidationEngine {
     PackageHealthStatus overall = PackageHealthStatus.healthy;
     if (categorySummaries.values.contains(ValidationCheckStatus.fail)) {
       overall = PackageHealthStatus.unhealthy;
-    } else if (categorySummaries.values.contains(ValidationCheckStatus.warning)) {
+    } else if (categorySummaries.values
+        .contains(ValidationCheckStatus.warning)) {
       overall = PackageHealthStatus.degraded;
     }
 

@@ -1,8 +1,6 @@
 /// Domain models and abstractions for Phase 9.10: Enterprise Remote Execution & Controlled Workers.
 library;
 
-import 'dart:convert';
-
 /// Status of a worker machine or process.
 enum WorkerHealthStatus {
   healthy,
@@ -111,7 +109,8 @@ class ControlledWorkerInfo {
   });
 
   bool get isAvailable =>
-      healthStatus == WorkerHealthStatus.healthy && activeTaskCount < capacity.maxCpuCores;
+      healthStatus == WorkerHealthStatus.healthy &&
+      activeTaskCount < capacity.maxCpuCores;
 
   Map<String, dynamic> toJson() => {
         'worker_id': workerId,
@@ -140,7 +139,8 @@ class ControlledWorkerInfo {
         orElse: () => WorkerHealthStatus.healthy,
       ),
       capacity: json['capacity'] is Map<String, dynamic>
-          ? WorkerResourceLimits.fromJson(json['capacity'] as Map<String, dynamic>)
+          ? WorkerResourceLimits.fromJson(
+              json['capacity'] as Map<String, dynamic>)
           : const WorkerResourceLimits(),
       activeTaskCount: json['active_task_count'] as int? ?? 0,
       registeredAt: json['registered_at'] is String
@@ -191,10 +191,12 @@ class WorkerExecutionRequest {
     return WorkerExecutionRequest(
       taskId: json['task_id'] as String? ?? '',
       taskType: json['task_type'] as String? ?? 'generic_task',
-      requiredCapability: WorkerCapability.fromString(json['required_capability'] as String?),
+      requiredCapability:
+          WorkerCapability.fromString(json['required_capability'] as String?),
       payload: (json['payload'] as Map<String, dynamic>?) ?? const {},
       limits: json['limits'] is Map<String, dynamic>
-          ? WorkerResourceLimits.fromJson(json['limits'] as Map<String, dynamic>)
+          ? WorkerResourceLimits.fromJson(
+              json['limits'] as Map<String, dynamic>)
           : const WorkerResourceLimits(),
       requesterId: json['requester_id'] as String? ?? 'system',
       correlationId: json['correlation_id'] as String? ?? 'cid_unknown',
@@ -233,7 +235,8 @@ class WorkerExecutionResult {
     required this.completedAt,
   });
 
-  bool get isSuccess => status == WorkerExecutionStatus.completed && exitCode == 0;
+  bool get isSuccess =>
+      status == WorkerExecutionStatus.completed && exitCode == 0;
 
   Map<String, dynamic> toJson() => {
         'task_id': taskId,

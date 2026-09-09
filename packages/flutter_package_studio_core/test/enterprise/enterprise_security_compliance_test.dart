@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:path/path.dart' as p;
@@ -20,8 +19,10 @@ version: 1.0.0
 environment:
   sdk: '>=3.5.0 <4.0.0'
 ''');
-      final libDir = Directory(p.join(rootPath, 'lib'))..createSync(recursive: true);
-      File(p.join(libDir.path, 'main.dart')).writeAsStringSync('void main() {}');
+      final libDir = Directory(p.join(rootPath, 'lib'))
+        ..createSync(recursive: true);
+      File(p.join(libDir.path, 'main.dart'))
+          .writeAsStringSync('void main() {}');
     });
 
     tearDown(() {
@@ -34,8 +35,11 @@ environment:
     // Test 1: Profile Presets (Standard, Enterprise, Financial, Healthcare, Govt)
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('1. Profile Presets: configures industry and enterprise policy presets accurately', () {
-      final finDoc = EnterpriseSecurityCompliancePolicy.fromProfile(EnterpriseComplianceProfile.financial);
+    test(
+        '1. Profile Presets: configures industry and enterprise policy presets accurately',
+        () {
+      final finDoc = EnterpriseSecurityCompliancePolicy.fromProfile(
+          EnterpriseComplianceProfile.financial);
       expect(finDoc.profile, equals(EnterpriseComplianceProfile.financial));
       expect(finDoc.requireZeroSecrets, isTrue);
       expect(finDoc.requireEncryptedArtifacts, isTrue);
@@ -43,10 +47,12 @@ environment:
       expect(finDoc.maxAllowedCriticalFindings, equals(0));
       expect(finDoc.maxAllowedHighFindings, equals(0));
 
-      final healthDoc = EnterpriseSecurityCompliancePolicy.fromProfile(EnterpriseComplianceProfile.healthcare);
+      final healthDoc = EnterpriseSecurityCompliancePolicy.fromProfile(
+          EnterpriseComplianceProfile.healthcare);
       expect(healthDoc.requireEncryptedArtifacts, isTrue);
 
-      final stdDoc = EnterpriseSecurityCompliancePolicy.fromProfile(EnterpriseComplianceProfile.standard);
+      final stdDoc = EnterpriseSecurityCompliancePolicy.fromProfile(
+          EnterpriseComplianceProfile.standard);
       expect(stdDoc.requireEncryptedArtifacts, isFalse);
 
       // JSON roundtrip
@@ -60,7 +66,9 @@ environment:
     // Test 2: Clean Compliance Run on Standard Profile
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('2. Clean Assessment: clean project passes standard and enterprise compliance profiles', () async {
+    test(
+        '2. Clean Assessment: clean project passes standard and enterprise compliance profiles',
+        () async {
       final engine = EnterpriseSecurityComplianceEngine(projectRoot: rootPath);
       final result = await engine.assessCompliance();
 
@@ -76,9 +84,12 @@ environment:
     // Test 3: Sensitive File Rule Violation
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('3. Sensitive File Control: flags .env or key.properties violation and blocks assessment', () async {
+    test(
+        '3. Sensitive File Control: flags .env or key.properties violation and blocks assessment',
+        () async {
       // Create sensitive .env file
-      File(p.join(rootPath, '.env')).writeAsStringSync('DATABASE_SECRET=xyz999\n');
+      File(p.join(rootPath, '.env'))
+          .writeAsStringSync('DATABASE_SECRET=xyz999\n');
 
       final engine = EnterpriseSecurityComplianceEngine(projectRoot: rootPath);
       final result = await engine.assessCompliance();
@@ -98,10 +109,13 @@ environment:
     // Test 4: Financial Profile Encryption & Formal Review Requirements
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('4. Financial Profile: enforces encryption and formal security auditor sign-off', () async {
+    test(
+        '4. Financial Profile: enforces encryption and formal security auditor sign-off',
+        () async {
       final engine = EnterpriseSecurityComplianceEngine(projectRoot: rootPath);
 
-      final finPolicy = EnterpriseSecurityCompliancePolicy.fromProfile(EnterpriseComplianceProfile.financial);
+      final finPolicy = EnterpriseSecurityCompliancePolicy.fromProfile(
+          EnterpriseComplianceProfile.financial);
 
       // Without formal security review completed -> FAILS
       final unreviewedResult = await engine.assessCompliance(
@@ -133,7 +147,9 @@ environment:
     // Test 5: Vulnerability Threshold Limits
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('5. Vulnerability Thresholds: blocks when critical/high vulnerability limits are exceeded', () async {
+    test(
+        '5. Vulnerability Thresholds: blocks when critical/high vulnerability limits are exceeded',
+        () async {
       final engine = EnterpriseSecurityComplianceEngine(projectRoot: rootPath);
 
       final result = await engine.assessCompliance(
@@ -151,7 +167,9 @@ environment:
     // Test 6: Pure Security Compliance Renderer Conformance
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('6. Renderer Conformance: generates deterministic JSON and Markdown compliance reports', () async {
+    test(
+        '6. Renderer Conformance: generates deterministic JSON and Markdown compliance reports',
+        () async {
       final engine = EnterpriseSecurityComplianceEngine(projectRoot: rootPath);
       final result = await engine.assessCompliance();
       const renderer = EnterpriseSecurityComplianceRenderer();

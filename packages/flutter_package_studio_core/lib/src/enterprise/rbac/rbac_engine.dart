@@ -79,7 +79,8 @@ class RbacEngine {
 
     final permittedRoles = _roleMatrix[op] ?? [EnterpriseRole.administrator];
 
-    _logger.info('Evaluating authorization for principal "${identity.displayName}" (${identity.id}) -> $permKey');
+    _logger.info(
+        'Evaluating authorization for principal "${identity.displayName}" (${identity.id}) -> $permKey');
 
     // 1. Direct permission check (Wildcard '*' or exact key match)
     if (identity.hasDirectPermission(permKey)) {
@@ -122,7 +123,8 @@ class RbacEngine {
             decision: AuthorizationDecision.allow,
             identity: identity,
             operation: op,
-            reason: 'Granted to Release Manager with verified elevated approval.',
+            reason:
+                'Granted to Release Manager with verified elevated approval.',
             requiredPermissions: [permKey],
             authorizedRoles: permittedRoles,
             requiresAdditionalApproval: true,
@@ -135,7 +137,8 @@ class RbacEngine {
             decision: AuthorizationDecision.requiresApproval,
             identity: identity,
             operation: op,
-            reason: 'Release Manager requires secondary elevated approval (✓*) to override security gate.',
+            reason:
+                'Release Manager requires secondary elevated approval (✓*) to override security gate.',
             requiredPermissions: [permKey],
             authorizedRoles: permittedRoles,
             requiresAdditionalApproval: true,
@@ -152,7 +155,8 @@ class RbacEngine {
       orElse: () => EnterpriseRole.custom,
     );
 
-    if (matchedRole != EnterpriseRole.custom && permittedRoles.contains(matchedRole)) {
+    if (matchedRole != EnterpriseRole.custom &&
+        permittedRoles.contains(matchedRole)) {
       sw.stop();
       return AuthorizationResult(
         decision: AuthorizationDecision.allow,
@@ -173,7 +177,8 @@ class RbacEngine {
       decision: AuthorizationDecision.deny,
       identity: identity,
       operation: op,
-      reason: 'Denied: Assigned role(s) [${identity.roles.map((r) => r.displayName).join(", ")}] lack permission "$permKey". Permitted roles: [${permittedRoles.map((r) => r.displayName).join(", ")}].',
+      reason:
+          'Denied: Assigned role(s) [${identity.roles.map((r) => r.displayName).join(", ")}] lack permission "$permKey". Permitted roles: [${permittedRoles.map((r) => r.displayName).join(", ")}].',
       requiredPermissions: [permKey],
       authorizedRoles: permittedRoles,
       requiresAdditionalApproval: false,

@@ -83,8 +83,10 @@ class SecretRedactor {
     sanitized = sanitized.replaceAll(_jwtPattern, '[REDACTED_JWT_TOKEN]');
 
     // Password and secret field assignments (in JSON, YAML, or properties)
-    sanitized = sanitized.replaceAll(_awsSecretPattern, '[REDACTED_AWS_SECRET]');
-    sanitized = sanitized.replaceAll(_genericAssignmentPattern, '[REDACTED_SECRET]');
+    sanitized =
+        sanitized.replaceAll(_awsSecretPattern, '[REDACTED_AWS_SECRET]');
+    sanitized =
+        sanitized.replaceAll(_genericAssignmentPattern, '[REDACTED_SECRET]');
     sanitized =
         sanitized.replaceAll(_passwordFieldPattern, '[REDACTED_PASSWORD]');
     sanitized = sanitized.replaceAll(_secretFieldPattern, '[REDACTED_SECRET]');

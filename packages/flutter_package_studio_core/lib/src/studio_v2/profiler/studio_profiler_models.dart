@@ -1,7 +1,6 @@
 /// Domain models and performance profile snapshots for Phase 10.10: Performance Profiler.
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/studio_v2/studio_v2_models.dart';
 
 /// Profiler operational display mode.
@@ -50,11 +49,16 @@ class FrameSubsystemTimings {
 
   factory FrameSubsystemTimings.fromJson(Map<String, dynamic> json) {
     return FrameSubsystemTimings(
-      animationProcessingMs: (json['animation_processing_ms'] as num?)?.toDouble() ?? 1.2,
-      particleProcessingMs: (json['particle_processing_ms'] as num?)?.toDouble() ?? 3.5,
-      physicsProcessingMs: (json['physics_processing_ms'] as num?)?.toDouble() ?? 2.1,
-      renderingDrawPassMs: (json['rendering_draw_pass_ms'] as num?)?.toDouble() ?? 6.4,
-      shaderExecutionMs: (json['shader_execution_ms'] as num?)?.toDouble() ?? 3.0,
+      animationProcessingMs:
+          (json['animation_processing_ms'] as num?)?.toDouble() ?? 1.2,
+      particleProcessingMs:
+          (json['particle_processing_ms'] as num?)?.toDouble() ?? 3.5,
+      physicsProcessingMs:
+          (json['physics_processing_ms'] as num?)?.toDouble() ?? 2.1,
+      renderingDrawPassMs:
+          (json['rendering_draw_pass_ms'] as num?)?.toDouble() ?? 6.4,
+      shaderExecutionMs:
+          (json['shader_execution_ms'] as num?)?.toDouble() ?? 3.0,
     );
   }
 }
@@ -104,12 +108,14 @@ class PerformanceSnapshot {
       label: json['label'] as String? ?? 'Snapshot',
       loaderId: json['loader_id'] as String? ?? 'infinite_universe',
       configuration: json['configuration'] != null
-          ? StudioConfigurationDescriptor.fromJson(json['configuration'] as Map<String, dynamic>)
+          ? StudioConfigurationDescriptor.fromJson(
+              json['configuration'] as Map<String, dynamic>)
           : const StudioConfigurationDescriptor(),
       fps: (json['fps'] as num?)?.toDouble() ?? 60.0,
       frameTimeMs: (json['frame_time_ms'] as num?)?.toDouble() ?? 16.6,
       timings: json['timings'] != null
-          ? FrameSubsystemTimings.fromJson(json['timings'] as Map<String, dynamic>)
+          ? FrameSubsystemTimings.fromJson(
+              json['timings'] as Map<String, dynamic>)
           : const FrameSubsystemTimings(),
       simulatedObjectCount: json['simulated_object_count'] as int? ?? 200,
       shadersActive: json['shaders_active'] as bool? ?? true,
@@ -125,9 +131,11 @@ class PerformanceDeltaComparison {
 
   double get fpsDelta => after.fps - before.fps;
   double get frameTimeDeltaMs => after.frameTimeMs - before.frameTimeMs;
-  int get objectCountDelta => after.simulatedObjectCount - before.simulatedObjectCount;
+  int get objectCountDelta =>
+      after.simulatedObjectCount - before.simulatedObjectCount;
   double get totalProcessingDeltaMs =>
-      after.timings.totalCpuGpuDurationMs - before.timings.totalCpuGpuDurationMs;
+      after.timings.totalCpuGpuDurationMs -
+      before.timings.totalCpuGpuDurationMs;
 
   const PerformanceDeltaComparison({
     required this.before,

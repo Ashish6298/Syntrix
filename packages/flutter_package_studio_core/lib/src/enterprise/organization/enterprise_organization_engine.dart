@@ -38,19 +38,21 @@ class EnterpriseOrganizationEngine {
     }
   }
 
-  File get _manifestFile =>
-      File(p.join(_projectRoot, '.fps', 'organization', 'organization_manifest.json'));
+  File get _manifestFile => File(p.join(
+      _projectRoot, '.fps', 'organization', 'organization_manifest.json'));
 
   /// Registers or updates the organization root profile.
   void setOrganization(EnterpriseOrganization org) {
     _organization = org;
     _saveOrganizationManifest();
-    _logger.info('Updated organization profile: ${org.name} (${org.organizationId})');
+    _logger.info(
+        'Updated organization profile: ${org.name} (${org.organizationId})');
   }
 
   /// Adds or updates a team within the organization.
   void registerTeam(EnterpriseTeam team) {
-    final existingIndex = _organization.teams.indexWhere((t) => t.teamId == team.teamId);
+    final existingIndex =
+        _organization.teams.indexWhere((t) => t.teamId == team.teamId);
     final updatedTeams = List<EnterpriseTeam>.from(_organization.teams);
 
     if (existingIndex >= 0) {
@@ -77,8 +79,10 @@ class EnterpriseOrganizationEngine {
 
   /// Adds a shared package available to all teams across the organization.
   void registerSharedPackage(ManagedPackage package) {
-    final updatedShared = List<ManagedPackage>.from(_organization.sharedPackages);
-    final existingIndex = updatedShared.indexWhere((p) => p.packageId == package.packageId);
+    final updatedShared =
+        List<ManagedPackage>.from(_organization.sharedPackages);
+    final existingIndex =
+        updatedShared.indexWhere((p) => p.packageId == package.packageId);
 
     if (existingIndex >= 0) {
       updatedShared[existingIndex] = package;

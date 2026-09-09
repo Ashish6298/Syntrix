@@ -12,8 +12,10 @@ class PlatformVerificationEngine {
   PlatformVerificationEngine();
 
   /// Run complete platform verification matrix.
-  PlatformVerificationReport runPlatformVerification({String targetVersion = '1.0.0'}) {
-    _logger.info('Executing Phase 11.4: Platform Verification across all 6 target platforms.');
+  PlatformVerificationReport runPlatformVerification(
+      {String targetVersion = '1.0.0'}) {
+    _logger.info(
+        'Executing Phase 11.4: Platform Verification across all 6 target platforms.');
 
     final items = <PlatformCheckItem>[];
     const platforms = TargetPlatformType.values;
@@ -30,7 +32,8 @@ class PlatformVerificationEngine {
       }
     }
 
-    final hasFailures = items.any((i) => i.status == PlatformCheckStatus.failed);
+    final hasFailures =
+        items.any((i) => i.status == PlatformCheckStatus.failed);
 
     return PlatformVerificationReport(
       reportId: 'platform_verify_${DateTime.now().millisecondsSinceEpoch}',
@@ -43,7 +46,8 @@ class PlatformVerificationEngine {
     );
   }
 
-  String _getVerificationDetail(TargetPlatformType platform, PlatformVerificationDimension dim) {
+  String _getVerificationDetail(
+      TargetPlatformType platform, PlatformVerificationDimension dim) {
     switch (dim) {
       case PlatformVerificationDimension.initialization:
         return 'Deterministic bootstrap and dependency container injection on ${platform.label}.';

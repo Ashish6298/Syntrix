@@ -3,7 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   group('Phase 10.9: Diagnostics & Performance Center Models', () {
-    test('DiagnosticHealthItem, ExceptionEvent, and DashboardSnapshot JSON roundtrip', () {
+    test(
+        'DiagnosticHealthItem, ExceptionEvent, and DashboardSnapshot JSON roundtrip',
+        () {
       final snapshot = DiagnosticsDashboardSnapshot(
         dashboardId: 'dash_test_01',
         healthItems: const [
@@ -39,7 +41,8 @@ void main() {
 
       expect(restored.dashboardId, equals('dash_test_01'));
       expect(restored.healthItems.length, equals(2));
-      expect(restored.healthItems.first.status, equals(DiagnosticSubsystemStatus.healthy));
+      expect(restored.healthItems.first.status,
+          equals(DiagnosticSubsystemStatus.healthy));
       expect(restored.healthItems.first.status.symbol, equals('✓'));
       expect(restored.liveFps, equals(60.0));
       expect(restored.recentExceptions.length, equals(1));
@@ -54,7 +57,8 @@ void main() {
 
       // Log & exception capture
       diagEngine.appendLog('Diagnostic sweep initiated');
-      diagEngine.recordException(Exception('Simulated GPU Buffer OOM'), context: 'ParticleEngine');
+      diagEngine.recordException(Exception('Simulated GPU Buffer OOM'),
+          context: 'ParticleEngine');
 
       // Capture snapshot
       final snapshot = diagEngine.captureDashboardSnapshot(
@@ -64,9 +68,12 @@ void main() {
       );
 
       expect(snapshot.healthItems.length, equals(5));
-      expect(snapshot.healthItems.any((h) => h.subsystem == 'Rendering'), isTrue);
-      expect(snapshot.healthItems.any((h) => h.subsystem == 'Animation'), isTrue);
-      expect(snapshot.healthItems.any((h) => h.subsystem == 'Particles'), isTrue);
+      expect(
+          snapshot.healthItems.any((h) => h.subsystem == 'Rendering'), isTrue);
+      expect(
+          snapshot.healthItems.any((h) => h.subsystem == 'Animation'), isTrue);
+      expect(
+          snapshot.healthItems.any((h) => h.subsystem == 'Particles'), isTrue);
       expect(snapshot.healthItems.any((h) => h.subsystem == 'Physics'), isTrue);
       expect(snapshot.healthItems.any((h) => h.subsystem == 'Shaders'), isTrue);
 
@@ -76,7 +83,8 @@ void main() {
   });
 
   group('Phase 10.9: Studio Diagnostics Renderer', () {
-    test('Renders ASCII Diagnostics Dashboard, Markdown Report, and JSON state', () {
+    test('Renders ASCII Diagnostics Dashboard, Markdown Report, and JSON state',
+        () {
       final controller = StudioV2Controller();
       final diagEngine = StudioDiagnosticsEngine(controller: controller);
 

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:test/test.dart';
 
@@ -41,49 +40,197 @@ void main() {
     // Test 1: Milestone 9.3 Specification Matrix Conformance
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('1. Specification Matrix: verifies all operations across Developer, Reviewer, Release Manager, Admin', () {
+    test(
+        '1. Specification Matrix: verifies all operations across Developer, Reviewer, Release Manager, Admin',
+        () {
       // 1. Inspect project (Dev: ✓, Rev: ✓, Rel: ✓, Admin: ✓)
-      expect(rbac.authorize(const AuthorizationRequest(identity: devIdentity, operation: EnterpriseOperation.inspectProject)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: reviewerIdentity, operation: EnterpriseOperation.inspectProject)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: releaseManagerIdentity, operation: EnterpriseOperation.inspectProject)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: adminIdentity, operation: EnterpriseOperation.inspectProject)).isAllowed, isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: devIdentity,
+                  operation: EnterpriseOperation.inspectProject))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: reviewerIdentity,
+                  operation: EnterpriseOperation.inspectProject))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: releaseManagerIdentity,
+                  operation: EnterpriseOperation.inspectProject))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: adminIdentity,
+                  operation: EnterpriseOperation.inspectProject))
+              .isAllowed,
+          isTrue);
 
       // 2. Run AI review (Dev: ✓, Rev: ✓, Rel: ✓, Admin: ✓)
-      expect(rbac.authorize(const AuthorizationRequest(identity: devIdentity, operation: EnterpriseOperation.runAiReview)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: reviewerIdentity, operation: EnterpriseOperation.runAiReview)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: releaseManagerIdentity, operation: EnterpriseOperation.runAiReview)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: adminIdentity, operation: EnterpriseOperation.runAiReview)).isAllowed, isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: devIdentity,
+                  operation: EnterpriseOperation.runAiReview))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: reviewerIdentity,
+                  operation: EnterpriseOperation.runAiReview))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: releaseManagerIdentity,
+                  operation: EnterpriseOperation.runAiReview))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: adminIdentity,
+                  operation: EnterpriseOperation.runAiReview))
+              .isAllowed,
+          isTrue);
 
       // 3. Modify package (Dev: ✓, Rev: ✓, Rel: ✓, Admin: ✓)
-      expect(rbac.authorize(const AuthorizationRequest(identity: devIdentity, operation: EnterpriseOperation.modifyPackage)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: reviewerIdentity, operation: EnterpriseOperation.modifyPackage)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: releaseManagerIdentity, operation: EnterpriseOperation.modifyPackage)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: adminIdentity, operation: EnterpriseOperation.modifyPackage)).isAllowed, isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: devIdentity,
+                  operation: EnterpriseOperation.modifyPackage))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: reviewerIdentity,
+                  operation: EnterpriseOperation.modifyPackage))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: releaseManagerIdentity,
+                  operation: EnterpriseOperation.modifyPackage))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: adminIdentity,
+                  operation: EnterpriseOperation.modifyPackage))
+              .isAllowed,
+          isTrue);
 
       // 4. Create release (Dev: ❌, Rev: ❌, Rel: ✓, Admin: ✓)
-      expect(rbac.authorize(const AuthorizationRequest(identity: devIdentity, operation: EnterpriseOperation.createRelease)).isAllowed, isFalse);
-      expect(rbac.authorize(const AuthorizationRequest(identity: reviewerIdentity, operation: EnterpriseOperation.createRelease)).isAllowed, isFalse);
-      expect(rbac.authorize(const AuthorizationRequest(identity: releaseManagerIdentity, operation: EnterpriseOperation.createRelease)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: adminIdentity, operation: EnterpriseOperation.createRelease)).isAllowed, isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: devIdentity,
+                  operation: EnterpriseOperation.createRelease))
+              .isAllowed,
+          isFalse);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: reviewerIdentity,
+                  operation: EnterpriseOperation.createRelease))
+              .isAllowed,
+          isFalse);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: releaseManagerIdentity,
+                  operation: EnterpriseOperation.createRelease))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: adminIdentity,
+                  operation: EnterpriseOperation.createRelease))
+              .isAllowed,
+          isTrue);
 
       // 5. Publish package (Dev: ❌, Rev: ❌, Rel: ✓, Admin: ✓)
-      expect(rbac.authorize(const AuthorizationRequest(identity: devIdentity, operation: EnterpriseOperation.publishPackage)).isAllowed, isFalse);
-      expect(rbac.authorize(const AuthorizationRequest(identity: reviewerIdentity, operation: EnterpriseOperation.publishPackage)).isAllowed, isFalse);
-      expect(rbac.authorize(const AuthorizationRequest(identity: releaseManagerIdentity, operation: EnterpriseOperation.publishPackage)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: adminIdentity, operation: EnterpriseOperation.publishPackage)).isAllowed, isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: devIdentity,
+                  operation: EnterpriseOperation.publishPackage))
+              .isAllowed,
+          isFalse);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: reviewerIdentity,
+                  operation: EnterpriseOperation.publishPackage))
+              .isAllowed,
+          isFalse);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: releaseManagerIdentity,
+                  operation: EnterpriseOperation.publishPackage))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: adminIdentity,
+                  operation: EnterpriseOperation.publishPackage))
+              .isAllowed,
+          isTrue);
 
       // 6. Change enterprise policy (Dev: ❌, Rev: ❌, Rel: ❌, Admin: ✓)
-      expect(rbac.authorize(const AuthorizationRequest(identity: devIdentity, operation: EnterpriseOperation.changeEnterprisePolicy)).isAllowed, isFalse);
-      expect(rbac.authorize(const AuthorizationRequest(identity: reviewerIdentity, operation: EnterpriseOperation.changeEnterprisePolicy)).isAllowed, isFalse);
-      expect(rbac.authorize(const AuthorizationRequest(identity: releaseManagerIdentity, operation: EnterpriseOperation.changeEnterprisePolicy)).isAllowed, isFalse);
-      expect(rbac.authorize(const AuthorizationRequest(identity: adminIdentity, operation: EnterpriseOperation.changeEnterprisePolicy)).isAllowed, isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: devIdentity,
+                  operation: EnterpriseOperation.changeEnterprisePolicy))
+              .isAllowed,
+          isFalse);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: reviewerIdentity,
+                  operation: EnterpriseOperation.changeEnterprisePolicy))
+              .isAllowed,
+          isFalse);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: releaseManagerIdentity,
+                  operation: EnterpriseOperation.changeEnterprisePolicy))
+              .isAllowed,
+          isFalse);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: adminIdentity,
+                  operation: EnterpriseOperation.changeEnterprisePolicy))
+              .isAllowed,
+          isTrue);
     });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Test 2: Elevated Approval (✓*) for Security Gate Overrides
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('2. Elevated Approval (✓*): Release Manager requires elevated approval to override security gate', () {
+    test(
+        '2. Elevated Approval (✓*): Release Manager requires elevated approval to override security gate',
+        () {
       // 1. Without elevated approval -> requiresApproval (not directly allowed)
       final unapproved = rbac.authorize(
         const AuthorizationRequest(
@@ -93,7 +240,8 @@ void main() {
         ),
       );
       expect(unapproved.isAllowed, isFalse);
-      expect(unapproved.decision, equals(AuthorizationDecision.requiresApproval));
+      expect(
+          unapproved.decision, equals(AuthorizationDecision.requiresApproval));
       expect(unapproved.requiresAdditionalApproval, isTrue);
 
       // 2. With elevated approval -> Allowed
@@ -123,7 +271,9 @@ void main() {
     // Test 3: Direct Permissions and Wildcard Superuser Grants
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('3. Permission Granularity: supports direct permissions and wildcard grants', () {
+    test(
+        '3. Permission Granularity: supports direct permissions and wildcard grants',
+        () {
       const customIdentity = EnterpriseIdentity(
         id: 'usr_custom_99',
         displayName: 'Custom User',
@@ -146,18 +296,46 @@ void main() {
     // Test 4: Security Auditor Capabilities
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('4. Security Auditor: can view audit logs and run AI review, but cannot modify or publish', () {
-      expect(rbac.authorize(const AuthorizationRequest(identity: auditorIdentity, operation: EnterpriseOperation.viewAuditLogs)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: auditorIdentity, operation: EnterpriseOperation.runAiReview)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: auditorIdentity, operation: EnterpriseOperation.modifyPackage)).isAllowed, isFalse);
-      expect(rbac.authorize(const AuthorizationRequest(identity: auditorIdentity, operation: EnterpriseOperation.publishPackage)).isAllowed, isFalse);
+    test(
+        '4. Security Auditor: can view audit logs and run AI review, but cannot modify or publish',
+        () {
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: auditorIdentity,
+                  operation: EnterpriseOperation.viewAuditLogs))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: auditorIdentity,
+                  operation: EnterpriseOperation.runAiReview))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: auditorIdentity,
+                  operation: EnterpriseOperation.modifyPackage))
+              .isAllowed,
+          isFalse);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: auditorIdentity,
+                  operation: EnterpriseOperation.publishPackage))
+              .isAllowed,
+          isFalse);
     });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Test 5: Pure RBAC Renderer Conformance
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('5. Renderer Conformance: generates deterministic JSON and Markdown authorization reports', () {
+    test(
+        '5. Renderer Conformance: generates deterministic JSON and Markdown authorization reports',
+        () {
       final res = rbac.authorize(
         const AuthorizationRequest(
           identity: releaseManagerIdentity,

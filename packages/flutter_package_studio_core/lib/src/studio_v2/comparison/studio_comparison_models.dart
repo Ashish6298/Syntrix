@@ -1,7 +1,6 @@
 /// Domain models and comparison matrices for Phase 10.14: Loader Comparison Laboratory.
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/studio_v2/studio_v2_models.dart';
 
 /// Single candidate profile inside the comparison laboratory.
@@ -62,7 +61,8 @@ class LoaderComparisonCandidate {
               .toList() ??
           const [],
       configuration: json['configuration'] != null
-          ? StudioConfigurationDescriptor.fromJson(json['configuration'] as Map<String, dynamic>)
+          ? StudioConfigurationDescriptor.fromJson(
+              json['configuration'] as Map<String, dynamic>)
           : const StudioConfigurationDescriptor(),
     );
   }
@@ -102,11 +102,15 @@ class LoaderComparisonSession {
     return LoaderComparisonSession(
       sessionId: json['session_id'] as String? ?? 'comp_default',
       primary: json['primary'] != null
-          ? LoaderComparisonCandidate.fromJson(json['primary'] as Map<String, dynamic>)
-          : const LoaderComparisonCandidate(loaderId: 'a', displayName: 'Loader A'),
+          ? LoaderComparisonCandidate.fromJson(
+              json['primary'] as Map<String, dynamic>)
+          : const LoaderComparisonCandidate(
+              loaderId: 'a', displayName: 'Loader A'),
       secondary: json['secondary'] != null
-          ? LoaderComparisonCandidate.fromJson(json['secondary'] as Map<String, dynamic>)
-          : const LoaderComparisonCandidate(loaderId: 'b', displayName: 'Loader B'),
+          ? LoaderComparisonCandidate.fromJson(
+              json['secondary'] as Map<String, dynamic>)
+          : const LoaderComparisonCandidate(
+              loaderId: 'b', displayName: 'Loader B'),
       comparedAt: DateTime.parse(json['compared_at'] as String),
     );
   }

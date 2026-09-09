@@ -37,7 +37,8 @@ void main() {
       expect(restored.sceneId, equals('scene_test_01'));
       expect(restored.name, equals('Test Orbit Scene'));
       expect(restored.layers.length, equals(2));
-      expect(restored.layers.first.layerType, equals(SceneLayerType.background));
+      expect(
+          restored.layers.first.layerType, equals(SceneLayerType.background));
       expect(restored.layers.last.opacity, equals(0.9));
     });
   });
@@ -62,11 +63,16 @@ void main() {
 
       // 2. Reorder Layer
       engine.reorderLayer('layer_custom_01', 5);
-      expect(engine.activeScene.layers.firstWhere((l) => l.layerId == 'layer_custom_01').zIndex, equals(5));
+      expect(
+          engine.activeScene.layers
+              .firstWhere((l) => l.layerId == 'layer_custom_01')
+              .zIndex,
+          equals(5));
 
       // 3. Configure Layer
       engine.configureLayer('layer_custom_01', opacity: 0.4, isVisible: false);
-      final configured = engine.activeScene.layers.firstWhere((l) => l.layerId == 'layer_custom_01');
+      final configured = engine.activeScene.layers
+          .firstWhere((l) => l.layerId == 'layer_custom_01');
       expect(configured.opacity, equals(0.4));
       expect(configured.isVisible, isFalse);
 
@@ -100,19 +106,23 @@ void main() {
   });
 
   group('Phase 10.7: Studio Scene Renderer', () {
-    test('Renders ASCII Scene Tree, Markdown Documentation, and JSON state', () {
+    test('Renders ASCII Scene Tree, Markdown Documentation, and JSON state',
+        () {
       final controller = StudioV2Controller();
       final engine = StudioSceneBuilderEngine(controller: controller);
 
       // 1. ASCII Tree
-      final ascii = StudioSceneRenderer.renderAsciiSceneTree(engine.activeScene);
+      final ascii =
+          StudioSceneRenderer.renderAsciiSceneTree(engine.activeScene);
       expect(ascii, contains('Scene: Deep Space Galaxy Scene'));
       expect(ascii, contains('Deep Space Background'));
       expect(ascii, contains('Galaxy Orbit Loader'));
 
       // 2. Markdown Report
-      final markdown = StudioSceneRenderer.renderMarkdown(engine.activeScene, engine);
-      expect(markdown, contains('# Visual Scene Builder: Deep Space Galaxy Scene'));
+      final markdown =
+          StudioSceneRenderer.renderMarkdown(engine.activeScene, engine);
+      expect(markdown,
+          contains('# Visual Scene Builder: Deep Space Galaxy Scene'));
       expect(markdown, contains('## Layer Hierarchy'));
       expect(markdown, contains('```dart'));
 

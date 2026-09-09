@@ -1,7 +1,6 @@
 /// Domain models for Phase 9.11: Enterprise Workflow Orchestration.
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/enterprise/identity/enterprise_identity_models.dart';
 
 /// Status of an individual enterprise workflow stage.
@@ -102,7 +101,8 @@ enum WorkflowStageType {
   static WorkflowStageType fromString(String? val) {
     if (val == null) return WorkflowStageType.customStage;
     return WorkflowStageType.values.firstWhere(
-      (s) => s.name.toLowerCase() == val.toLowerCase() ||
+      (s) =>
+          s.name.toLowerCase() == val.toLowerCase() ||
           s.displayName.toLowerCase() == val.toLowerCase(),
       orElse: () => WorkflowStageType.customStage,
     );
@@ -357,9 +357,11 @@ class EnterpriseWorkflowPlan {
       name: json['name'] as String? ?? 'Workflow Plan',
       targetPackageName: json['target_package_name'] as String? ?? 'unknown',
       targetVersion: json['target_version'] as String? ?? '0.0.0',
-      initiator: EnterpriseIdentity.fromJson(json['initiator'] as Map<String, dynamic>),
+      initiator: EnterpriseIdentity.fromJson(
+          json['initiator'] as Map<String, dynamic>),
       stages: (json['stages'] as List<dynamic>?)
-              ?.map((s) => OrchestrationStageDefinition.fromJson(s as Map<String, dynamic>))
+              ?.map((s) => OrchestrationStageDefinition.fromJson(
+                  s as Map<String, dynamic>))
               .toList() ??
           const [],
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -423,7 +425,8 @@ class EnterpriseWorkflowExecutionResult {
         'completed_at': completedAt.toIso8601String(),
       };
 
-  factory EnterpriseWorkflowExecutionResult.fromJson(Map<String, dynamic> json) {
+  factory EnterpriseWorkflowExecutionResult.fromJson(
+      Map<String, dynamic> json) {
     return EnterpriseWorkflowExecutionResult(
       workflowId: json['workflow_id'] as String? ?? '',
       name: json['name'] as String? ?? '',
@@ -434,7 +437,8 @@ class EnterpriseWorkflowExecutionResult {
         orElse: () => EnterpriseWorkflowExecutionStatus.failed,
       ),
       stageResults: (json['stage_results'] as List<dynamic>?)
-              ?.map((s) => OrchestrationStageResult.fromJson(s as Map<String, dynamic>))
+              ?.map((s) =>
+                  OrchestrationStageResult.fromJson(s as Map<String, dynamic>))
               .toList() ??
           const [],
       totalStages: json['total_stages'] as int? ?? 0,

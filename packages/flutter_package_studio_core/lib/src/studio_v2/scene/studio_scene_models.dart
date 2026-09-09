@@ -1,8 +1,6 @@
 /// Domain models and layer descriptors for Phase 10.7: Scene Builder.
 library;
 
-import 'dart:convert';
-
 /// Scene layer type hierarchy.
 enum SceneLayerType {
   background,
@@ -37,7 +35,8 @@ class SceneComponentLayer {
   final String layerId;
   final String name;
   final SceneLayerType layerType;
-  final String componentReference; // e.g. 'deep_space', 'galaxy_orbit', 'cosmic_dust'
+  final String
+      componentReference; // e.g. 'deep_space', 'galaxy_orbit', 'cosmic_dust'
   final bool isVisible;
   final double opacity;
   final int zIndex;
@@ -99,7 +98,8 @@ class SceneComponentLayer {
       isVisible: json['is_visible'] as bool? ?? true,
       opacity: (json['opacity'] as num?)?.toDouble() ?? 1.0,
       zIndex: json['z_index'] as int? ?? 0,
-      configuration: (json['configuration'] as Map<String, dynamic>?) ?? const {},
+      configuration:
+          (json['configuration'] as Map<String, dynamic>?) ?? const {},
     );
   }
 }
@@ -165,7 +165,8 @@ class VisualSceneDescriptor {
       name: json['name'] as String? ?? 'Default Scene',
       description: json['description'] as String? ?? '',
       layers: (json['layers'] as List<dynamic>?)
-              ?.map((l) => SceneComponentLayer.fromJson(l as Map<String, dynamic>))
+              ?.map((l) =>
+                  SceneComponentLayer.fromJson(l as Map<String, dynamic>))
               .toList() ??
           const [],
       width: (json['width'] as num?)?.toDouble() ?? 400.0,

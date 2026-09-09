@@ -1,9 +1,6 @@
 /// Domain models for Phase 9.14: Enterprise Compliance Reporting & Governance Reports.
 library;
 
-import 'dart:convert';
-import 'package:flutter_package_studio_core/src/enterprise/security/enterprise_security_compliance_models.dart';
-
 /// Supported formats for enterprise compliance and governance exports.
 enum ComplianceReportFormat {
   json,
@@ -88,7 +85,8 @@ class ComplianceReportSection {
               .toList() ??
           const [],
       rows: (json['rows'] as List<dynamic>?)
-              ?.map((r) => (r as List<dynamic>).map((c) => c.toString()).toList())
+              ?.map(
+                  (r) => (r as List<dynamic>).map((c) => c.toString()).toList())
               .toList() ??
           const [],
       metadata: (json['metadata'] as Map<String, dynamic>?) ?? const {},
@@ -144,10 +142,12 @@ class EnterpriseComplianceReport {
       executiveSummary: json['executive_summary'] as String? ?? '',
       isCompliant: json['is_compliant'] as bool? ?? false,
       sections: (json['sections'] as List<dynamic>?)
-              ?.map((s) => ComplianceReportSection.fromJson(s as Map<String, dynamic>))
+              ?.map((s) =>
+                  ComplianceReportSection.fromJson(s as Map<String, dynamic>))
               .toList() ??
           const [],
-      summaryMetrics: (json['summary_metrics'] as Map<String, dynamic>?) ?? const {},
+      summaryMetrics:
+          (json['summary_metrics'] as Map<String, dynamic>?) ?? const {},
       generatedAt: DateTime.parse(json['generated_at'] as String),
     );
   }

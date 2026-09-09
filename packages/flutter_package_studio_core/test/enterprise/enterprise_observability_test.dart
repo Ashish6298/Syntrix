@@ -3,7 +3,8 @@ import 'package:flutter_package_studio_core/src/enterprise/enterprise.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Phase 9.12: Enterprise Observability & Operational Dashboard Models', () {
+  group('Phase 9.12: Enterprise Observability & Operational Dashboard Models',
+      () {
     test('PackageHealthMetric serialization and deserialization', () {
       final metric = PackageHealthMetric(
         packageName: 'core_security_pkg',
@@ -67,7 +68,8 @@ void main() {
       final restored = EnterpriseDashboardSnapshot.fromJson(json);
 
       expect(restored.organizationId, equals('acme_corp'));
-      expect(restored.overallSystemHealth, equals(OperationalHealthStatus.degraded));
+      expect(restored.overallSystemHealth,
+          equals(OperationalHealthStatus.degraded));
       expect(restored.totalWorkflowsExecuted, equals(20));
       expect(restored.packageHealth.length, equals(1));
       expect(restored.aiReviewStats.averageQualityScore, equals(94.2));
@@ -102,13 +104,16 @@ dependencies:
       final auditEngine = EnterpriseAuditEngine(projectRoot: tempDir.path);
       final workerManager = EnterpriseWorkerManager(projectRoot: tempDir.path);
       final workflowEngine = EnterpriseWorkflowEngine();
-      final securityEngine = EnterpriseSecurityComplianceEngine(projectRoot: tempDir.path);
-      final dependencyEngine = EnterpriseDependencyGovernanceEngine(projectRoot: tempDir.path);
+      final securityEngine =
+          EnterpriseSecurityComplianceEngine(projectRoot: tempDir.path);
+      final dependencyEngine =
+          EnterpriseDependencyGovernanceEngine(projectRoot: tempDir.path);
 
       // Record sample audit events
       await auditEngine.recordEvent(
         eventType: AuditEventType.projectInspected,
-        actorIdentity: const EnterpriseIdentity(id: 'dev_1', displayName: 'Developer Alice'),
+        actorIdentity: const EnterpriseIdentity(
+            id: 'dev_1', displayName: 'Developer Alice'),
         operation: 'INSPECT_PROJECT',
         packageOrProject: 'acme_pkg',
         outcome: AuditEventOutcome.success,
@@ -116,7 +121,8 @@ dependencies:
 
       await auditEngine.recordEvent(
         eventType: AuditEventType.securityAuditExecuted,
-        actorIdentity: const EnterpriseIdentity(id: 'auditor_1', displayName: 'Auditor Bob'),
+        actorIdentity: const EnterpriseIdentity(
+            id: 'auditor_1', displayName: 'Auditor Bob'),
         operation: 'SECURITY_AUDIT',
         packageOrProject: 'acme_pkg',
         outcome: AuditEventOutcome.failure,
@@ -157,10 +163,12 @@ dependencies:
       expect(snapshot.totalAuditEventsRecorded, greaterThanOrEqualTo(2));
       expect(snapshot.failedOperationsRecorded, equals(1));
       expect(snapshot.recentFailedOperations.length, equals(1));
-      expect(snapshot.recentFailedOperations.first['failure_info'], contains('Found high severity dependency risk'));
+      expect(snapshot.recentFailedOperations.first['failure_info'],
+          contains('Found high severity dependency risk'));
       expect(snapshot.totalWorkflowsExecuted, equals(1));
       expect(snapshot.successfulWorkflows, equals(1));
-      expect(snapshot.workerStats.totalRegisteredWorkers, greaterThanOrEqualTo(1));
+      expect(
+          snapshot.workerStats.totalRegisteredWorkers, greaterThanOrEqualTo(1));
       expect(snapshot.workerStats.healthyWorkers, greaterThanOrEqualTo(1));
       expect(snapshot.packageHealth.length, equals(1));
       expect(snapshot.packageHealth.first.packageName, equals('acme_pkg'));

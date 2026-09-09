@@ -1,8 +1,6 @@
 /// Domain models and lifecycle validation for Phase 11.8: Release Candidate (RC1 & Final v1.0.0 Promotion).
 library;
 
-import 'dart:convert';
-
 /// Stage of the release lifecycle.
 enum ReleaseStage {
   rc1Candidate,
@@ -124,19 +122,24 @@ class ReleaseCandidatePromotionReport {
   factory ReleaseCandidatePromotionReport.fromJson(Map<String, dynamic> json) {
     return ReleaseCandidatePromotionReport(
       reportId: json['report_id'] as String? ?? 'rc_report_default',
-      releaseCandidateTag: json['release_candidate_tag'] as String? ?? 'v1.0.0-rc.1',
-      promotedStableVersion: json['promoted_stable_version'] as String? ?? 'v1.0.0',
+      releaseCandidateTag:
+          json['release_candidate_tag'] as String? ?? 'v1.0.0-rc.1',
+      promotedStableVersion:
+          json['promoted_stable_version'] as String? ?? 'v1.0.0',
       currentStage: ReleaseStage.values.firstWhere(
         (s) => s.id == json['current_stage'] || s.name == json['current_stage'],
         orElse: () => ReleaseStage.v100Promoted,
       ),
-      isReadyForV100Promotion: json['is_ready_for_v100_promotion'] as bool? ?? true,
+      isReadyForV100Promotion:
+          json['is_ready_for_v100_promotion'] as bool? ?? true,
       totalGatesEvaluated: json['total_gates_evaluated'] as int? ?? 0,
       gateItems: (json['gate_items'] as List<dynamic>?)
-              ?.map((g) => FinalValidationGateItem.fromJson(g as Map<String, dynamic>))
+              ?.map((g) =>
+                  FinalValidationGateItem.fromJson(g as Map<String, dynamic>))
               .toList() ??
           const [],
-      evaluatedAt: DateTime.parse(json['evaluated_at'] as String? ?? DateTime.now().toIso8601String()),
+      evaluatedAt: DateTime.parse(
+          json['evaluated_at'] as String? ?? DateTime.now().toIso8601String()),
     );
   }
 }

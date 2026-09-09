@@ -1,8 +1,6 @@
 /// Domain models for Phase 9.6: Enterprise Dependency Governance.
 library;
 
-import 'dart:convert';
-
 /// Classification status of a dependency.
 enum DependencyGovernanceStatus {
   approved,
@@ -96,10 +94,23 @@ class EnterpriseDependencyPolicy {
   final bool blockKnownVulnerabilities;
 
   const EnterpriseDependencyPolicy({
-    this.approvedPackages = const ['flutter', 'flutter_test', 'http', 'path', 'meta', 'collection'],
+    this.approvedPackages = const [
+      'flutter',
+      'flutter_test',
+      'http',
+      'path',
+      'meta',
+      'collection'
+    ],
     this.restrictedPackages = const [],
     this.blockedPackages = const [],
-    this.allowedLicenses = const ['MIT', 'Apache-2.0', 'BSD-3-Clause', 'BSD-2-Clause', 'ISC'],
+    this.allowedLicenses = const [
+      'MIT',
+      'Apache-2.0',
+      'BSD-3-Clause',
+      'BSD-2-Clause',
+      'ISC'
+    ],
     this.blockedLicenses = const ['GPL-3.0', 'AGPL-3.0', 'SSPL'],
     this.blockUnapprovedPackages = false,
     this.blockGitDependencies = true,
@@ -121,22 +132,32 @@ class EnterpriseDependencyPolicy {
 
   factory EnterpriseDependencyPolicy.fromJson(Map<String, dynamic> json) {
     return EnterpriseDependencyPolicy(
-      approvedPackages:
-          (json['approved_packages'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
-      restrictedPackages:
-          (json['restricted_packages'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
-      blockedPackages:
-          (json['blocked_packages'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
-      allowedLicenses:
-          (json['allowed_licenses'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
-              const ['MIT', 'Apache-2.0', 'BSD-3-Clause', 'BSD-2-Clause', 'ISC'],
-      blockedLicenses:
-          (json['blocked_licenses'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
-              const ['GPL-3.0', 'AGPL-3.0', 'SSPL'],
-      blockUnapprovedPackages: json['block_unapproved_packages'] as bool? ?? false,
+      approvedPackages: (json['approved_packages'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      restrictedPackages: (json['restricted_packages'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      blockedPackages: (json['blocked_packages'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      allowedLicenses: (json['allowed_licenses'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const ['MIT', 'Apache-2.0', 'BSD-3-Clause', 'BSD-2-Clause', 'ISC'],
+      blockedLicenses: (json['blocked_licenses'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const ['GPL-3.0', 'AGPL-3.0', 'SSPL'],
+      blockUnapprovedPackages:
+          json['block_unapproved_packages'] as bool? ?? false,
       blockGitDependencies: json['block_git_dependencies'] as bool? ?? true,
       blockPathDependencies: json['block_path_dependencies'] as bool? ?? true,
-      blockKnownVulnerabilities: json['block_known_vulnerabilities'] as bool? ?? true,
+      blockKnownVulnerabilities:
+          json['block_known_vulnerabilities'] as bool? ?? true,
     );
   }
 }
@@ -194,9 +215,11 @@ class DependencyGovernanceResult {
       isCompliant: json['is_compliant'] as bool? ?? false,
       isBlocked: json['is_blocked'] as bool? ?? true,
       targetPackageName: json['target_package_name'] as String? ?? 'unknown',
-      totalDependenciesAnalyzed: json['total_dependencies_analyzed'] as int? ?? 0,
+      totalDependenciesAnalyzed:
+          json['total_dependencies_analyzed'] as int? ?? 0,
       findings: (json['findings'] as List<dynamic>?)
-              ?.map((f) => DependencyGovernanceFinding.fromJson(f as Map<String, dynamic>))
+              ?.map((f) => DependencyGovernanceFinding.fromJson(
+                  f as Map<String, dynamic>))
               .toList() ??
           const [],
       approvedCount: json['approved_count'] as int? ?? 0,
@@ -206,7 +229,9 @@ class DependencyGovernanceResult {
       licenseViolationCount: json['license_violation_count'] as int? ?? 0,
       summary: json['summary'] as String? ?? '',
       durationMs: json['duration_ms'] as int? ?? 0,
-      timestamp: json['timestamp'] is String ? DateTime.parse(json['timestamp'] as String) : DateTime.now(),
+      timestamp: json['timestamp'] is String
+          ? DateTime.parse(json['timestamp'] as String)
+          : DateTime.now(),
     );
   }
 }

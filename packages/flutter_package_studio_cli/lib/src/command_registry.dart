@@ -1,4 +1,3 @@
-import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:flutter_package_studio_cli/src/base_command.dart';
@@ -69,7 +68,8 @@ class CommandRegistry {
     final glyph = purpleDim('⬢');
 
     String pad(String label, [int width = 10]) {
-      return label + ' ' * (width - label.length > 0 ? width - label.length : 1);
+      return label +
+          ' ' * (width - label.length > 0 ? width - label.length : 1);
     }
 
     final commands = [
@@ -84,7 +84,8 @@ class CommandRegistry {
     buffer.writeln();
     buffer.writeln('                 $glyph  ${white('S Y N T R I X')}');
     buffer.writeln();
-    buffer.writeln('     ${muted('Enterprise tools & AI studio for Flutter and Dart')}');
+    buffer.writeln(
+        '     ${muted('Enterprise tools & AI studio for Flutter and Dart')}');
     buffer.writeln('     ${footer('─' * 50)}');
     buffer.writeln();
     buffer.writeln('     ${white('Quick Actions:')}');
@@ -127,7 +128,8 @@ class CommandRegistry {
     final glyph = purpleDim('⬢');
 
     String pad(String label, int width) {
-      return label + ' ' * (width - label.length > 0 ? width - label.length : 1);
+      return label +
+          ' ' * (width - label.length > 0 ? width - label.length : 1);
     }
 
     final buffer = StringBuffer();
@@ -187,7 +189,10 @@ class CommandRegistry {
       ['deps', 'analyze dependency versions, conflicts, and upgrade risk'],
       ['security', 'analyze secret exposures and credential handling risks'],
       ['test', 'analyze coverage gaps and generate candidate test proposals'],
-      ['release-readiness', 'evaluate release candidate readiness across all gates'],
+      [
+        'release-readiness',
+        'evaluate release candidate readiness across all gates'
+      ],
     ];
     printSection('Analysis & audit', analysisAudit, 20);
 
@@ -216,7 +221,8 @@ class CommandRegistry {
         return 0;
       }
 
-      if (arguments.contains('--version') || arguments.contains('-V')) {
+      if (arguments.length == 1 &&
+          (arguments[0] == '--version' || arguments[0] == '-V')) {
         print('Syntrix CLI v$version (Flutter Package Studio)');
         return 0;
       }
@@ -266,5 +272,3 @@ class CommandRegistry {
     }
   }
 }
-
-

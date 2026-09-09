@@ -1,8 +1,6 @@
 /// Domain models and telemetry structures for Phase 11.5: Performance Certification.
 library;
 
-import 'dart:convert';
-
 /// Hardware/Runtime profile configuration tier.
 enum HardwareProfileTier {
   lowEnd,
@@ -76,11 +74,15 @@ class PerformanceProfileMetrics {
       ),
       fps: (json['fps'] as num?)?.toDouble() ?? 60.0,
       frameTimeMs: (json['frame_time_ms'] as num?)?.toDouble() ?? 16.6,
-      cpuUsagePercentage: (json['cpu_usage_percentage'] as num?)?.toDouble() ?? 0.0,
-      gpuWorkloadPercentage: (json['gpu_workload_percentage'] as num?)?.toDouble() ?? 0.0,
+      cpuUsagePercentage:
+          (json['cpu_usage_percentage'] as num?)?.toDouble() ?? 0.0,
+      gpuWorkloadPercentage:
+          (json['gpu_workload_percentage'] as num?)?.toDouble() ?? 0.0,
       memoryUsageMb: (json['memory_usage_mb'] as num?)?.toDouble() ?? 0.0,
-      allocationRateMbPerSec: (json['allocation_rate_mb_per_sec'] as num?)?.toDouble() ?? 0.0,
-      gcPressureEventsPerMin: (json['gc_pressure_events_per_min'] as num?)?.toDouble() ?? 0.0,
+      allocationRateMbPerSec:
+          (json['allocation_rate_mb_per_sec'] as num?)?.toDouble() ?? 0.0,
+      gcPressureEventsPerMin:
+          (json['gc_pressure_events_per_min'] as num?)?.toDouble() ?? 0.0,
       particleCount: json['particle_count'] as int? ?? 0,
       renderingCostMs: (json['rendering_cost_ms'] as num?)?.toDouble() ?? 0.0,
       startupTimeMs: json['startup_time_ms'] as int? ?? 0,
@@ -119,7 +121,8 @@ class PerformanceCertificationReport {
       targetVersion: json['target_version'] as String? ?? '1.0.0',
       isOverallCertified: json['is_overall_certified'] as bool? ?? true,
       profiles: (json['profiles'] as List<dynamic>?)
-              ?.map((p) => PerformanceProfileMetrics.fromJson(p as Map<String, dynamic>))
+              ?.map((p) =>
+                  PerformanceProfileMetrics.fromJson(p as Map<String, dynamic>))
               .toList() ??
           const [],
       certifiedAt: DateTime.parse(json['certified_at'] as String),

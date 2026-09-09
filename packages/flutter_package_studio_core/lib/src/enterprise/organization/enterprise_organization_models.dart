@@ -1,7 +1,6 @@
 /// Domain models for Phase 9.8: Multi-Project & Organization Management.
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/enterprise/policy/enterprise_policy_models.dart';
 import 'package:flutter_package_studio_core/src/enterprise/identity/enterprise_identity_models.dart';
 
@@ -80,9 +79,11 @@ class ManagedPackage {
       currentVersion: json['current_version'] as String? ?? '1.0.0',
       description: json['description'] as String?,
       ownerTeamId: json['owner_team_id'] as String? ?? 'shared',
-      packagePolicyOverride: json['package_policy_override'] is Map<String, dynamic>
-          ? EnterprisePolicyDocument.fromJson(json['package_policy_override'] as Map<String, dynamic>)
-          : null,
+      packagePolicyOverride:
+          json['package_policy_override'] is Map<String, dynamic>
+              ? EnterprisePolicyDocument.fromJson(
+                  json['package_policy_override'] as Map<String, dynamic>)
+              : null,
     );
   }
 }
@@ -139,12 +140,15 @@ class ManagedProject {
               .toList() ??
           const [],
       members: (json['members'] as List<dynamic>?)
-              ?.map((m) => OrganizationMember.fromJson(m as Map<String, dynamic>))
+              ?.map(
+                  (m) => OrganizationMember.fromJson(m as Map<String, dynamic>))
               .toList() ??
           const [],
-      projectPolicyOverride: json['project_policy_override'] is Map<String, dynamic>
-          ? EnterprisePolicyDocument.fromJson(json['project_policy_override'] as Map<String, dynamic>)
-          : null,
+      projectPolicyOverride:
+          json['project_policy_override'] is Map<String, dynamic>
+              ? EnterprisePolicyDocument.fromJson(
+                  json['project_policy_override'] as Map<String, dynamic>)
+              : null,
       createdAt: json['created_at'] is String
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
@@ -196,12 +200,17 @@ class EnterpriseTeam {
       organizationId: json['organization_id'] as String? ?? 'default_org',
       leadUserId: json['lead_user_id'] as String? ?? 'admin',
       members: (json['members'] as List<dynamic>?)
-              ?.map((m) => OrganizationMember.fromJson(m as Map<String, dynamic>))
+              ?.map(
+                  (m) => OrganizationMember.fromJson(m as Map<String, dynamic>))
               .toList() ??
           const [],
-      projectIds: (json['project_ids'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+      projectIds: (json['project_ids'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
       teamPolicyOverride: json['team_policy_override'] is Map<String, dynamic>
-          ? EnterprisePolicyDocument.fromJson(json['team_policy_override'] as Map<String, dynamic>)
+          ? EnterprisePolicyDocument.fromJson(
+              json['team_policy_override'] as Map<String, dynamic>)
           : null,
       createdAt: json['created_at'] is String
           ? DateTime.parse(json['created_at'] as String)
@@ -252,7 +261,8 @@ class EnterpriseOrganization {
       name: json['name'] as String? ?? 'Default Organization',
       domain: json['domain'] as String? ?? 'enterprise.internal',
       defaultPolicy: json['default_policy'] is Map<String, dynamic>
-          ? EnterprisePolicyDocument.fromJson(json['default_policy'] as Map<String, dynamic>)
+          ? EnterprisePolicyDocument.fromJson(
+              json['default_policy'] as Map<String, dynamic>)
           : const EnterprisePolicyDocument(),
       teams: (json['teams'] as List<dynamic>?)
               ?.map((t) => EnterpriseTeam.fromJson(t as Map<String, dynamic>))
@@ -263,7 +273,8 @@ class EnterpriseOrganization {
               .toList() ??
           const [],
       globalAdmins: (json['global_admins'] as List<dynamic>?)
-              ?.map((a) => OrganizationMember.fromJson(a as Map<String, dynamic>))
+              ?.map(
+                  (a) => OrganizationMember.fromJson(a as Map<String, dynamic>))
               .toList() ??
           const [],
       createdAt: json['created_at'] is String

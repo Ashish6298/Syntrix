@@ -18,15 +18,16 @@ class EnterpriseDependencyRenderer {
   String renderMarkdown(DependencyGovernanceResult result) {
     final buffer = StringBuffer();
 
-    final statusIcon = result.isCompliant
-        ? '✅'
-        : (result.isBlocked ? '❌' : '⚠️');
+    final statusIcon =
+        result.isCompliant ? '✅' : (result.isBlocked ? '❌' : '⚠️');
 
     buffer.writeln('# Enterprise Dependency Governance Report');
     buffer.writeln();
     buffer.writeln('**Target Package**: `${result.targetPackageName}`  ');
-    buffer.writeln('**Compliance Status**: $statusIcon **${result.isCompliant ? "COMPLIANT" : (result.isBlocked ? "BLOCKED (POLICY VIOLATION)" : "NON-COMPLIANT")}**  ');
-    buffer.writeln('**Total Dependencies Analyzed**: `${result.totalDependenciesAnalyzed}`  ');
+    buffer.writeln(
+        '**Compliance Status**: $statusIcon **${result.isCompliant ? "COMPLIANT" : (result.isBlocked ? "BLOCKED (POLICY VIOLATION)" : "NON-COMPLIANT")}**  ');
+    buffer.writeln(
+        '**Total Dependencies Analyzed**: `${result.totalDependenciesAnalyzed}`  ');
     buffer.writeln('**Duration**: `${result.durationMs}ms`  ');
     buffer.writeln('**Timestamp**: `${result.timestamp.toIso8601String()}`');
     buffer.writeln();
@@ -54,9 +55,13 @@ class EnterpriseDependencyRenderer {
                 ? '⚠️'
                 : (finding.status == DependencyGovernanceStatus.vulnerable
                     ? '🛡️'
-                    : (finding.status == DependencyGovernanceStatus.licenseViolation ? '⚖️' : '❌')));
+                    : (finding.status ==
+                            DependencyGovernanceStatus.licenseViolation
+                        ? '⚖️'
+                        : '❌')));
 
-        buffer.writeln('### $icon [${finding.status.label}] `${finding.packageName}` (`${finding.declaredVersion}`)');
+        buffer.writeln(
+            '### $icon [${finding.status.label}] `${finding.packageName}` (`${finding.declaredVersion}`)');
         buffer.writeln('- **Type**: `${finding.dependencyType.id}`');
         buffer.writeln('- **Reason**: ${finding.reason}');
         if (finding.license != null) {

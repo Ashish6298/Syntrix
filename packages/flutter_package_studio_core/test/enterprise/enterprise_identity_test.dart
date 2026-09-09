@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:path/path.dart' as p;
@@ -10,7 +9,8 @@ void main() {
     late String rootPath;
 
     setUp(() {
-      tempDir = Directory.systemTemp.createTempSync('fps_enterprise_identity_test_');
+      tempDir =
+          Directory.systemTemp.createTempSync('fps_enterprise_identity_test_');
       rootPath = tempDir.path;
 
       // Scaffold project workspace
@@ -32,7 +32,9 @@ environment:
     // Test 1: Identity Model Conformance & Role Representations
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('1. Model Conformance: Supports all 6 enterprise roles and identity types', () {
+    test(
+        '1. Model Conformance: Supports all 6 enterprise roles and identity types',
+        () {
       final roles = [
         EnterpriseRole.administrator,
         EnterpriseRole.releaseManager,
@@ -67,7 +69,9 @@ environment:
     // Test 2: Pluggable Identity Provider Authentication (Mock Provider)
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('2. Provider Authentication: authenticates valid users and rejects invalid ones', () async {
+    test(
+        '2. Provider Authentication: authenticates valid users and rejects invalid ones',
+        () async {
       final idp = MockEnterpriseIdentityProvider();
 
       // 1. Success authentication
@@ -80,8 +84,10 @@ environment:
 
       expect(successResult.isSuccess, isTrue);
       expect(successResult.session, isNotNull);
-      expect(successResult.session!.identity.roles, contains(EnterpriseRole.administrator));
-      expect(successResult.session!.status, equals(AuthenticationStatus.authenticated));
+      expect(successResult.session!.identity.roles,
+          contains(EnterpriseRole.administrator));
+      expect(successResult.session!.status,
+          equals(AuthenticationStatus.authenticated));
 
       // 2. Failure authentication
       final failResult = await idp.authenticate(
@@ -92,7 +98,8 @@ environment:
       );
 
       expect(failResult.isSuccess, isFalse);
-      expect(failResult.errorMessage, contains('Invalid credentials or user not found'));
+      expect(failResult.errorMessage,
+          contains('Invalid credentials or user not found'));
       expect(failResult.session, isNull);
     });
 
@@ -100,7 +107,9 @@ environment:
     // Test 3: Session Validation & Revocation
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('3. Session Lifecycle: validates active sessions and supports revocation', () async {
+    test(
+        '3. Session Lifecycle: validates active sessions and supports revocation',
+        () async {
       final idp = MockEnterpriseIdentityProvider();
       final authResult = await idp.authenticate(
         const AuthenticationRequest(
@@ -122,7 +131,9 @@ environment:
     // Test 4: Identity Manager Resolution (Environment Token vs. Anonymous)
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('4. Identity Resolution: resolves service token from environment or falls back to anonymous', () async {
+    test(
+        '4. Identity Resolution: resolves service token from environment or falls back to anonymous',
+        () async {
       final manager = EnterpriseIdentityManager(projectRoot: rootPath);
 
       // 1. Unauthenticated workspace resolves to Anonymous
@@ -144,7 +155,9 @@ environment:
     // Test 5: Session Persistence & Logout
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('5. Session Persistence: persists session in .fps/session.json and clears on logout', () async {
+    test(
+        '5. Session Persistence: persists session in .fps/session.json and clears on logout',
+        () async {
       final manager = EnterpriseIdentityManager(projectRoot: rootPath);
 
       final auth = await manager.login(
@@ -172,7 +185,9 @@ environment:
     // Test 6: Pure Identity Renderer Conformance
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('6. Renderer Conformance: generates deterministic JSON and Markdown user profiles', () async {
+    test(
+        '6. Renderer Conformance: generates deterministic JSON and Markdown user profiles',
+        () async {
       final manager = EnterpriseIdentityManager(projectRoot: rootPath);
       final auth = await manager.login(
         providerId: 'mock_idp',

@@ -3,7 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   group('Phase 10.21: Release Candidate Audit Models', () {
-    test('ReleaseCandidateGateItem and ReleaseCandidateAuditReport JSON roundtrip', () {
+    test(
+        'ReleaseCandidateGateItem and ReleaseCandidateAuditReport JSON roundtrip',
+        () {
       const gate = ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.pubDevValidation,
         status: GateStatus.pass,
@@ -28,17 +30,21 @@ void main() {
       expect(restored.isMilestone10Complete, isTrue);
       expect(restored.isReleaseCandidateReady, isTrue);
       expect(restored.gates.length, equals(1));
-      expect(restored.gates.first.dimension, equals(Milestone10GateDimension.pubDevValidation));
+      expect(restored.gates.first.dimension,
+          equals(Milestone10GateDimension.pubDevValidation));
       expect(restored.packageMetadataCheck['pubspec_valid'], isTrue);
     });
   });
 
   group('Phase 10.21: Release Candidate Audit Engine Operations', () {
-    test('Audits all 19 Milestone 10 Release Gates and proves Release Candidate readiness', () {
+    test(
+        'Audits all 19 Milestone 10 Release Gates and proves Release Candidate readiness',
+        () {
       final controller = StudioV2Controller();
       final auditEngine = ReleaseCandidateAuditEngine(controller: controller);
 
-      final report = auditEngine.runReleaseCandidateAudit(targetVersion: '1.0.0');
+      final report =
+          auditEngine.runReleaseCandidateAudit(targetVersion: '1.0.0');
 
       expect(report.isMilestone10Complete, isTrue);
       expect(report.isReleaseCandidateReady, isTrue);
@@ -76,11 +82,14 @@ void main() {
   });
 
   group('Phase 10.21: Release Candidate Renderer', () {
-    test('Renders ASCII Milestone 10 Release Gate Box, Markdown Report, and JSON schema', () {
+    test(
+        'Renders ASCII Milestone 10 Release Gate Box, Markdown Report, and JSON schema',
+        () {
       final controller = StudioV2Controller();
       final auditEngine = ReleaseCandidateAuditEngine(controller: controller);
 
-      final report = auditEngine.runReleaseCandidateAudit(targetVersion: '1.0.0');
+      final report =
+          auditEngine.runReleaseCandidateAudit(targetVersion: '1.0.0');
 
       // 1. ASCII Release Gate Box
       final ascii = ReleaseCandidateRenderer.renderAsciiReleaseGate(report);
@@ -95,10 +104,13 @@ void main() {
 
       // 2. Markdown Report
       final markdown = ReleaseCandidateRenderer.renderMarkdown(report);
-      expect(markdown, contains('# Milestone 10 — Release Candidate Audit Report'));
+      expect(markdown,
+          contains('# Milestone 10 — Release Candidate Audit Report'));
       expect(markdown, contains('**Milestone 10 Status:** `COMPLETE`'));
-      expect(markdown, contains('**Project Status:** `RELEASE CANDIDATE READY (RC)`'));
-      expect(markdown, contains('## Milestone 10 Release Gate Evaluation Matrix'));
+      expect(markdown,
+          contains('**Project Status:** `RELEASE CANDIDATE READY (RC)`'));
+      expect(
+          markdown, contains('## Milestone 10 Release Gate Evaluation Matrix'));
       expect(markdown, contains('## Next Steps'));
 
       // 3. JSON

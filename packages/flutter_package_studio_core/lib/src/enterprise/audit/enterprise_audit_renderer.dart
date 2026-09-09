@@ -27,10 +27,14 @@ class EnterpriseAuditRenderer {
     buffer.writeln('## Executive Audit Summary');
     buffer.writeln('```text');
     buffer.writeln('Total Events: ${records.length}');
-    buffer.writeln('Success Count: ${records.where((r) => r.outcome == AuditEventOutcome.success).length}');
-    buffer.writeln('Failure Count: ${records.where((r) => r.outcome == AuditEventOutcome.failure).length}');
-    buffer.writeln('Blocked Count: ${records.where((r) => r.outcome == AuditEventOutcome.blocked).length}');
-    buffer.writeln('Warning Count: ${records.where((r) => r.outcome == AuditEventOutcome.warning).length}');
+    buffer.writeln(
+        'Success Count: ${records.where((r) => r.outcome == AuditEventOutcome.success).length}');
+    buffer.writeln(
+        'Failure Count: ${records.where((r) => r.outcome == AuditEventOutcome.failure).length}');
+    buffer.writeln(
+        'Blocked Count: ${records.where((r) => r.outcome == AuditEventOutcome.blocked).length}');
+    buffer.writeln(
+        'Warning Count: ${records.where((r) => r.outcome == AuditEventOutcome.warning).length}');
     buffer.writeln('```');
     buffer.writeln();
 
@@ -45,10 +49,13 @@ class EnterpriseAuditRenderer {
                 ? '❌'
                 : (record.outcome == AuditEventOutcome.blocked ? '🚫' : '⚠️'));
 
-        buffer.writeln('### $icon [${record.eventType.displayName}] `${record.operation}`');
+        buffer.writeln(
+            '### $icon [${record.eventType.displayName}] `${record.operation}`');
         buffer.writeln('- **Event ID**: `${record.eventId}`');
-        buffer.writeln('- **Timestamp**: `${record.timestamp.toIso8601String()}`');
-        buffer.writeln('- **Actor**: `${record.actor.displayName}` (`${record.actor.id}` / `${record.actor.role}`)');
+        buffer.writeln(
+            '- **Timestamp**: `${record.timestamp.toIso8601String()}`');
+        buffer.writeln(
+            '- **Actor**: `${record.actor.displayName}` (`${record.actor.id}` / `${record.actor.role}`)');
         buffer.writeln('- **Target**: `${record.packageOrProject}`');
         buffer.writeln('- **Outcome**: `${record.outcome.label}`');
         buffer.writeln('- **Correlation ID**: `${record.correlationId}`');

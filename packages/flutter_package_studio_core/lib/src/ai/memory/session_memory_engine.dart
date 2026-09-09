@@ -33,7 +33,8 @@ class SessionMemoryEngine {
   })  : _projectRoot = p.normalize(projectRoot),
         _storagePath = storagePath != null
             ? p.normalize(storagePath)
-            : p.join(p.normalize(projectRoot), '.fps', 'memory', 'sessions.json');
+            : p.join(
+                p.normalize(projectRoot), '.fps', 'memory', 'sessions.json');
 
   /// Creates a new engineering session.
   Future<MemorySession> createSession({
@@ -49,7 +50,8 @@ class SessionMemoryEngine {
       now: t,
     );
     await saveSession(session);
-    _logger.info('Created new engineering memory session: ${session.sessionId}');
+    _logger
+        .info('Created new engineering memory session: ${session.sessionId}');
     return session;
   }
 
@@ -80,8 +82,9 @@ class SessionMemoryEngine {
         return [MemorySession.fromJson(decoded)];
       }
       return [];
-    } catch (e, st) {
-      _logger.warning('Failed to load session memory storage from $_storagePath: $e');
+    } catch (e) {
+      _logger.warning(
+          'Failed to load session memory storage from $_storagePath: $e');
       return [];
     }
   }
@@ -117,7 +120,8 @@ class SessionMemoryEngine {
       final redacted = SecretRedactor.redact(jsonString);
 
       await file.writeAsString(redacted);
-      _logger.info('Saved memory session ${session.sessionId} to $_storagePath');
+      _logger
+          .info('Saved memory session ${session.sessionId} to $_storagePath');
     } catch (e, st) {
       _logger.error('Failed to save session memory: $e', e, st);
       rethrow;
@@ -126,7 +130,8 @@ class SessionMemoryEngine {
 
   /// Records a new [KnowledgeEntry] into the specified [sessionId].
   /// Automatically analyzes and detects potential conflicts with existing entries.
-  Future<({KnowledgeEntry entry, List<ConflictReport> conflicts})> recordKnowledge({
+  Future<({KnowledgeEntry entry, List<ConflictReport> conflicts})>
+      recordKnowledge({
     required String sessionId,
     required KnowledgeEntryType type,
     required String title,
@@ -146,7 +151,8 @@ class SessionMemoryEngine {
       now: t,
     );
 
-    final entryId = 'ke_${t.millisecondsSinceEpoch}_${title.hashCode.abs().toRadixString(16)}';
+    final entryId =
+        'ke_${t.millisecondsSinceEpoch}_${title.hashCode.abs().toRadixString(16)}';
     final entry = KnowledgeEntry(
       id: entryId,
       sessionId: sessionId,
@@ -168,7 +174,8 @@ class SessionMemoryEngine {
     session = session.withEntry(entry, now: t);
     await saveSession(session);
 
-    _logger.info('Recorded knowledge entry "$title" in session "$sessionId" with ${conflicts.length} conflict(s).');
+    _logger.info(
+        'Recorded knowledge entry "$title" in session "$sessionId" with ${conflicts.length} conflict(s).');
     return (entry: entry, conflicts: conflicts);
   }
 
@@ -178,17 +185,25 @@ class SessionMemoryEngine {
     List<KnowledgeEntry> allEntries,
   ) {
     final conflicts = <ConflictReport>[];
-    final candWords = candidate.title.toLowerCase().split(RegExp(r'\W+')).where((w) => w.length > 3).toSet();
+    final candWords = candidate.title
+        .toLowerCase()
+        .split(RegExp(r'\W+'))
+        .where((w) => w.length > 3)
+        .toSet();
     final candContent = candidate.content.toLowerCase();
 
     for (final existing in allEntries) {
       if (existing.id == candidate.id) continue;
 
       // 1. Check same category and high title word overlap
-      final existingWords = existing.title.toLowerCase().split(RegExp(r'\W+')).where((w) => w.length > 3).toSet();
+      final existingWords = existing.title
+          .toLowerCase()
+          .split(RegExp(r'\W+'))
+          .where((w) => w.length > 3)
+          .toSet();
       final overlap = candWords.intersection(existingWords);
 
-      final isHighTopicOverlap = overlap.length >= 2 || 
+      final isHighTopicOverlap = overlap.length >= 2 ||
           (candWords.isNotEmpty && overlap.length == candWords.length);
 
       if (isHighTopicOverlap) {
@@ -202,17 +217,22 @@ class SessionMemoryEngine {
             existingEntryId: existing.id,
             competingEntryId: candidate.id,
             topic: candidate.title,
-            reason: 'Contradiction detected with existing entry "${existing.title}": $contradicts',
-            severity: candidate.type == KnowledgeEntryType.architecture || candidate.type == KnowledgeEntryType.decision
+            reason:
+                'Contradiction detected with existing entry "${existing.title}": $contradicts',
+            severity: candidate.type == KnowledgeEntryType.architecture ||
+                    candidate.type == KnowledgeEntryType.decision
                 ? 'critical'
                 : 'warning',
           ));
-        } else if (candidate.type == existing.type && candidate.title.trim().toLowerCase() == existing.title.trim().toLowerCase()) {
+        } else if (candidate.type == existing.type &&
+            candidate.title.trim().toLowerCase() ==
+                existing.title.trim().toLowerCase()) {
           conflicts.add(ConflictReport(
             existingEntryId: existing.id,
             competingEntryId: candidate.id,
             topic: candidate.title,
-            reason: 'Duplicate entry title with different content in session "${existing.sessionId}". Consider versioning or updating.',
+            reason:
+                'Duplicate entry title with different content in session "${existing.sessionId}". Consider versioning or updating.',
             severity: 'warning',
           ));
         }
@@ -250,12 +270,20 @@ class SessionMemoryEngine {
     }
 
     // Check explicit rejection keywords
-    if ((textA.contains('chosen') || textA.contains('approved') || textA.contains('adopted')) &&
-        (textB.contains('rejected') || textB.contains('deprecated') || textB.contains('avoid'))) {
+    if ((textA.contains('chosen') ||
+            textA.contains('approved') ||
+            textA.contains('adopted')) &&
+        (textB.contains('rejected') ||
+            textB.contains('deprecated') ||
+            textB.contains('avoid'))) {
       return 'One entry approves/adopts this approach while the other marks it as rejected/avoided.';
     }
-    if ((textB.contains('chosen') || textB.contains('approved') || textB.contains('adopted')) &&
-        (textA.contains('rejected') || textA.contains('deprecated') || textA.contains('avoid'))) {
+    if ((textB.contains('chosen') ||
+            textB.contains('approved') ||
+            textB.contains('adopted')) &&
+        (textA.contains('rejected') ||
+            textA.contains('deprecated') ||
+            textA.contains('avoid'))) {
       return 'One entry approves/adopts this approach while the other marks it as rejected/avoided.';
     }
 
@@ -276,27 +304,35 @@ class SessionMemoryEngine {
 
       // Filter expired unless requested
       if (!request.includeExpired) {
-        candidateEntries = candidateEntries.where((e) => !e.isExpired(now)).toList();
+        candidateEntries =
+            candidateEntries.where((e) => !e.isExpired(now)).toList();
       }
 
       // Filter by session ID
       if (request.sessionId != null && request.sessionId!.isNotEmpty) {
-        candidateEntries = candidateEntries.where((e) => e.sessionId == request.sessionId).toList();
+        candidateEntries = candidateEntries
+            .where((e) => e.sessionId == request.sessionId)
+            .toList();
       }
 
       // Filter by type
       if (request.type != null) {
-        candidateEntries = candidateEntries.where((e) => e.type == request.type).toList();
+        candidateEntries =
+            candidateEntries.where((e) => e.type == request.type).toList();
       }
 
       // Filter by scope
       if (request.scope != null && request.scope!.isNotEmpty) {
-        candidateEntries = candidateEntries.where((e) => e.scope == request.scope || e.scope == 'workspace').toList();
+        candidateEntries = candidateEntries
+            .where((e) => e.scope == request.scope || e.scope == 'workspace')
+            .toList();
       }
 
       // Filter by tags
       if (request.tags.isNotEmpty) {
-        candidateEntries = candidateEntries.where((e) => request.tags.any((t) => e.tags.contains(t))).toList();
+        candidateEntries = candidateEntries
+            .where((e) => request.tags.any((t) => e.tags.contains(t)))
+            .toList();
       }
 
       // Score and rank matches by query terms
@@ -320,8 +356,12 @@ class SessionMemoryEngine {
         }
 
         // Match type label or type name
-        if (entry.type.name.toLowerCase().contains(request.query.toLowerCase()) ||
-            entry.type.label.toLowerCase().contains(request.query.toLowerCase())) {
+        if (entry.type.name
+                .toLowerCase()
+                .contains(request.query.toLowerCase()) ||
+            entry.type.label
+                .toLowerCase()
+                .contains(request.query.toLowerCase())) {
           score += 10;
         }
 
@@ -336,8 +376,10 @@ class SessionMemoryEngine {
         }
 
         // Boost architecture / decision entries when asking "why" or "how"
-        if (request.query.toLowerCase().contains('why') || request.query.toLowerCase().contains('architecture')) {
-          if (entry.type == KnowledgeEntryType.architecture || entry.type == KnowledgeEntryType.decision) {
+        if (request.query.toLowerCase().contains('why') ||
+            request.query.toLowerCase().contains('architecture')) {
+          if (entry.type == KnowledgeEntryType.architecture ||
+              entry.type == KnowledgeEntryType.decision) {
             score += 5;
           }
         }
@@ -348,12 +390,14 @@ class SessionMemoryEngine {
       }
 
       scored.sort((a, b) => b.score.compareTo(a.score));
-      final topEntries = scored.take(request.limit).map((s) => s.entry).toList();
+      final topEntries =
+          scored.take(request.limit).map((s) => s.entry).toList();
 
       // Check for conflicts within top matching entries
       final detectedConflicts = <ConflictReport>[];
       for (int i = 0; i < topEntries.length; i++) {
-        final conflicts = detectConflicts(topEntries[i], topEntries.sublist(i + 1));
+        final conflicts =
+            detectConflicts(topEntries[i], topEntries.sublist(i + 1));
         detectedConflicts.addAll(conflicts);
       }
 
@@ -379,7 +423,8 @@ class SessionMemoryEngine {
       _logger.error('Error during memory query: $e', e, st);
       return MemoryQueryResult.failure(
         query: request.query,
-        errorMessage: 'Memory query failed: ${SecretRedactor.redact(e.toString())}',
+        errorMessage:
+            'Memory query failed: ${SecretRedactor.redact(e.toString())}',
         durationMs: stopwatch.elapsedMilliseconds,
         timestamp: now,
       );
@@ -402,7 +447,8 @@ class SessionMemoryEngine {
 
     if (purgedCount > 0) {
       const encoder = JsonEncoder.withIndent('  ');
-      final jsonString = encoder.convert(updatedSessions.map((s) => s.toJson()).toList());
+      final jsonString =
+          encoder.convert(updatedSessions.map((s) => s.toJson()).toList());
       final redacted = SecretRedactor.redact(jsonString);
       await File(_storagePath).writeAsString(redacted);
       _logger.info('Purged $purgedCount expired knowledge entries.');
@@ -422,7 +468,8 @@ class SessionMemoryEngine {
     }
 
     final buf = StringBuffer();
-    buf.writeln('Based on project engineering memory and documented decisions:');
+    buf.writeln(
+        'Based on project engineering memory and documented decisions:');
     buf.writeln();
 
     for (final e in entries) {
@@ -451,7 +498,29 @@ class SessionMemoryEngine {
   }
 
   static const _commonStopWords = {
-    'the', 'is', 'at', 'which', 'on', 'a', 'an', 'and', 'or', 'in', 'for', 'of',
-    'to', 'with', 'by', 'as', 'what', 'why', 'how', 'when', 'who', 'we', 'did', 'do'
+    'the',
+    'is',
+    'at',
+    'which',
+    'on',
+    'a',
+    'an',
+    'and',
+    'or',
+    'in',
+    'for',
+    'of',
+    'to',
+    'with',
+    'by',
+    'as',
+    'what',
+    'why',
+    'how',
+    'when',
+    'who',
+    'we',
+    'did',
+    'do'
   };
 }

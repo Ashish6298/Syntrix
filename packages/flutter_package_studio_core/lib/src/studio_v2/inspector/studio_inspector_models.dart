@@ -1,8 +1,6 @@
 /// Domain models, control descriptors, and property definitions for Phase 10.4: Visual Configuration Inspector.
 library;
 
-import 'dart:convert';
-
 /// Visual control widget types for the Inspector UI.
 enum InspectorControlType {
   slider,
@@ -116,7 +114,8 @@ class VisualInspectorSchema {
 
   const VisualInspectorSchema({required this.properties});
 
-  List<InspectorPropertyDefinition> getPropertiesByCategory(InspectorPropertyCategory category) {
+  List<InspectorPropertyDefinition> getPropertiesByCategory(
+      InspectorPropertyCategory category) {
     return properties.where((p) => p.category == category).toList();
   }
 

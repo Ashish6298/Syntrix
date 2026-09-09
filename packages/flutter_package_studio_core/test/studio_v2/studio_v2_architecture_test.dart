@@ -70,8 +70,10 @@ void main() {
       final restored = StudioV2State.fromJson(json);
 
       expect(restored.workspaceId, equals('ws_demo_01'));
-      expect(restored.currentSection, equals(StudioNavigationSection.themeStudio));
-      expect(restored.activeConfiguration.targetLoaderId, equals('galaxy_orbit'));
+      expect(
+          restored.currentSection, equals(StudioNavigationSection.themeStudio));
+      expect(
+          restored.activeConfiguration.targetLoaderId, equals('galaxy_orbit'));
       expect(restored.favoriteLoaderIds.length, equals(2));
       expect(restored.isLivePreviewPaused, isTrue);
       expect(restored.isDiagnosticsOverlayVisible, isTrue);
@@ -99,15 +101,19 @@ void main() {
         notifiedState = state;
       });
 
-      expect(controller.state.currentSection, equals(StudioNavigationSection.workspace));
+      expect(controller.state.currentSection,
+          equals(StudioNavigationSection.workspace));
 
       controller.navigateTo(StudioNavigationSection.explorer);
-      expect(controller.state.currentSection, equals(StudioNavigationSection.explorer));
+      expect(controller.state.currentSection,
+          equals(StudioNavigationSection.explorer));
       expect(notifiedState, isNotNull);
-      expect(notifiedState!.currentSection, equals(StudioNavigationSection.explorer));
+      expect(notifiedState!.currentSection,
+          equals(StudioNavigationSection.explorer));
     });
 
-    test('Controller mutates configuration and triggers registered actions', () {
+    test('Controller mutates configuration and triggers registered actions',
+        () {
       final registry = StudioV2Registry();
       final controller = StudioV2Controller(registry: registry);
 
@@ -142,11 +148,15 @@ void main() {
       expect(controller.state.favoriteLoaderIds, contains('loader_galaxy'));
 
       controller.toggleFavoriteLoader('loader_galaxy');
-      expect(controller.state.favoriteLoaderIds, isNot(contains('loader_galaxy')));
+      expect(
+          controller.state.favoriteLoaderIds, isNot(contains('loader_galaxy')));
     });
 
-    test('Controller persists and restores workspace state via FileSystem driver', () async {
-      final driver = FileSystemStudioPersistenceDriver(projectRoot: tempDir.path);
+    test(
+        'Controller persists and restores workspace state via FileSystem driver',
+        () async {
+      final driver =
+          FileSystemStudioPersistenceDriver(projectRoot: tempDir.path);
       final controller = StudioV2Controller(
         persistenceDriver: driver,
         initialState: StudioV2State(
@@ -165,7 +175,8 @@ void main() {
       await controller.saveWorkspace();
 
       // Verify file exists
-      final expectedFile = File('${tempDir.path}/.fps/studio_v2/saved_ws_01.json');
+      final expectedFile =
+          File('${tempDir.path}/.fps/studio_v2/saved_ws_01.json');
       expect(expectedFile.existsSync(), isTrue);
 
       // Create second controller and load
@@ -174,10 +185,14 @@ void main() {
 
       expect(loaded, isTrue);
       expect(secondController.state.workspaceId, equals('saved_ws_01'));
-      expect(secondController.state.workspaceName, equals('Persisted Workspace'));
-      expect(secondController.state.currentSection, equals(StudioNavigationSection.sceneBuilder));
-      expect(secondController.state.activeConfiguration.targetLoaderId, equals('cosmic_ring'));
-      expect(secondController.state.activeConfiguration.animationSpeed, equals(2.5));
+      expect(
+          secondController.state.workspaceName, equals('Persisted Workspace'));
+      expect(secondController.state.currentSection,
+          equals(StudioNavigationSection.sceneBuilder));
+      expect(secondController.state.activeConfiguration.targetLoaderId,
+          equals('cosmic_ring'));
+      expect(secondController.state.activeConfiguration.animationSpeed,
+          equals(2.5));
     });
   });
 

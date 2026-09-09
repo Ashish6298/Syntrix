@@ -1,7 +1,6 @@
 /// Central Enterprise Credential Manager for Phase 9.9.
 library;
 
-import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:flutter_package_studio_core/src/logging/logger.dart';
 import 'package:flutter_package_studio_core/src/ai/security/secret_redactor.dart';
@@ -39,7 +38,8 @@ class EnterpriseCredentialManager {
   /// Registers a credential provider.
   void registerProvider(CredentialProvider provider) {
     _providers[provider.providerId] = provider;
-    _logger.info('Registered credential provider: ${provider.providerId} (${provider.displayName})');
+    _logger.info(
+        'Registered credential provider: ${provider.providerId} (${provider.displayName})');
   }
 
   /// Checks if a credential key exists across registered providers.
@@ -53,7 +53,8 @@ class EnterpriseCredentialManager {
           isAvailable: true,
           providerType: provider.providerType,
           providerId: provider.providerId,
-          message: 'Credential key "$key" is securely available via ${provider.displayName}.',
+          message:
+              'Credential key "$key" is securely available via ${provider.displayName}.',
           checkedAt: now,
         );
       }
@@ -64,7 +65,8 @@ class EnterpriseCredentialManager {
       isAvailable: false,
       providerType: CredentialProviderType.environment,
       providerId: 'none',
-      message: 'Credential key "$key" was not found in any registered provider.',
+      message:
+          'Credential key "$key" was not found in any registered provider.',
       checkedAt: now,
     );
   }
@@ -85,17 +87,20 @@ class EnterpriseCredentialManager {
     }
 
     if (token == null) {
-      throw StateError('Cannot execute: Credential key "$key" is not available in registered providers.');
+      throw StateError(
+          'Cannot execute: Credential key "$key" is not available in registered providers.');
     }
 
-    _logger.info('Injecting scoped credential "$key" into isolated execution boundary (Scope: ${scope.id}).');
+    _logger.info(
+        'Injecting scoped credential "$key" into isolated execution boundary (Scope: ${scope.id}).');
 
     return token.withSecret((rawSecret) async {
       try {
         return await executionClosure(rawSecret);
       } catch (e) {
         final sanitizedError = SecretRedactor.redact(e.toString());
-        _logger.error('Execution error inside credential boundary: $sanitizedError');
+        _logger.error(
+            'Execution error inside credential boundary: $sanitizedError');
         throw StateError('Execution failed: $sanitizedError');
       }
     });

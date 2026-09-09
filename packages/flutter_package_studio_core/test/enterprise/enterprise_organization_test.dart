@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:path/path.dart' as p;
@@ -32,12 +31,15 @@ environment:
     // Test 1: Full Hierarchy Construction (Org -> Teams -> Projects -> Packages)
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('1. Hierarchy Model: constructs and serializes 4-tier organization tree', () {
+    test(
+        '1. Hierarchy Model: constructs and serializes 4-tier organization tree',
+        () {
       final org = EnterpriseOrganization(
         organizationId: 'acme_corp',
         name: 'Acme Global Corp',
         domain: 'acme.com',
-        defaultPolicy: EnterprisePolicyDocument.fromProfile(EnterprisePolicyProfile.strict),
+        defaultPolicy: EnterprisePolicyDocument.fromProfile(
+            EnterprisePolicyProfile.strict),
         teams: [
           EnterpriseTeam(
             teamId: 'team_fintech',
@@ -92,7 +94,9 @@ environment:
     // Test 2: Deterministic Policy Inheritance & Override Cascade
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('2. Policy Inheritance: Org Defaults -> Team Policy -> Project Overrides -> Package Overrides', () {
+    test(
+        '2. Policy Inheritance: Org Defaults -> Team Policy -> Project Overrides -> Package Overrides',
+        () {
       final engine = EnterpriseOrganizationEngine(
         projectRoot: rootPath,
         initialOrganization: EnterpriseOrganization(
@@ -111,7 +115,8 @@ environment:
               leadUserId: 'lead_1',
               teamPolicyOverride: const EnterprisePolicyDocument(
                 profile: EnterprisePolicyProfile.financial,
-                securityPolicy: SecurityPolicyConfig(maxAllowedCriticalFindings: 0),
+                securityPolicy:
+                    SecurityPolicyConfig(maxAllowedCriticalFindings: 0),
               ),
               createdAt: DateTime.now(),
             ),
@@ -125,9 +130,11 @@ environment:
       expect(orgEffective.profile, equals(EnterprisePolicyProfile.standard));
 
       // 2. Resolve for Team level (Financial profile cascade)
-      final teamEffective = engine.resolveEffectivePolicy(teamId: 'team_fintech');
+      final teamEffective =
+          engine.resolveEffectivePolicy(teamId: 'team_fintech');
       expect(teamEffective.profile, equals(EnterprisePolicyProfile.financial));
-      expect(teamEffective.releasePolicy.requireGitTag, isTrue); // Inherited from Org
+      expect(teamEffective.releasePolicy.requireGitTag,
+          isTrue); // Inherited from Org
 
       // 3. Resolve for Project level with project-specific override
       final projectWithOverride = ManagedProject(
@@ -146,8 +153,10 @@ environment:
         teamId: 'team_fintech',
         project: projectWithOverride,
       );
-      expect(projectEffective.profile, equals(EnterprisePolicyProfile.financial));
-      expect(projectEffective.customMetadata['compliance_tier'], equals('tier_1'));
+      expect(
+          projectEffective.profile, equals(EnterprisePolicyProfile.financial));
+      expect(
+          projectEffective.customMetadata['compliance_tier'], equals('tier_1'));
 
       // 4. Resolve for Package level with package override
       const packageWithOverride = ManagedPackage(
@@ -166,14 +175,17 @@ environment:
         package: packageWithOverride,
       );
       expect(packageEffective.profile, equals(EnterprisePolicyProfile.strict));
-      expect(packageEffective.customMetadata['compliance_tier'], equals('tier_1'));
+      expect(
+          packageEffective.customMetadata['compliance_tier'], equals('tier_1'));
     });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Test 3: Persistent Organization Manifest Storage
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('3. Persistence: saves and loads organization manifest from .fps/organization/', () {
+    test(
+        '3. Persistence: saves and loads organization manifest from .fps/organization/',
+        () {
       final engine = EnterpriseOrganizationEngine(projectRoot: rootPath);
 
       engine.registerTeam(
@@ -195,20 +207,27 @@ environment:
         ),
       );
 
-      final manifestFile = File(p.join(rootPath, '.fps', 'organization', 'organization_manifest.json'));
+      final manifestFile = File(p.join(
+          rootPath, '.fps', 'organization', 'organization_manifest.json'));
       expect(manifestFile.existsSync(), isTrue);
 
       // Reload into new engine instance
       final engine2 = EnterpriseOrganizationEngine(projectRoot: rootPath);
-      expect(engine2.organization.teams.any((t) => t.teamId == 'team_ai'), isTrue);
-      expect(engine2.organization.sharedPackages.any((p) => p.packageId == 'pkg_shared_ai'), isTrue);
+      expect(
+          engine2.organization.teams.any((t) => t.teamId == 'team_ai'), isTrue);
+      expect(
+          engine2.organization.sharedPackages
+              .any((p) => p.packageId == 'pkg_shared_ai'),
+          isTrue);
     });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Test 4: Pure Organization Renderer Conformance
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('4. Renderer Conformance: generates deterministic JSON and Markdown organization reports', () {
+    test(
+        '4. Renderer Conformance: generates deterministic JSON and Markdown organization reports',
+        () {
       final engine = EnterpriseOrganizationEngine(projectRoot: rootPath);
       const renderer = EnterpriseOrganizationRenderer();
 

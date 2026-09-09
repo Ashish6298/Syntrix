@@ -37,14 +37,17 @@ void main() {
       expect(restored.reportId, equals('val_test_01'));
       expect(restored.packageName, equals('flutter_package_studio_core'));
       expect(restored.overallHealth, equals(PackageHealthStatus.healthy));
-      expect(restored.categorySummaries[StudioValidationCategory.architecture], equals(ValidationCheckStatus.pass));
+      expect(restored.categorySummaries[StudioValidationCategory.architecture],
+          equals(ValidationCheckStatus.pass));
       expect(restored.checks.length, equals(1));
       expect(restored.checks.first.title, equals('Static Analysis'));
     });
   });
 
   group('Phase 10.17: Studio Validation Engine Operations', () {
-    test('Runs full validation covering all 7 categories and 9+ checks accurately', () {
+    test(
+        'Runs full validation covering all 7 categories and 9+ checks accurately',
+        () {
       final controller = StudioV2Controller();
       final valEngine = StudioValidationEngine(controller: controller);
 
@@ -54,7 +57,8 @@ void main() {
       expect(report.categorySummaries.length, equals(7));
 
       for (final cat in StudioValidationCategory.values) {
-        expect(report.categorySummaries[cat], equals(ValidationCheckStatus.pass));
+        expect(
+            report.categorySummaries[cat], equals(ValidationCheckStatus.pass));
       }
 
       expect(report.checks.length, greaterThanOrEqualTo(10));
@@ -73,7 +77,9 @@ void main() {
   });
 
   group('Phase 10.17: Studio Validation Renderer', () {
-    test('Renders ASCII Package Health Dashboard, Markdown Report, and JSON schema', () {
+    test(
+        'Renders ASCII Package Health Dashboard, Markdown Report, and JSON schema',
+        () {
       final controller = StudioV2Controller();
       final valEngine = StudioValidationEngine(controller: controller);
 
@@ -93,7 +99,8 @@ void main() {
 
       // 2. Markdown Report
       final markdown = StudioValidationRenderer.renderMarkdown(report);
-      expect(markdown, contains('# Automated Validation Center — Package Health Report'));
+      expect(markdown,
+          contains('# Automated Validation Center — Package Health Report'));
       expect(markdown, contains('**Overall Health Status:** `HEALTHY`'));
       expect(markdown, contains('## Category Summary Dashboard'));
       expect(markdown, contains('## Detailed Check Matrix'));

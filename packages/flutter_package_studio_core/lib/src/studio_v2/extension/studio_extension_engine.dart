@@ -12,11 +12,14 @@ class StudioExtensionEngine {
   final StudioV2Controller controller;
 
   final Map<String, StudioExtension> _registeredExtensions = {};
-  final List<void Function(StudioExtension)> _onExtensionRegisteredListeners = [];
+  final List<void Function(StudioExtension)> _onExtensionRegisteredListeners =
+      [];
 
-  Map<String, StudioExtension> get registeredExtensions => Map.unmodifiable(_registeredExtensions);
+  Map<String, StudioExtension> get registeredExtensions =>
+      Map.unmodifiable(_registeredExtensions);
 
-  StudioExtensionEngine({required this.controller, bool registerDefaults = true}) {
+  StudioExtensionEngine(
+      {required this.controller, bool registerDefaults = true}) {
     if (registerDefaults) {
       registerDefaultExtensions();
     }
@@ -35,7 +38,8 @@ class StudioExtensionEngine {
   Future<void> registerExtension(StudioExtension extension) async {
     _registeredExtensions[extension.extensionId] = extension;
     await extension.onInitialize(controller);
-    _logger.info('Registered Studio extension: "${extension.name}" (${extension.extensionId}) v${extension.version}');
+    _logger.info(
+        'Registered Studio extension: "${extension.name}" (${extension.extensionId}) v${extension.version}');
 
     for (final l in _onExtensionRegisteredListeners) {
       l(extension);

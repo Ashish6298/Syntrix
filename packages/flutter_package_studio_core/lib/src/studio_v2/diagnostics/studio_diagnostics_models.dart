@@ -1,9 +1,6 @@
 /// Domain models and diagnostics health checks for Phase 10.9: Diagnostics & Performance Center.
 library;
 
-import 'dart:convert';
-import 'package:flutter_package_studio_core/src/logging/logger.dart';
-
 /// Diagnostics subsystem health status.
 enum DiagnosticSubsystemStatus {
   healthy,
@@ -29,7 +26,8 @@ enum DiagnosticSubsystemStatus {
 
 /// An individual subsystem diagnostic verification item.
 class DiagnosticHealthItem {
-  final String subsystem; // Rendering, Animation, Particles, Physics, Shaders, Memory
+  final String
+      subsystem; // Rendering, Animation, Particles, Physics, Shaders, Memory
   final DiagnosticSubsystemStatus status;
   final String message;
   final Map<String, dynamic> details;
@@ -136,15 +134,18 @@ class DiagnosticsDashboardSnapshot {
     return DiagnosticsDashboardSnapshot(
       dashboardId: json['dashboard_id'] as String? ?? 'dash_default',
       healthItems: (json['health_items'] as List<dynamic>?)
-              ?.map((h) => DiagnosticHealthItem.fromJson(h as Map<String, dynamic>))
+              ?.map((h) =>
+                  DiagnosticHealthItem.fromJson(h as Map<String, dynamic>))
               .toList() ??
           const [],
       liveFps: (json['live_fps'] as num?)?.toDouble() ?? 60.0,
       liveFrameTimeMs: (json['live_frame_time_ms'] as num?)?.toDouble() ?? 16.2,
       activeParticleCount: json['active_particle_count'] as int? ?? 320,
-      estimatedMemoryMb: (json['estimated_memory_mb'] as num?)?.toDouble() ?? 42.5,
+      estimatedMemoryMb:
+          (json['estimated_memory_mb'] as num?)?.toDouble() ?? 42.5,
       recentExceptions: (json['recent_exceptions'] as List<dynamic>?)
-              ?.map((e) => DiagnosticExceptionEvent.fromJson(e as Map<String, dynamic>))
+              ?.map((e) =>
+                  DiagnosticExceptionEvent.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
       recentLogEntries: (json['recent_log_entries'] as List<dynamic>?)

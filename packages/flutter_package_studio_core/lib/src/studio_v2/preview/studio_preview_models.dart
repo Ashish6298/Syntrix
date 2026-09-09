@@ -1,7 +1,6 @@
 /// Domain models and performance telemetry descriptors for Phase 10.5: Live Preview Engine.
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/studio_v2/studio_v2_models.dart';
 
 /// Playback and animation state of the live preview engine.
@@ -100,7 +99,8 @@ class LivePreviewMetrics {
     return LivePreviewMetrics(
       currentFps: (json['current_fps'] as num?)?.toDouble() ?? 60.0,
       averageFps: (json['average_fps'] as num?)?.toDouble() ?? 59.8,
-      currentFrameTimeMs: (json['current_frame_time_ms'] as num?)?.toDouble() ?? 16.6,
+      currentFrameTimeMs:
+          (json['current_frame_time_ms'] as num?)?.toDouble() ?? 16.6,
       minFrameTimeMs: (json['min_frame_time_ms'] as num?)?.toDouble() ?? 14.2,
       maxFrameTimeMs: (json['max_frame_time_ms'] as num?)?.toDouble() ?? 18.1,
       totalFramesRendered: json['total_frames_rendered'] as int? ?? 0,
@@ -161,19 +161,23 @@ class LivePreviewSessionState {
         'playback_state': playbackState.id,
         'viewport_mode': viewportMode.id,
         'metrics': metrics.toJson(),
-        'recent_timing_samples': recentTimingSamples.map((s) => s.toJson()).toList(),
+        'recent_timing_samples':
+            recentTimingSamples.map((s) => s.toJson()).toList(),
         'started_at': startedAt.toIso8601String(),
       };
 
   factory LivePreviewSessionState.fromJson(Map<String, dynamic> json) {
     return LivePreviewSessionState(
       previewId: json['preview_id'] as String? ?? 'prev_default',
-      activeLoaderId: json['active_loader_id'] as String? ?? 'infinite_universe',
+      activeLoaderId:
+          json['active_loader_id'] as String? ?? 'infinite_universe',
       configuration: json['configuration'] != null
-          ? StudioConfigurationDescriptor.fromJson(json['configuration'] as Map<String, dynamic>)
+          ? StudioConfigurationDescriptor.fromJson(
+              json['configuration'] as Map<String, dynamic>)
           : const StudioConfigurationDescriptor(),
       playbackState: LivePreviewPlaybackState.values.firstWhere(
-        (p) => p.id == json['playback_state'] || p.name == json['playback_state'],
+        (p) =>
+            p.id == json['playback_state'] || p.name == json['playback_state'],
         orElse: () => LivePreviewPlaybackState.playing,
       ),
       viewportMode: PreviewViewportMode.values.firstWhere(
@@ -184,7 +188,8 @@ class LivePreviewSessionState {
           ? LivePreviewMetrics.fromJson(json['metrics'] as Map<String, dynamic>)
           : const LivePreviewMetrics(),
       recentTimingSamples: (json['recent_timing_samples'] as List<dynamic>?)
-              ?.map((s) => FrameTimingSample.fromJson(s as Map<String, dynamic>))
+              ?.map(
+                  (s) => FrameTimingSample.fromJson(s as Map<String, dynamic>))
               .toList() ??
           const [],
       startedAt: DateTime.parse(json['started_at'] as String),

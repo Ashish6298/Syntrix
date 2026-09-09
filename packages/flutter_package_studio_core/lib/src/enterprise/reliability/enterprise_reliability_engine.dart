@@ -29,7 +29,8 @@ class EnterpriseReliabilityEngine {
     _ensureStateDirectory();
   }
 
-  Directory get _stateDir => Directory(p.join(_projectRoot, '.fps', 'recovery'));
+  Directory get _stateDir =>
+      Directory(p.join(_projectRoot, '.fps', 'recovery'));
 
   void _ensureStateDirectory() {
     if (!_stateDir.existsSync()) {
@@ -37,7 +38,8 @@ class EnterpriseReliabilityEngine {
     }
   }
 
-  File _stateFile(String workflowId) => File(p.join(_stateDir.path, '$workflowId.state.json'));
+  File _stateFile(String workflowId) =>
+      File(p.join(_stateDir.path, '$workflowId.state.json'));
 
   /// Identifies if a specific stage type is destructive (e.g. Git tagging, publish).
   bool isDestructiveStage(WorkflowStageType type) {
@@ -47,7 +49,8 @@ class EnterpriseReliabilityEngine {
   }
 
   /// Initialize persistent state for a new workflow execution.
-  Future<PersistentExecutionState> initializeState(EnterpriseWorkflowPlan plan) async {
+  Future<PersistentExecutionState> initializeState(
+      EnterpriseWorkflowPlan plan) async {
     final now = DateTime.now();
     final state = PersistentExecutionState(
       workflowId: plan.workflowId,
@@ -62,7 +65,8 @@ class EnterpriseReliabilityEngine {
     );
 
     await saveState(state);
-    _logger.info('Initialized persistent state for workflow ${plan.workflowId}');
+    _logger
+        .info('Initialized persistent state for workflow ${plan.workflowId}');
     return state;
   }
 
@@ -92,7 +96,8 @@ class EnterpriseReliabilityEngine {
     } catch (e) {
       _logger.error('Corrupted state file detected for $workflowId: $e');
       // Quarantine corrupted state
-      final corruptedFile = File('${file.path}.corrupt_${DateTime.now().millisecondsSinceEpoch}');
+      final corruptedFile =
+          File('${file.path}.corrupt_${DateTime.now().millisecondsSinceEpoch}');
       if (file.existsSync()) {
         await file.rename(corruptedFile.path);
       }
@@ -101,14 +106,16 @@ class EnterpriseReliabilityEngine {
   }
 
   /// List all active or interrupted execution states on disk.
-  Future<List<PersistentExecutionState>> listActiveOrInterruptedExecutions() async {
+  Future<List<PersistentExecutionState>>
+      listActiveOrInterruptedExecutions() async {
     _ensureStateDirectory();
     final results = <PersistentExecutionState>[];
 
     final entities = _stateDir.listSync();
     for (final entity in entities) {
       if (entity is File && entity.path.endsWith('.state.json')) {
-        final wfId = p.basenameWithoutExtension(p.basenameWithoutExtension(entity.path));
+        final wfId =
+            p.basenameWithoutExtension(p.basenameWithoutExtension(entity.path));
         final state = await loadState(wfId);
         if (state != null) {
           results.add(state);
@@ -143,11 +150,13 @@ class EnterpriseReliabilityEngine {
       updatedAt: now,
     );
 
-    final updatedCheckpoints = List<OperationCheckpoint>.from(currentState.checkpoints)
-      ..removeWhere((c) => c.stageId == stage.stageId)
-      ..add(checkpoint);
+    final updatedCheckpoints =
+        List<OperationCheckpoint>.from(currentState.checkpoints)
+          ..removeWhere((c) => c.stageId == stage.stageId)
+          ..add(checkpoint);
 
-    final updatedCompletedResults = Map<String, dynamic>.from(currentState.completedStageResults);
+    final updatedCompletedResults =
+        Map<String, dynamic>.from(currentState.completedStageResults);
     if (isCompleted) {
       updatedCompletedResults[stage.stageId] = stateData;
     }
@@ -157,8 +166,11 @@ class EnterpriseReliabilityEngine {
       targetPackageName: currentState.targetPackageName,
       targetVersion: currentState.targetVersion,
       initiatorId: currentState.initiatorId,
-      executionStatus: status == CheckpointStatus.failed ? CheckpointStatus.failed : CheckpointStatus.active,
-      lastCompletedStageId: isCompleted ? stage.stageId : currentState.lastCompletedStageId,
+      executionStatus: status == CheckpointStatus.failed
+          ? CheckpointStatus.failed
+          : CheckpointStatus.active,
+      lastCompletedStageId:
+          isCompleted ? stage.stageId : currentState.lastCompletedStageId,
       checkpoints: updatedCheckpoints,
       completedStageResults: updatedCompletedResults,
       startedAt: currentState.startedAt,
@@ -210,16 +222,22 @@ class EnterpriseReliabilityEngine {
         operationType: 'RESUME',
         recoveredCheckpointsCount: 0,
         skippedDestructiveOperations: 0,
-        actionsTaken: ['State not found on disk for workflow ${plan.workflowId}'],
+        actionsTaken: [
+          'State not found on disk for workflow ${plan.workflowId}'
+        ],
         errorMessage: 'State not found on disk',
         executedAt: now,
       );
     }
 
     actions.add('Recovered execution state for workflow "${plan.workflowId}".');
-    actions.add('Last completed stage: ${existingState.lastCompletedStageId ?? "None"}');
+    actions.add(
+        'Last completed stage: ${existingState.lastCompletedStageId ?? "None"}');
 
-    final completedStages = existingState.checkpoints.where((c) => c.isCompleted).map((c) => c.stageId).toSet();
+    final completedStages = existingState.checkpoints
+        .where((c) => c.isCompleted)
+        .map((c) => c.stageId)
+        .toSet();
     recoveredCheckpoints = completedStages.length;
 
     // Filter remaining stages that need execution
@@ -227,16 +245,19 @@ class EnterpriseReliabilityEngine {
       if (completedStages.contains(s.stageId)) {
         if (isDestructiveStage(s.stageType)) {
           skippedDestructive++;
-          actions.add('IDEMPOTENCY GUARD: Stage "${s.name}" (${s.stageId}) was already completed. Skipping destructive re-execution.');
+          actions.add(
+              'IDEMPOTENCY GUARD: Stage "${s.name}" (${s.stageId}) was already completed. Skipping destructive re-execution.');
         } else {
-          actions.add('Skipping non-destructive already completed stage "${s.name}" (${s.stageId}).');
+          actions.add(
+              'Skipping non-destructive already completed stage "${s.name}" (${s.stageId}).');
         }
         return false;
       }
       return true;
     }).toList();
 
-    actions.add('Proceeding with remaining ${remainingStages.length} pending stages.');
+    actions.add(
+        'Proceeding with remaining ${remainingStages.length} pending stages.');
 
     // Execute remaining stages via WorkflowEngine if provided
     if (workflowEngine != null && remainingStages.isNotEmpty) {
@@ -251,7 +272,8 @@ class EnterpriseReliabilityEngine {
       );
 
       final execResult = await workflowEngine!.executeWorkflow(resumePlan);
-      actions.add('Resumed workflow execution finished with status: ${execResult.status.label}');
+      actions.add(
+          'Resumed workflow execution finished with status: ${execResult.status.label}');
     }
 
     // Mark persistent state as completed
@@ -320,12 +342,14 @@ class EnterpriseReliabilityEngine {
       );
     }
 
-    actions.add('Initiating rollback for workflow "$workflowId" (Package: ${state.targetPackageName}@${state.targetVersion})');
+    actions.add(
+        'Initiating rollback for workflow "$workflowId" (Package: ${state.targetPackageName}@${state.targetVersion})');
     actions.add('Reason: $reason');
 
     for (final chk in state.checkpoints.reversed) {
       if (chk.isCompleted) {
-        actions.add('Compensating/Rolling back stage: ${chk.stageName} (${chk.stageId})');
+        actions.add(
+            'Compensating/Rolling back stage: ${chk.stageName} (${chk.stageId})');
       }
     }
 

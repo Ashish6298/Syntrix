@@ -30,7 +30,8 @@ class StudioLoaderExplorerEngine {
     registerLoader(const LoaderMetadataEntry(
       id: 'infinite_universe',
       name: 'Infinite Universe',
-      description: 'Cosmic particle swirling vortex with dynamic gravitational physics and shader glow.',
+      description:
+          'Cosmic particle swirling vortex with dynamic gravitational physics and shader glow.',
       category: LoaderCategory.cosmic,
       complexity: LoaderComplexity.highPerformance,
       hasParticles: true,
@@ -43,7 +44,8 @@ class StudioLoaderExplorerEngine {
     registerLoader(const LoaderMetadataEntry(
       id: 'galaxy_orbit',
       name: 'Galaxy Orbit',
-      description: 'Multi-ring planetary orbit loader with synchronized orbital resonance and trails.',
+      description:
+          'Multi-ring planetary orbit loader with synchronized orbital resonance and trails.',
       category: LoaderCategory.cosmic,
       complexity: LoaderComplexity.standard,
       hasParticles: true,
@@ -56,7 +58,8 @@ class StudioLoaderExplorerEngine {
     registerLoader(const LoaderMetadataEntry(
       id: 'nebula_storm',
       name: 'Nebula Storm',
-      description: 'Volumetric fluid cosmic dust storm with turbulent particle physics.',
+      description:
+          'Volumetric fluid cosmic dust storm with turbulent particle physics.',
       category: LoaderCategory.fluid,
       complexity: LoaderComplexity.advanced,
       hasParticles: true,
@@ -69,7 +72,8 @@ class StudioLoaderExplorerEngine {
     registerLoader(const LoaderMetadataEntry(
       id: 'quantum_void',
       name: 'Quantum Void',
-      description: 'Geometric atomic orbital lattice with mathematical probability wave oscillation.',
+      description:
+          'Geometric atomic orbital lattice with mathematical probability wave oscillation.',
       category: LoaderCategory.quantum,
       complexity: LoaderComplexity.advanced,
       hasParticles: true,
@@ -82,7 +86,8 @@ class StudioLoaderExplorerEngine {
     registerLoader(const LoaderMetadataEntry(
       id: 'pulsar_wave',
       name: 'Pulsar Wave',
-      description: 'Minimalist radial pulse ring with rhythmic easing and glowing wavefront.',
+      description:
+          'Minimalist radial pulse ring with rhythmic easing and glowing wavefront.',
       category: LoaderCategory.minimal,
       complexity: LoaderComplexity.lightweight,
       hasParticles: false,
@@ -95,7 +100,8 @@ class StudioLoaderExplorerEngine {
     registerLoader(const LoaderMetadataEntry(
       id: 'cyber_matrix',
       name: 'Cyber Matrix',
-      description: 'Retro cyberpunk digital rain loader with scanline shader passes.',
+      description:
+          'Retro cyberpunk digital rain loader with scanline shader passes.',
       category: LoaderCategory.retro,
       complexity: LoaderComplexity.standard,
       hasParticles: true,
@@ -109,7 +115,8 @@ class StudioLoaderExplorerEngine {
   /// Register a loader into the Explorer Catalog.
   void registerLoader(LoaderMetadataEntry loader) {
     _catalog[loader.id] = loader;
-    _logger.info('Registered loader in explorer catalog: ${loader.id} (${loader.name})');
+    _logger.info(
+        'Registered loader in explorer catalog: ${loader.id} (${loader.name})');
   }
 
   /// Look up a single loader by ID.
@@ -135,11 +142,14 @@ class StudioLoaderExplorerEngine {
     if (loader != null) {
       controller.updateConfiguration((cfg) => cfg.copyWith(
             targetLoaderId: loader.id,
-            selectedThemeId: loader.supportedThemes.isNotEmpty ? loader.supportedThemes.first : cfg.selectedThemeId,
+            selectedThemeId: loader.supportedThemes.isNotEmpty
+                ? loader.supportedThemes.first
+                : cfg.selectedThemeId,
             shadersEnabled: loader.hasShaders,
             isInteractive: loader.isInteractive,
           ));
-      _logger.info('Applied loader "${loader.name}" to workspace configuration.');
+      _logger
+          .info('Applied loader "${loader.name}" to workspace configuration.');
     }
   }
 
@@ -160,7 +170,10 @@ class StudioLoaderExplorerEngine {
         'both_have_physics': a.hasPhysics && b.hasPhysics,
         'both_have_shaders': a.hasShaders && b.hasShaders,
         'both_interactive': a.isInteractive && b.isInteractive,
-        'shared_themes': a.supportedThemes.toSet().intersection(b.supportedThemes.toSet()).toList(),
+        'shared_themes': a.supportedThemes
+            .toSet()
+            .intersection(b.supportedThemes.toSet())
+            .toList(),
       },
     };
   }

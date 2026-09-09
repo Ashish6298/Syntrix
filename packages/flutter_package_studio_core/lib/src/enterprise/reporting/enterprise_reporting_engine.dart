@@ -1,14 +1,11 @@
 /// Central Compliance & Governance Reporting Engine for Phase 9.14.
 library;
 
-import 'dart:io';
 import 'package:path/path.dart' as p;
-import 'package:flutter_package_studio_core/src/logging/logger.dart';
 import 'package:flutter_package_studio_core/src/enterprise/policy/enterprise_policy_engine.dart';
 import 'package:flutter_package_studio_core/src/enterprise/security/enterprise_security_compliance_engine.dart';
 import 'package:flutter_package_studio_core/src/enterprise/dependency/enterprise_dependency_engine.dart';
 import 'package:flutter_package_studio_core/src/enterprise/audit/enterprise_audit_engine.dart';
-import 'package:flutter_package_studio_core/src/enterprise/audit/enterprise_audit_models.dart';
 import 'package:flutter_package_studio_core/src/enterprise/approval/enterprise_approval_engine.dart';
 import 'package:flutter_package_studio_core/src/enterprise/organization/enterprise_organization_engine.dart';
 import 'package:flutter_package_studio_core/src/enterprise/orchestration/enterprise_orchestration_engine.dart';
@@ -16,7 +13,6 @@ import 'package:flutter_package_studio_core/src/enterprise/reporting/enterprise_
 
 /// Central Enterprise Compliance & Governance Reporting Engine.
 class EnterpriseReportingEngine {
-  final Logger _logger = Logger('EnterpriseReportingEngine');
   final String _projectRoot;
 
   final EnterprisePolicyEngine? policyEngine;
@@ -76,14 +72,39 @@ class EnterpriseReportingEngine {
       sections: [
         ComplianceReportSection(
           title: 'Security Control Findings',
-          description: 'Detailed evaluation of all evaluated organization security vectors.',
-          headers: const ['Control ID', 'Control Name', 'Status', 'Severity', 'Finding Rationale'],
+          description:
+              'Detailed evaluation of all evaluated organization security vectors.',
+          headers: const [
+            'Control ID',
+            'Control Name',
+            'Status',
+            'Severity',
+            'Finding Rationale'
+          ],
           rows: rows.isNotEmpty
               ? rows
               : [
-                  const ['SEC_CTL_001', 'Secret Detection & Redaction', 'PASSED', 'CRITICAL', 'Zero secrets detected in codebase'],
-                  const ['SEC_CTL_002', 'Encryption & Key Management', 'PASSED', 'HIGH', 'Encrypted credential storage active'],
-                  const ['SEC_CTL_003', 'Source Exposure Rules', 'PASSED', 'HIGH', 'Sensitive configuration files excluded'],
+                  const [
+                    'SEC_CTL_001',
+                    'Secret Detection & Redaction',
+                    'PASSED',
+                    'CRITICAL',
+                    'Zero secrets detected in codebase'
+                  ],
+                  const [
+                    'SEC_CTL_002',
+                    'Encryption & Key Management',
+                    'PASSED',
+                    'HIGH',
+                    'Encrypted credential storage active'
+                  ],
+                  const [
+                    'SEC_CTL_003',
+                    'Source Exposure Rules',
+                    'PASSED',
+                    'HIGH',
+                    'Sensitive configuration files excluded'
+                  ],
                 ],
         ),
       ],
@@ -131,14 +152,39 @@ class EnterpriseReportingEngine {
       sections: [
         ComplianceReportSection(
           title: 'Evaluated Package Dependencies',
-          description: 'Registry and licensing audit of direct and transitive package dependencies.',
-          headers: const ['Package Name', 'Version', 'Type', 'Status', 'Policy Note'],
+          description:
+              'Registry and licensing audit of direct and transitive package dependencies.',
+          headers: const [
+            'Package Name',
+            'Version',
+            'Type',
+            'Status',
+            'Policy Note'
+          ],
           rows: rows.isNotEmpty
               ? rows
               : [
-                  const ['flutter', 'sdk', 'DIRECT', 'APPROVED', 'Standard framework runtime'],
-                  const ['http', '^1.2.0', 'DIRECT', 'APPROVED', 'Compliant network library'],
-                  const ['path', '^1.9.0', 'DIRECT', 'APPROVED', 'Compliant filesystem utility'],
+                  const [
+                    'flutter',
+                    'sdk',
+                    'DIRECT',
+                    'APPROVED',
+                    'Standard framework runtime'
+                  ],
+                  const [
+                    'http',
+                    '^1.2.0',
+                    'DIRECT',
+                    'APPROVED',
+                    'Compliant network library'
+                  ],
+                  const [
+                    'path',
+                    '^1.9.0',
+                    'DIRECT',
+                    'APPROVED',
+                    'Compliant filesystem utility'
+                  ],
                 ],
         ),
       ],
@@ -176,13 +222,22 @@ class EnterpriseReportingEngine {
       organizationId: organizationId,
       reportType: ComplianceReportType.auditActivity,
       title: 'Enterprise Audit Trail & Operations Log Report',
-      executiveSummary: 'Immutable record of security-critical and operational actions across all packages.',
+      executiveSummary:
+          'Immutable record of security-critical and operational actions across all packages.',
       isCompliant: true,
       sections: [
         ComplianceReportSection(
           title: 'Recorded Enterprise Operations',
           description: 'Hash-chained, tamper-evident audit trail entries.',
-          headers: const ['Event ID', 'Timestamp', 'Actor', 'Event Type', 'Operation', 'Resource', 'Outcome'],
+          headers: const [
+            'Event ID',
+            'Timestamp',
+            'Actor',
+            'Event Type',
+            'Operation',
+            'Resource',
+            'Outcome'
+          ],
           rows: rows,
         ),
       ],
@@ -200,9 +255,12 @@ class EnterpriseReportingEngine {
     DateTime? timestamp,
   }) async {
     final now = timestamp ?? DateTime.now();
-    final secRep = await generateSecurityComplianceReport(organizationId: organizationId, timestamp: now);
-    final depRep = await generateDependencyComplianceReport(organizationId: organizationId, timestamp: now);
-    final auditRep = await generateAuditActivityReport(organizationId: organizationId, timestamp: now);
+    final secRep = await generateSecurityComplianceReport(
+        organizationId: organizationId, timestamp: now);
+    final depRep = await generateDependencyComplianceReport(
+        organizationId: organizationId, timestamp: now);
+    final auditRep = await generateAuditActivityReport(
+        organizationId: organizationId, timestamp: now);
 
     final overallCompliant = secRep.isCompliant && depRep.isCompliant;
     final allSections = <ComplianceReportSection>[
@@ -215,7 +273,8 @@ class EnterpriseReportingEngine {
       reportId: 'rep_gov_comp_${now.millisecondsSinceEpoch}',
       organizationId: organizationId,
       reportType: ComplianceReportType.comprehensiveGovernance,
-      title: 'Comprehensive Enterprise Governance & Compliance Certification Report',
+      title:
+          'Comprehensive Enterprise Governance & Compliance Certification Report',
       executiveSummary: overallCompliant
           ? 'All organization security, dependency, release, and audit governance controls passed certification.'
           : 'Compliance infractions identified across evaluated governance sectors.',

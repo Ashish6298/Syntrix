@@ -72,7 +72,8 @@ class CommandCenterEngine {
   })  : _projectRoot = p.normalize(projectRoot),
         _provider = provider,
         _assistantEngine = assistantEngine ??
-            AssistantEngine(provider: provider, defaultConfiguration: configuration);
+            AssistantEngine(
+                provider: provider, defaultConfiguration: configuration);
 
   /// Dispatches [request] to the appropriate AI subsystem.
   Future<CommandCenterResponse> execute(
@@ -82,7 +83,8 @@ class CommandCenterEngine {
     final stopwatch = Stopwatch()..start();
     final now = executionTimestamp ?? DateTime.now();
 
-    _logger.info('Command Center dispatching capability: ${request.capability.name} for target: "${request.target}"');
+    _logger.info(
+        'Command Center dispatching capability: ${request.capability.name} for target: "${request.target}"');
 
     try {
       switch (request.capability) {
@@ -127,10 +129,14 @@ class CommandCenterEngine {
       }
     } catch (e, st) {
       stopwatch.stop();
-      _logger.error('Command Center error executing ${request.capability.name}: $e', e, st);
+      _logger.error(
+          'Command Center error executing ${request.capability.name}: $e',
+          e,
+          st);
       return CommandCenterResponse.failure(
         capability: request.capability,
-        errorMessage: 'Command Center execution failed: ${SecretRedactor.redact(e.toString())}',
+        errorMessage:
+            'Command Center execution failed: ${SecretRedactor.redact(e.toString())}',
         durationMs: stopwatch.elapsedMilliseconds,
         timestamp: now,
       );
@@ -141,40 +147,82 @@ class CommandCenterEngine {
   static CommandCenterCapability resolveCapabilityFromIntent(String intent) {
     final clean = intent.toLowerCase();
 
-    if (clean.contains('sec') || clean.contains('vulnerab') || clean.contains('leak') || clean.contains('secret') || clean.contains('token')) {
+    if (clean.contains('sec') ||
+        clean.contains('vulnerab') ||
+        clean.contains('leak') ||
+        clean.contains('secret') ||
+        clean.contains('token')) {
       return CommandCenterCapability.security;
     }
-    if (clean.contains('debug') || clean.contains('fail') || clean.contains('error') || clean.contains('exception') || clean.contains('stacktrace') || clean.contains('crash') || clean.contains('crashed')) {
+    if (clean.contains('debug') ||
+        clean.contains('fail') ||
+        clean.contains('error') ||
+        clean.contains('exception') ||
+        clean.contains('stacktrace') ||
+        clean.contains('crash') ||
+        clean.contains('crashed')) {
       return CommandCenterCapability.debug;
     }
-    if (clean.contains('why did') || clean.contains('why we') || clean.contains('decision') || clean.contains('history') || clean.contains('limitation') || clean.contains('memory')) {
+    if (clean.contains('why did') ||
+        clean.contains('why we') ||
+        clean.contains('decision') ||
+        clean.contains('history') ||
+        clean.contains('limitation') ||
+        clean.contains('memory')) {
       return CommandCenterCapability.memory;
     }
-    if (clean.contains('arch') || clean.contains('boundary') || clean.contains('layer') || clean.contains('modular')) {
+    if (clean.contains('arch') ||
+        clean.contains('boundary') ||
+        clean.contains('layer') ||
+        clean.contains('modular')) {
       return CommandCenterCapability.architecture;
     }
-    if (clean.contains('test') || clean.contains('suite') || clean.contains('coverage') || clean.contains('mock')) {
+    if (clean.contains('test') ||
+        clean.contains('suite') ||
+        clean.contains('coverage') ||
+        clean.contains('mock')) {
       return CommandCenterCapability.test;
     }
-    if (clean.contains('review') || clean.contains('lint') || clean.contains('smell') || clean.contains('inspect')) {
+    if (clean.contains('review') ||
+        clean.contains('lint') ||
+        clean.contains('smell') ||
+        clean.contains('inspect')) {
       return CommandCenterCapability.review;
     }
-    if (clean.contains('doc') || clean.contains('readme') || clean.contains('api doc') || clean.contains('guide')) {
+    if (clean.contains('doc') ||
+        clean.contains('readme') ||
+        clean.contains('api doc') ||
+        clean.contains('guide')) {
       return CommandCenterCapability.document;
     }
-    if (clean.contains('dep') || clean.contains('version') || clean.contains('upgrade') || clean.contains('pubspec') || clean.contains('compat')) {
+    if (clean.contains('dep') ||
+        clean.contains('version') ||
+        clean.contains('upgrade') ||
+        clean.contains('pubspec') ||
+        clean.contains('compat')) {
       return CommandCenterCapability.dependencies;
     }
-    if (clean.contains('release') || clean.contains('readiness') || clean.contains('publish') || clean.contains('changelog')) {
+    if (clean.contains('release') ||
+        clean.contains('readiness') ||
+        clean.contains('publish') ||
+        clean.contains('changelog')) {
       return CommandCenterCapability.release;
     }
-    if (clean.contains('plan') || clean.contains('roadmap') || clean.contains('step') || clean.contains('implement')) {
+    if (clean.contains('plan') ||
+        clean.contains('roadmap') ||
+        clean.contains('step') ||
+        clean.contains('implement')) {
       return CommandCenterCapability.plan;
     }
-    if (clean.contains('modify') || clean.contains('patch') || clean.contains('change code') || clean.contains('refactor code')) {
+    if (clean.contains('modify') ||
+        clean.contains('patch') ||
+        clean.contains('change code') ||
+        clean.contains('refactor code')) {
       return CommandCenterCapability.modify;
     }
-    if (clean.contains('explain') || clean.contains('how does') || clean.contains('pattern')) {
+    if (clean.contains('explain') ||
+        clean.contains('how does') ||
+        clean.contains('pattern')) {
       return CommandCenterCapability.explain;
     }
 
@@ -185,20 +233,26 @@ class CommandCenterEngine {
   // Subsystem Routers
   // ───────────────────────────────────────────────────────────────────────────
 
-  Future<CommandCenterResponse> _routeAnalyze(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routeAnalyze(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final templateId = req.target ?? 'default_template';
     final assistantReq = AssistantRequest(
-      prompt: req.prompt.isNotEmpty ? req.prompt : 'Perform deep architectural, dependency, and security analysis.',
+      prompt: req.prompt.isNotEmpty
+          ? req.prompt
+          : 'Perform deep architectural, dependency, and security analysis.',
       mode: AssistantMode.analysis,
       templateId: templateId,
       context: PromptContext(templateId: templateId),
     );
-    final resp = await _assistantEngine.executeRequest(assistantReq, executionTimestamp: now);
+    final resp = await _assistantEngine.executeRequest(assistantReq,
+        executionTimestamp: now);
     sw.stop();
 
     return CommandCenterResponse(
       capability: CommandCenterCapability.analyze,
-      summary: resp.isSuccess ? 'Completed deep analysis for "$templateId".' : 'Analysis failed.',
+      summary: resp.isSuccess
+          ? 'Completed deep analysis for "$templateId".'
+          : 'Analysis failed.',
       structuredPayload: resp.structuredContent,
       durationMs: sw.elapsedMilliseconds,
       timestamp: now,
@@ -207,14 +261,17 @@ class CommandCenterEngine {
     );
   }
 
-  Future<CommandCenterResponse> _routeDebug(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routeDebug(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final engine = FailureDiagnosisEngine.withProvider(
       projectRoot: _projectRoot,
       provider: _provider,
     );
     final diagReq = DiagnosisRequest(
       evidence: FailureEvidenceBundle.fromSingleError(
-        errorMessage: req.prompt.isNotEmpty ? req.prompt : 'Debugging failure in ${req.target ?? "workspace"}',
+        errorMessage: req.prompt.isNotEmpty
+            ? req.prompt
+            : 'Debugging failure in ${req.target ?? "workspace"}',
         targetPackage: req.target,
       ),
     );
@@ -232,14 +289,16 @@ class CommandCenterEngine {
     );
   }
 
-  Future<CommandCenterResponse> _routeReview(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routeReview(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final engine = CodeReviewEngine.withProvider(
       projectRoot: _projectRoot,
       provider: _provider,
     );
     final isDartFile = req.target != null && req.target!.endsWith('.dart');
     final reviewReq = CodeReviewRequest(
-      mode: isDartFile ? CodeReviewMode.singleFile : CodeReviewMode.packageLevel,
+      mode:
+          isDartFile ? CodeReviewMode.singleFile : CodeReviewMode.packageLevel,
       targetFile: isDartFile ? req.target : null,
       targetPackage: !isDartFile ? req.target : null,
       customInstruction: req.prompt.isNotEmpty ? req.prompt : null,
@@ -259,7 +318,8 @@ class CommandCenterEngine {
     );
   }
 
-  Future<CommandCenterResponse> _routeTest(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routeTest(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final engine = TestIntelligenceEngine.withProvider(
       projectRoot: _projectRoot,
       provider: _provider,
@@ -274,7 +334,8 @@ class CommandCenterEngine {
 
     return CommandCenterResponse(
       capability: CommandCenterCapability.test,
-      summary: res.isSuccess ? res.summary : 'Test intelligence planning failed.',
+      summary:
+          res.isSuccess ? res.summary : 'Test intelligence planning failed.',
       structuredPayload: res,
       durationMs: sw.elapsedMilliseconds,
       timestamp: now,
@@ -283,7 +344,8 @@ class CommandCenterEngine {
     );
   }
 
-  Future<CommandCenterResponse> _routeDocument(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routeDocument(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final engine = DocumentationAssistantEngine.withProvider(
       projectRoot: _projectRoot,
       provider: _provider,
@@ -294,12 +356,15 @@ class CommandCenterEngine {
       instruction: req.prompt.isNotEmpty ? req.prompt : null,
       tokenBudget: req.tokenBudget,
     );
-    final res = await engine.generateDocumentation(docReq, executionTimestamp: now);
+    final res =
+        await engine.generateDocumentation(docReq, executionTimestamp: now);
     sw.stop();
 
     return CommandCenterResponse(
       capability: CommandCenterCapability.document,
-      summary: res.isSuccess ? 'Generated documentation for "${res.target}".' : 'Documentation generation failed.',
+      summary: res.isSuccess
+          ? 'Generated documentation for "${res.target}".'
+          : 'Documentation generation failed.',
       structuredPayload: res,
       durationMs: sw.elapsedMilliseconds,
       timestamp: now,
@@ -308,13 +373,16 @@ class CommandCenterEngine {
     );
   }
 
-  Future<CommandCenterResponse> _routeSecurity(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routeSecurity(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final engine = SecurityAdvisorEngine.withProvider(
       projectRoot: _projectRoot,
       provider: _provider,
     );
     final secReq = SecurityAnalysisRequest(
-      scope: req.target != null ? SecurityAnalysisScope.package : SecurityAnalysisScope.wholeProject,
+      scope: req.target != null
+          ? SecurityAnalysisScope.package
+          : SecurityAnalysisScope.wholeProject,
       targetPackage: req.target,
       tokenBudget: req.tokenBudget,
     );
@@ -332,13 +400,16 @@ class CommandCenterEngine {
     );
   }
 
-  Future<CommandCenterResponse> _routeArchitecture(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routeArchitecture(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final engine = ArchitectureAdvisorEngine.withProvider(
       projectRoot: _projectRoot,
       provider: _provider,
     );
     final archReq = ArchitectureScanRequest(
-      scope: req.target != null ? ArchitectureScanScope.package : ArchitectureScanScope.wholeProject,
+      scope: req.target != null
+          ? ArchitectureScanScope.package
+          : ArchitectureScanScope.wholeProject,
       targetPackage: req.target,
       tokenBudget: req.tokenBudget,
     );
@@ -347,7 +418,9 @@ class CommandCenterEngine {
 
     return CommandCenterResponse(
       capability: CommandCenterCapability.architecture,
-      summary: res.isSuccess ? 'Architecture scan complete: ${res.findings.length} findings, score: ${res.findings.isEmpty ? 100 : 80}/100.' : 'Architecture analysis failed.',
+      summary: res.isSuccess
+          ? 'Architecture scan complete: ${res.findings.length} findings, score: ${res.findings.isEmpty ? 100 : 80}/100.'
+          : 'Architecture analysis failed.',
       structuredPayload: res,
       durationMs: sw.elapsedMilliseconds,
       timestamp: now,
@@ -356,13 +429,16 @@ class CommandCenterEngine {
     );
   }
 
-  Future<CommandCenterResponse> _routeDependencies(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routeDependencies(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final engine = DependencyAdvisorEngine.withProvider(
       projectRoot: _projectRoot,
       provider: _provider,
     );
     final depReq = DependencyAnalysisRequest(
-      scope: req.target != null ? DependencyAnalysisScope.package : DependencyAnalysisScope.wholeProject,
+      scope: req.target != null
+          ? DependencyAnalysisScope.package
+          : DependencyAnalysisScope.wholeProject,
       targetPackage: req.target,
       tokenBudget: req.tokenBudget,
     );
@@ -371,7 +447,9 @@ class CommandCenterEngine {
 
     return CommandCenterResponse(
       capability: CommandCenterCapability.dependencies,
-      summary: res.isSuccess ? 'Dependency analysis complete: ${res.findings.length} findings identified.' : 'Dependency advice failed.',
+      summary: res.isSuccess
+          ? 'Dependency analysis complete: ${res.findings.length} findings identified.'
+          : 'Dependency advice failed.',
       structuredPayload: res,
       durationMs: sw.elapsedMilliseconds,
       timestamp: now,
@@ -380,13 +458,16 @@ class CommandCenterEngine {
     );
   }
 
-  Future<CommandCenterResponse> _routeRelease(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routeRelease(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final engine = ReleaseReadinessAdvisorEngine.withProvider(
       projectRoot: _projectRoot,
       provider: _provider,
     );
     final relReq = ReleaseReadinessRequest(
-      scope: req.target != null ? ReleaseReadinessScope.package : ReleaseReadinessScope.wholeProject,
+      scope: req.target != null
+          ? ReleaseReadinessScope.package
+          : ReleaseReadinessScope.wholeProject,
       targetPackage: req.target,
       tokenBudget: req.tokenBudget,
     );
@@ -395,7 +476,9 @@ class CommandCenterEngine {
 
     return CommandCenterResponse(
       capability: CommandCenterCapability.release,
-      summary: res.summary.isNotEmpty ? res.summary : 'Release readiness: ${res.status.name.toUpperCase()}.',
+      summary: res.summary.isNotEmpty
+          ? res.summary
+          : 'Release readiness: ${res.status.name.toUpperCase()}.',
       structuredPayload: res,
       durationMs: sw.elapsedMilliseconds,
       timestamp: now,
@@ -404,13 +487,16 @@ class CommandCenterEngine {
     );
   }
 
-  Future<CommandCenterResponse> _routePlan(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routePlan(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final engine = WorkflowPlannerEngine.withProvider(
       projectRoot: _projectRoot,
       provider: _provider,
     );
     final planReq = WorkflowPlanRequest(
-      request: req.prompt.isNotEmpty ? req.prompt : (req.target ?? 'Engineering plan'),
+      request: req.prompt.isNotEmpty
+          ? req.prompt
+          : (req.target ?? 'Engineering plan'),
       targetPackage: req.target,
       tokenBudget: req.tokenBudget,
     );
@@ -419,7 +505,9 @@ class CommandCenterEngine {
 
     return CommandCenterResponse(
       capability: CommandCenterCapability.plan,
-      summary: res.isSuccess ? 'Generated 9-stage engineering workflow plan.' : 'Workflow planning failed.',
+      summary: res.isSuccess
+          ? 'Generated 9-stage engineering workflow plan.'
+          : 'Workflow planning failed.',
       structuredPayload: res,
       durationMs: sw.elapsedMilliseconds,
       timestamp: now,
@@ -428,20 +516,25 @@ class CommandCenterEngine {
     );
   }
 
-  Future<CommandCenterResponse> _routeExplain(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routeExplain(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final templateId = req.target ?? 'pattern_explanation';
     final assistantReq = AssistantRequest(
-      prompt: req.prompt.isNotEmpty ? req.prompt : 'Explain architectural design patterns.',
+      prompt: req.prompt.isNotEmpty
+          ? req.prompt
+          : 'Explain architectural design patterns.',
       mode: AssistantMode.explanation,
       templateId: templateId,
       context: PromptContext(templateId: templateId),
     );
-    final resp = await _assistantEngine.executeRequest(assistantReq, executionTimestamp: now);
+    final resp = await _assistantEngine.executeRequest(assistantReq,
+        executionTimestamp: now);
     sw.stop();
 
     return CommandCenterResponse(
       capability: CommandCenterCapability.explain,
-      summary: resp.isSuccess ? 'Explanation generated.' : 'Explanation failed.',
+      summary:
+          resp.isSuccess ? 'Explanation generated.' : 'Explanation failed.',
       structuredPayload: resp.structuredContent,
       durationMs: sw.elapsedMilliseconds,
       timestamp: now,
@@ -450,10 +543,13 @@ class CommandCenterEngine {
     );
   }
 
-  Future<CommandCenterResponse> _routeMemory(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routeMemory(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final engine = SessionMemoryEngine(projectRoot: _projectRoot);
     final memReq = MemoryQueryRequest(
-      query: req.prompt.isNotEmpty ? req.prompt : (req.target ?? 'Engineering decisions'),
+      query: req.prompt.isNotEmpty
+          ? req.prompt
+          : (req.target ?? 'Engineering decisions'),
       scope: req.target,
     );
     final res = await engine.query(memReq, executionTimestamp: now);
@@ -470,21 +566,26 @@ class CommandCenterEngine {
     );
   }
 
-  Future<CommandCenterResponse> _routeModify(CommandCenterRequest req, Stopwatch sw, DateTime now) async {
+  Future<CommandCenterResponse> _routeModify(
+      CommandCenterRequest req, Stopwatch sw, DateTime now) async {
     final engine = CodeModificationEngine.withProvider(
       projectRoot: _projectRoot,
       provider: _provider,
     );
     final modReq = CodeModificationPlanRequest(
-      requirement: req.prompt.isNotEmpty ? req.prompt : (req.target ?? 'Code modification'),
+      requirement: req.prompt.isNotEmpty
+          ? req.prompt
+          : (req.target ?? 'Code modification'),
       targetScope: req.target,
     );
-    final res = await engine.proposeModification(modReq, executionTimestamp: now);
+    final res =
+        await engine.proposeModification(modReq, executionTimestamp: now);
     sw.stop();
 
     return CommandCenterResponse(
       capability: CommandCenterCapability.modify,
-      summary: res.isSuccess ? res.summary : 'Code modification proposal failed.',
+      summary:
+          res.isSuccess ? res.summary : 'Code modification proposal failed.',
       structuredPayload: res,
       durationMs: sw.elapsedMilliseconds,
       timestamp: now,

@@ -33,8 +33,10 @@ void main() {
       expect(restored.totalTestsRun, equals(178));
       expect(restored.coveragePercentage, closeTo(98.6, 0.01));
       expect(restored.testItems.length, equals(1));
-      expect(restored.testItems.first.category, equals(RegressionTestCategory.unitAndWidgetTests));
-      expect(restored.testItems.first.status, equals(RegressionStepStatus.passed));
+      expect(restored.testItems.first.category,
+          equals(RegressionTestCategory.unitAndWidgetTests));
+      expect(
+          restored.testItems.first.status, equals(RegressionStepStatus.passed));
     });
   });
 
@@ -56,10 +58,12 @@ void main() {
       final categories = report.testItems.map((i) => i.category).toSet();
       expect(categories, contains(RegressionTestCategory.cleanAndDeps));
       expect(categories, contains(RegressionTestCategory.staticAnalysis));
-      expect(categories, contains(RegressionTestCategory.documentationGeneration));
+      expect(
+          categories, contains(RegressionTestCategory.documentationGeneration));
       expect(categories, contains(RegressionTestCategory.unitAndWidgetTests));
       expect(categories, contains(RegressionTestCategory.codeCoverage));
-      expect(categories, contains(RegressionTestCategory.minimumDependencyCompatibility));
+      expect(categories,
+          contains(RegressionTestCategory.minimumDependencyCompatibility));
 
       for (final item in report.testItems) {
         expect(item.status, equals(RegressionStepStatus.passed));
@@ -77,7 +81,8 @@ void main() {
       );
 
       // 1. ASCII Dashboard
-      final ascii = RegressionTestRenderer.renderAsciiRegressionDashboard(report);
+      final ascii =
+          RegressionTestRenderer.renderAsciiRegressionDashboard(report);
       expect(ascii, contains('PHASE 11.3 — FULL REGRESSION TEST MATRIX'));
       expect(ascii, contains('Static Analysis (Analyze)'));
       expect(ascii, contains('Code Coverage Certification'));
@@ -85,8 +90,12 @@ void main() {
 
       // 2. Markdown Report
       final markdown = RegressionTestRenderer.renderMarkdown(report);
-      expect(markdown, contains('# Milestone 11 — Phase 11.3: Full Regression Testing Report'));
-      expect(markdown, contains('**Regression Suite Status:** `PASSED (100% Green)`'));
+      expect(
+          markdown,
+          contains(
+              '# Milestone 11 — Phase 11.3: Full Regression Testing Report'));
+      expect(markdown,
+          contains('**Regression Suite Status:** `PASSED (100% Green)`'));
       expect(markdown, contains('**Line Coverage:** `98.6%`'));
       expect(markdown, contains('**Phase 11.4 — Platform Verification**'));
 

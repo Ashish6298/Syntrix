@@ -1,8 +1,6 @@
 /// Core domain models, enums, and state descriptors for Milestone 10: Studio v2 Architecture Foundation.
 library;
 
-import 'dart:convert';
-
 /// High-level navigation section within Studio v2.
 enum StudioNavigationSection {
   workspace,
@@ -238,7 +236,8 @@ class StudioConfigurationDescriptor {
 
   factory StudioConfigurationDescriptor.fromJson(Map<String, dynamic> json) {
     return StudioConfigurationDescriptor(
-      targetLoaderId: json['target_loader_id'] as String? ?? 'infinite_universe',
+      targetLoaderId:
+          json['target_loader_id'] as String? ?? 'infinite_universe',
       selectedThemeId: json['selected_theme_id'] as String? ?? 'deep_space',
       animationSpeed: (json['animation_speed'] as num?)?.toDouble() ?? 1.0,
       intensity: (json['intensity'] as num?)?.toDouble() ?? 1.0,
@@ -250,7 +249,8 @@ class StudioConfigurationDescriptor {
       velocity: (json['velocity'] as num?)?.toDouble() ?? 1.0,
       isInteractive: json['is_interactive'] as bool? ?? true,
       shadersEnabled: json['shaders_enabled'] as bool? ?? true,
-      customParameters: (json['custom_parameters'] as Map<String, dynamic>?) ?? const {},
+      customParameters:
+          (json['custom_parameters'] as Map<String, dynamic>?) ?? const {},
     );
   }
 }
@@ -306,7 +306,8 @@ class StudioV2State {
       favoriteLoaderIds: favoriteLoaderIds ?? this.favoriteLoaderIds,
       recentPresetIds: recentPresetIds ?? this.recentPresetIds,
       isLivePreviewPaused: isLivePreviewPaused ?? this.isLivePreviewPaused,
-      isDiagnosticsOverlayVisible: isDiagnosticsOverlayVisible ?? this.isDiagnosticsOverlayVisible,
+      isDiagnosticsOverlayVisible:
+          isDiagnosticsOverlayVisible ?? this.isDiagnosticsOverlayVisible,
       lastModifiedAt: lastModifiedAt ?? this.lastModifiedAt,
     );
   }
@@ -330,18 +331,23 @@ class StudioV2State {
       workspaceId: json['workspace_id'] as String? ?? 'default_ws',
       workspaceName: json['workspace_name'] as String? ?? 'Studio v2 Workspace',
       currentSection: StudioNavigationSection.values.firstWhere(
-        (s) => s.id == json['current_section'] || s.name == json['current_section'],
+        (s) =>
+            s.id == json['current_section'] ||
+            s.name == json['current_section'],
         orElse: () => StudioNavigationSection.workspace,
       ),
       activeConfiguration: json['active_configuration'] != null
-          ? StudioConfigurationDescriptor.fromJson(json['active_configuration'] as Map<String, dynamic>)
+          ? StudioConfigurationDescriptor.fromJson(
+              json['active_configuration'] as Map<String, dynamic>)
           : const StudioConfigurationDescriptor(),
       registeredPanels: (json['registered_panels'] as List<dynamic>?)
-              ?.map((p) => StudioPanelDefinition.fromJson(p as Map<String, dynamic>))
+              ?.map((p) =>
+                  StudioPanelDefinition.fromJson(p as Map<String, dynamic>))
               .toList() ??
           const [],
       registeredActions: (json['registered_actions'] as List<dynamic>?)
-              ?.map((a) => StudioActionDefinition.fromJson(a as Map<String, dynamic>))
+              ?.map((a) =>
+                  StudioActionDefinition.fromJson(a as Map<String, dynamic>))
               .toList() ??
           const [],
       favoriteLoaderIds: (json['favorite_loader_ids'] as List<dynamic>?)
@@ -353,7 +359,8 @@ class StudioV2State {
               .toList() ??
           const [],
       isLivePreviewPaused: json['is_live_preview_paused'] as bool? ?? false,
-      isDiagnosticsOverlayVisible: json['is_diagnostics_overlay_visible'] as bool? ?? false,
+      isDiagnosticsOverlayVisible:
+          json['is_diagnostics_overlay_visible'] as bool? ?? false,
       lastModifiedAt: DateTime.parse(json['last_modified_at'] as String),
     );
   }

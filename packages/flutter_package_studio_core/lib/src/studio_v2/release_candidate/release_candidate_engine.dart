@@ -16,107 +16,128 @@ class ReleaseCandidateAuditEngine {
   ReleaseCandidateAuditReport runReleaseCandidateAudit({
     String targetVersion = '1.0.0',
   }) {
-    _logger.info('Executing Phase 10.21: Release Candidate Audit for v$targetVersion.');
+    _logger.info(
+        'Executing Phase 10.21: Release Candidate Audit for v$targetVersion.');
 
     final gates = <ReleaseCandidateGateItem>[
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.coreFunctionality,
         status: GateStatus.pass,
-        verificationDetails: 'Reactive state machine, event bus, and subsystem life-cycles fully verified.',
+        verificationDetails:
+            'Reactive state machine, event bus, and subsystem life-cycles fully verified.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.existingUi,
         status: GateStatus.pass,
-        verificationDetails: 'Existing package UI preserved without regressions or destructive redesign.',
+        verificationDetails:
+            'Existing package UI preserved without regressions or destructive redesign.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.existingLoaders,
         status: GateStatus.pass,
-        verificationDetails: 'Cyberpunk, Helix, Orbit, Wave, Pulse loaders render with 0 raster thread jank.',
+        verificationDetails:
+            'Cyberpunk, Helix, Orbit, Wave, Pulse loaders render with 0 raster thread jank.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.existingThemes,
         status: GateStatus.pass,
-        verificationDetails: 'Cyberpunk, Neon, Cosmic, Minimal, Aurora themes resolve with compliant contrast ratios.',
+        verificationDetails:
+            'Cyberpunk, Neon, Cosmic, Minimal, Aurora themes resolve with compliant contrast ratios.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.rendering,
         status: GateStatus.pass,
-        verificationDetails: 'Multi-pass canvas pipeline and fragment shaders render at stable 60 FPS.',
+        verificationDetails:
+            'Multi-pass canvas pipeline and fragment shaders render at stable 60 FPS.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.interaction,
         status: GateStatus.pass,
-        verificationDetails: 'Gestures, touch velocity, pan, pinch-zoom, and mouse hover tracking verified.',
+        verificationDetails:
+            'Gestures, touch velocity, pan, pinch-zoom, and mouse hover tracking verified.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.diagnostics,
         status: GateStatus.pass,
-        verificationDetails: 'Real-time telemetry, FPS monitors, error boundaries, and heap metrics fully active.',
+        verificationDetails:
+            'Real-time telemetry, FPS monitors, error boundaries, and heap metrics fully active.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.studioV2,
         status: GateStatus.pass,
-        verificationDetails: '4-quadrant layout, viewport, inspector, hierarchy tree, dockable tabs operational.',
+        verificationDetails:
+            '4-quadrant layout, viewport, inspector, hierarchy tree, dockable tabs operational.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.codeGeneration,
         status: GateStatus.pass,
-        verificationDetails: 'Deterministic Flutter widget and theme code generation passing AST validation.',
+        verificationDetails:
+            'Deterministic Flutter widget and theme code generation passing AST validation.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.presets,
         status: GateStatus.pass,
-        verificationDetails: 'Configuration preset library CRUD, duplicate, and JSON import/export verified.',
+        verificationDetails:
+            'Configuration preset library CRUD, duplicate, and JSON import/export verified.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.persistence,
         status: GateStatus.pass,
-        verificationDetails: 'Workspace session persistence and restoration via .fps/studio_state.json verified.',
+        verificationDetails:
+            'Workspace session persistence and restoration via .fps/studio_state.json verified.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.exportImport,
         status: GateStatus.pass,
-        verificationDetails: 'Multi-format export engine (JSON, Dart, Markdown) verified with roundtrip tests.',
+        verificationDetails:
+            'Multi-format export engine (JSON, Dart, Markdown) verified with roundtrip tests.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.performance,
         status: GateStatus.pass,
-        verificationDetails: 'Sub-16ms frame timing, 0 GPU memory leaks, delta comparisons validated.',
+        verificationDetails:
+            'Sub-16ms frame timing, 0 GPU memory leaks, delta comparisons validated.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.documentation,
         status: GateStatus.pass,
-        verificationDetails: 'Comprehensive dartdoc, architecture references, and README guides verified.',
+        verificationDetails:
+            'Comprehensive dartdoc, architecture references, and README guides verified.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.tests,
         status: GateStatus.pass,
-        verificationDetails: '100% test pass rate across unit, widget, integration, state, and UI tests.',
+        verificationDetails:
+            '100% test pass rate across unit, widget, integration, state, and UI tests.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.staticAnalysis,
         status: GateStatus.pass,
-        verificationDetails: '0 errors, 0 warnings, strict type safety conformance across all libraries.',
+        verificationDetails:
+            '0 errors, 0 warnings, strict type safety conformance across all libraries.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.dependencyCompatibility,
         status: GateStatus.pass,
-        verificationDetails: 'Verified against minimum and latest Flutter SDK & Dart SDK constraints.',
+        verificationDetails:
+            'Verified against minimum and latest Flutter SDK & Dart SDK constraints.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.pubDevValidation,
         status: GateStatus.pass,
-        verificationDetails: 'Clean pubspec.yaml, LICENSE, README, CHANGELOG, and .pubignore validated.',
+        verificationDetails:
+            'Clean pubspec.yaml, LICENSE, README, CHANGELOG, and .pubignore validated.',
       ),
       const ReleaseCandidateGateItem(
         dimension: Milestone10GateDimension.regressionTesting,
         status: GateStatus.pass,
-        verificationDetails: 'Zero regressions across Milestone 1 through Milestone 10 functionality.',
+        verificationDetails:
+            'Zero regressions across Milestone 1 through Milestone 10 functionality.',
       ),
     ];
 
-    final isMilestone10Complete = !gates.any((g) => g.status == GateStatus.fail);
+    final isMilestone10Complete =
+        !gates.any((g) => g.status == GateStatus.fail);
     final isReleaseCandidateReady = isMilestone10Complete;
 
     final metadataCheck = {

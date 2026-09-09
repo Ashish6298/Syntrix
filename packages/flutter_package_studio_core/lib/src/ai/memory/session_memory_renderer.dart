@@ -54,14 +54,16 @@ class SessionMemoryRenderer {
 
     if (!result.isSuccess) {
       buf.writeln('## ❌ Memory Retrieval Failed');
-      buf.writeln(result.errorMessage ?? 'An unknown error occurred during memory retrieval.');
+      buf.writeln(result.errorMessage ??
+          'An unknown error occurred during memory retrieval.');
       return SecretRedactor.redact(buf.toString());
     }
 
     if (result.conflictsDetected.isNotEmpty) {
       buf.writeln('## ⚠️ Architectural Conflicts Detected');
       for (final c in result.conflictsDetected) {
-        buf.writeln('- **[${c.severity.toUpperCase()}]** ${_escapeHtml(c.topic)}: ${_escapeHtml(c.reason)}');
+        buf.writeln(
+            '- **[${c.severity.toUpperCase()}]** ${_escapeHtml(c.topic)}: ${_escapeHtml(c.reason)}');
       }
       buf.writeln();
     }
@@ -74,11 +76,13 @@ class SessionMemoryRenderer {
       buf.writeln('## Documented Knowledge Entries');
       buf.writeln();
       for (final e in result.entries) {
-        buf.writeln('### [${_escapeHtml(e.type.label)}] ${_escapeHtml(e.title)} (v${e.version})');
+        buf.writeln(
+            '### [${_escapeHtml(e.type.label)}] ${_escapeHtml(e.title)} (v${e.version})');
         buf.writeln('- **Session ID**: `${_escapeHtml(e.sessionId)}`');
         buf.writeln('- **Scope**: `${_escapeHtml(e.scope)}`');
         if (e.tags.isNotEmpty) {
-          buf.writeln('- **Tags**: ${e.tags.map((t) => "`${_escapeHtml(t)}`").join(", ")}');
+          buf.writeln(
+              '- **Tags**: ${e.tags.map((t) => "`${_escapeHtml(t)}`").join(", ")}');
         }
         buf.writeln('- **Recorded**: `${e.createdAt.toIso8601String()}`');
         if (e.expiresAt != null) {
@@ -91,8 +95,11 @@ class SessionMemoryRenderer {
         if (e.evidenceRefs.isNotEmpty) {
           buf.writeln('**Evidence References:**');
           for (final ref in e.evidenceRefs) {
-            final loc = ref.location != null ? ' (location: `${_escapeHtml(ref.location!)}`)' : '';
-            buf.writeln('- [`${_escapeHtml(ref.path)}`]$loc — ${_escapeHtml(ref.description)}');
+            final loc = ref.location != null
+                ? ' (location: `${_escapeHtml(ref.location!)}`)'
+                : '';
+            buf.writeln(
+                '- [`${_escapeHtml(ref.path)}`]$loc — ${_escapeHtml(ref.description)}');
           }
           buf.writeln();
         }
@@ -111,7 +118,8 @@ class SessionMemoryRenderer {
     buf.writeln('**Summary**: ${_escapeHtml(session.summary)}  ');
     buf.writeln('**Entries Recorded**: `${session.entries.length}`  ');
     buf.writeln('**Created**: `${session.createdAt.toIso8601String()}`  ');
-    buf.writeln('**Last Updated**: `${session.lastAccessedAt.toIso8601String()}`');
+    buf.writeln(
+        '**Last Updated**: `${session.lastAccessedAt.toIso8601String()}`');
     buf.writeln();
 
     if (session.entries.isEmpty) {
@@ -120,11 +128,13 @@ class SessionMemoryRenderer {
       buf.writeln('## Knowledge Entries');
       buf.writeln();
       for (final e in session.entries) {
-        buf.writeln('### [${_escapeHtml(e.type.label)}] ${_escapeHtml(e.title)} (v${e.version})');
+        buf.writeln(
+            '### [${_escapeHtml(e.type.label)}] ${_escapeHtml(e.title)} (v${e.version})');
         buf.writeln('- **ID**: `${_escapeHtml(e.id)}`');
         buf.writeln('- **Scope**: `${_escapeHtml(e.scope)}`');
         if (e.tags.isNotEmpty) {
-          buf.writeln('- **Tags**: ${e.tags.map((t) => "`${_escapeHtml(t)}`").join(", ")}');
+          buf.writeln(
+              '- **Tags**: ${e.tags.map((t) => "`${_escapeHtml(t)}`").join(", ")}');
         }
         buf.writeln();
         buf.writeln(e.content);
@@ -133,8 +143,11 @@ class SessionMemoryRenderer {
         if (e.evidenceRefs.isNotEmpty) {
           buf.writeln('**Evidence:**');
           for (final ref in e.evidenceRefs) {
-            final loc = ref.location != null ? ' (`${_escapeHtml(ref.location!)}`)' : '';
-            buf.writeln('- `${_escapeHtml(ref.path)}`$loc: ${_escapeHtml(ref.description)}');
+            final loc = ref.location != null
+                ? ' (`${_escapeHtml(ref.location!)}`)'
+                : '';
+            buf.writeln(
+                '- `${_escapeHtml(ref.path)}`$loc: ${_escapeHtml(ref.description)}');
           }
           buf.writeln();
         }

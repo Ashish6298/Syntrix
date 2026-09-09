@@ -18,8 +18,10 @@ class StudioComparisonEngine {
   LoaderComparisonCandidate get secondary => _secondary;
 
   StudioComparisonEngine({required this.controller})
-      : _primary = _createDefaultCandidate('galaxy_orbit', 'Galaxy Orbit', 60.0, 220, true, true, 4.2),
-        _secondary = _createDefaultCandidate('wormhole_portal', 'Wormhole', 58.0, 340, true, true, 5.6);
+      : _primary = _createDefaultCandidate(
+            'galaxy_orbit', 'Galaxy Orbit', 60.0, 220, true, true, 4.2),
+        _secondary = _createDefaultCandidate(
+            'wormhole_portal', 'Wormhole', 58.0, 340, true, true, 5.6);
 
   static LoaderComparisonCandidate _createDefaultCandidate(
     String id,
@@ -39,7 +41,12 @@ class StudioComparisonEngine {
       hasShaders: shaders,
       isInteractive: true,
       renderPassMs: renderMs,
-      supportedFeatures: const ['Continuous Orbit', 'Custom Gravitation', 'Depth Fog', 'GPU Shaders'],
+      supportedFeatures: const [
+        'Continuous Orbit',
+        'Custom Gravitation',
+        'Depth Fog',
+        'GPU Shaders'
+      ],
       configuration: StudioConfigurationDescriptor(
         targetLoaderId: id,
         particleCount: particles,
@@ -51,13 +58,15 @@ class StudioComparisonEngine {
   /// Update primary candidate in comparison laboratory.
   void setPrimaryCandidate(LoaderComparisonCandidate candidate) {
     _primary = candidate;
-    _logger.info('Updated primary comparison candidate: ${candidate.displayName}');
+    _logger
+        .info('Updated primary comparison candidate: ${candidate.displayName}');
   }
 
   /// Update secondary candidate in comparison laboratory.
   void setSecondaryCandidate(LoaderComparisonCandidate candidate) {
     _secondary = candidate;
-    _logger.info('Updated secondary comparison candidate: ${candidate.displayName}');
+    _logger.info(
+        'Updated secondary comparison candidate: ${candidate.displayName}');
   }
 
   /// Create comparison session from current primary and secondary candidates.

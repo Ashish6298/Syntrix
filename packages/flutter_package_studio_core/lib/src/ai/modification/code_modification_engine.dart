@@ -76,9 +76,11 @@ class CodeModificationEngine {
   }) async {
     final stopwatch = Stopwatch()..start();
     final now = executionTimestamp ?? DateTime.now();
-    final proposalId = 'mod_${now.millisecondsSinceEpoch}_${request.requirement.hashCode.abs().toRadixString(16)}';
+    final proposalId =
+        'mod_${now.millisecondsSinceEpoch}_${request.requirement.hashCode.abs().toRadixString(16)}';
 
-    _logger.info('Proposing controlled code modification: "${request.requirement}"');
+    _logger.info(
+        'Proposing controlled code modification: "${request.requirement}"');
 
     try {
       // 1. Discover Project Context & Extract Relevant Files
@@ -88,12 +90,15 @@ class CodeModificationEngine {
 
       if (rootDir.existsSync()) {
         try {
-          for (final entity in rootDir.listSync(recursive: true, followLinks: false)) {
+          for (final entity
+              in rootDir.listSync(recursive: true, followLinks: false)) {
             if (entity is File &&
                 !entity.path.contains('.git') &&
                 !entity.path.contains('build') &&
                 !entity.path.contains('.dart_tool')) {
-              final rel = p.relative(entity.path, from: _projectRoot).replaceAll('\\', '/');
+              final rel = p
+                  .relative(entity.path, from: _projectRoot)
+                  .replaceAll('\\', '/');
               // Only consider non-denylisted files
               if (request.safetyPolicy.evaluateFilePath(rel).allowed) {
                 relevantFiles.add(rel);
@@ -136,11 +141,13 @@ class CodeModificationEngine {
 
       if (!response.isSuccess || response.rawUntrustedCompletion == null) {
         stopwatch.stop();
-        _logger.warning('AI Provider failed during modification planning: ${response.errorMessage}');
+        _logger.warning(
+            'AI Provider failed during modification planning: ${response.errorMessage}');
         return CodeModificationProposal.failure(
           proposalId: proposalId,
           requirement: request.requirement,
-          errorMessage: response.errorMessage ?? 'AI provider failed to generate modification proposal.',
+          errorMessage: response.errorMessage ??
+              'AI provider failed to generate modification proposal.',
           durationMs: stopwatch.elapsedMilliseconds,
           timestamp: now,
         );
@@ -159,21 +166,21 @@ class CodeModificationEngine {
 
       if (parsed.affectedFiles.length > request.safetyPolicy.maxFilesLimit) {
         policyViolations.add(
-          'Proposal affects ${parsed.affectedFiles.length} files, which exceeds max limit of ${request.safetyPolicy.maxFilesLimit}.'
-        );
+            'Proposal affects ${parsed.affectedFiles.length} files, which exceeds max limit of ${request.safetyPolicy.maxFilesLimit}.');
       }
 
-      final totalLinesChanged = parsed.totalLinesAdded + parsed.totalLinesRemoved;
+      final totalLinesChanged =
+          parsed.totalLinesAdded + parsed.totalLinesRemoved;
       if (totalLinesChanged > request.safetyPolicy.maxTotalLinesChanged) {
         policyViolations.add(
-          'Proposal changes $totalLinesChanged total lines, which exceeds max limit of ${request.safetyPolicy.maxTotalLinesChanged}.'
-        );
+            'Proposal changes $totalLinesChanged total lines, which exceeds max limit of ${request.safetyPolicy.maxTotalLinesChanged}.');
       }
 
       for (final file in parsed.affectedFiles) {
         final eval = request.safetyPolicy.evaluateFilePath(file);
         if (!eval.allowed) {
-          policyViolations.add(eval.reason ?? 'File "$file" violates safety policy.');
+          policyViolations
+              .add(eval.reason ?? 'File "$file" violates safety policy.');
         }
       }
 
@@ -181,7 +188,8 @@ class CodeModificationEngine {
       if (request.restrictedFileAllowlist.isNotEmpty) {
         for (final file in parsed.affectedFiles) {
           if (!request.restrictedFileAllowlist.contains(file)) {
-            policyViolations.add('File "$file" is not within the restricted allowlist override.');
+            policyViolations.add(
+                'File "$file" is not within the restricted allowlist override.');
           }
         }
       }
@@ -195,7 +203,8 @@ class CodeModificationEngine {
 
       stopwatch.stop();
 
-      final isEligible = policyViolations.isEmpty && validationResult.isAllPassed;
+      final isEligible =
+          policyViolations.isEmpty && validationResult.isAllPassed;
 
       return CodeModificationProposal(
         proposalId: proposalId,
@@ -210,7 +219,8 @@ class CodeModificationEngine {
         isEligibleForApplication: isEligible,
         durationMs: stopwatch.elapsedMilliseconds,
         timestamp: now,
-        errorMessage: policyViolations.isNotEmpty ? policyViolations.join('; ') : null,
+        errorMessage:
+            policyViolations.isNotEmpty ? policyViolations.join('; ') : null,
         isSuccess: true,
       );
     } catch (e, st) {
@@ -219,7 +229,8 @@ class CodeModificationEngine {
       return CodeModificationProposal.failure(
         proposalId: proposalId,
         requirement: request.requirement,
-        errorMessage: 'Internal modification planning error: ${SecretRedactor.redact(e.toString())}',
+        errorMessage:
+            'Internal modification planning error: ${SecretRedactor.redact(e.toString())}',
         durationMs: stopwatch.elapsedMilliseconds,
         timestamp: now,
       );
@@ -237,7 +248,8 @@ class CodeModificationEngine {
       return CodeModificationApplyResult(
         success: false,
         proposalId: proposal.proposalId,
-        message: 'Explicit execution approval is mandatory before applying code changes.',
+        message:
+            'Explicit execution approval is mandatory before applying code changes.',
       );
     }
 
@@ -245,7 +257,8 @@ class CodeModificationEngine {
       return CodeModificationApplyResult(
         success: false,
         proposalId: proposal.proposalId,
-        message: 'Cannot apply ineligible proposal: ${proposal.errorMessage ?? "Validation failed"}',
+        message:
+            'Cannot apply ineligible proposal: ${proposal.errorMessage ?? "Validation failed"}',
       );
     }
 
@@ -264,7 +277,8 @@ class CodeModificationEngine {
         final targetFile = File(targetPath);
 
         if (targetFile.existsSync()) {
-          final backupFilePath = p.join(backupDir.path, patch.relativePath.replaceAll('/', '_'));
+          final backupFilePath =
+              p.join(backupDir.path, patch.relativePath.replaceAll('/', '_'));
           targetFile.copySync(backupFilePath);
           backupPaths[patch.relativePath] = backupFilePath;
         }
@@ -289,7 +303,8 @@ class CodeModificationEngine {
             targetFile.deleteSync();
             modifiedFiles.add(patch.relativePath);
           }
-        } else if (patch.patchType == FilePatchType.create || patch.patchType == FilePatchType.modify) {
+        } else if (patch.patchType == FilePatchType.create ||
+            patch.patchType == FilePatchType.modify) {
           if (patch.proposedContent != null) {
             final parent = targetFile.parent;
             if (!parent.existsSync()) {
@@ -301,14 +316,16 @@ class CodeModificationEngine {
         }
       }
 
-      _logger.info('Successfully applied proposal ${proposal.proposalId} affecting ${modifiedFiles.length} file(s).');
+      _logger.info(
+          'Successfully applied proposal ${proposal.proposalId} affecting ${modifiedFiles.length} file(s).');
       return CodeModificationApplyResult(
         success: true,
         proposalId: proposal.proposalId,
         modifiedFiles: modifiedFiles,
         backupPaths: backupPaths,
         isRollback: false,
-        message: 'Successfully applied ${modifiedFiles.length} file modifications.',
+        message:
+            'Successfully applied ${modifiedFiles.length} file modifications.',
       );
     } catch (e, st) {
       _logger.error('Error applying modification proposal: $e', e, st);
@@ -317,7 +334,8 @@ class CodeModificationEngine {
       return CodeModificationApplyResult(
         success: false,
         proposalId: proposal.proposalId,
-        message: 'Failed to apply modifications: $e. Automatically rolled back.',
+        message:
+            'Failed to apply modifications: $e. Automatically rolled back.',
       );
     }
   }
@@ -347,9 +365,14 @@ class CodeModificationEngine {
     }
 
     try {
-      final manifest = jsonDecode(manifestFile.readAsStringSync()) as Map<String, dynamic>;
-      final backupPaths = (manifest['backupPaths'] as Map<String, dynamic>?) ?? {};
-      final affectedFiles = (manifest['affectedFiles'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [];
+      final manifest =
+          jsonDecode(manifestFile.readAsStringSync()) as Map<String, dynamic>;
+      final backupPaths =
+          (manifest['backupPaths'] as Map<String, dynamic>?) ?? {};
+      final affectedFiles = (manifest['affectedFiles'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [];
 
       final restoredFiles = <String>[];
 
@@ -373,13 +396,15 @@ class CodeModificationEngine {
         }
       }
 
-      _logger.info('Successfully rolled back proposal $proposalId (${restoredFiles.length} file(s) restored).');
+      _logger.info(
+          'Successfully rolled back proposal $proposalId (${restoredFiles.length} file(s) restored).');
       return CodeModificationApplyResult(
         success: true,
         proposalId: proposalId,
         modifiedFiles: restoredFiles,
         isRollback: true,
-        message: 'Successfully rolled back proposal $proposalId (${restoredFiles.length} file(s) restored).',
+        message:
+            'Successfully rolled back proposal $proposalId (${restoredFiles.length} file(s) restored).',
       );
     } catch (e, st) {
       _logger.error('Failed to rollback proposal $proposalId: $e', e, st);
@@ -408,7 +433,8 @@ class CodeModificationEngine {
       for (final patch in proposal.patches) {
         if (patch.relativePath.isEmpty || patch.diff.isEmpty) {
           patchValid = false;
-          failureReason = 'File patch for "${patch.relativePath}" contains empty path or diff.';
+          failureReason =
+              'File patch for "${patch.relativePath}" contains empty path or diff.';
           break;
         }
       }
@@ -417,7 +443,8 @@ class CodeModificationEngine {
     // 2. Automated Tests Check
     // When executing in isolated environment or unit tests, evaluate safely
     bool testsPassed = true;
-    String testOutput = 'Automated test suite verification simulated: 0 failures.';
+    String testOutput =
+        'Automated test suite verification simulated: 0 failures.';
 
     // 3. Analyzer Check
     bool analyzerPassed = true;
@@ -446,7 +473,8 @@ class CodeModificationEngine {
     required CodeModificationSafetyPolicy safetyPolicy,
   }) {
     final buf = StringBuffer();
-    buf.writeln('You are the AI-Assisted Controlled Code Modification Engine for Flutter Package Studio.');
+    buf.writeln(
+        'You are the AI-Assisted Controlled Code Modification Engine for Flutter Package Studio.');
     buf.writeln('Requirement: "$requirement"');
     if (targetScope != null) {
       buf.writeln('Target Scope: $targetScope');
@@ -461,7 +489,8 @@ class CodeModificationEngine {
     buf.writeln();
     buf.writeln('STRICT SAFETY INVARIANTS:');
     buf.writeln('1. Propose discrete, targeted file patches only.');
-    buf.writeln('2. Never edit the entire repository or touch prohibited files (.git, .env, .fps).');
+    buf.writeln(
+        '2. Never edit the entire repository or touch prohibited files (.git, .env, .fps).');
     buf.writeln('3. Redact all tokens/credentials with [REDACTED_SECRET].');
     buf.writeln('4. Return ONLY a JSON object conforming to this schema:');
     buf.writeln('''
@@ -494,7 +523,8 @@ class CodeModificationEngine {
     String cleanJson = rawText.trim();
     if (cleanJson.startsWith('```json')) cleanJson = cleanJson.substring(7);
     if (cleanJson.startsWith('```')) cleanJson = cleanJson.substring(3);
-    if (cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3);
+    if (cleanJson.endsWith('```'))
+      cleanJson = cleanJson.substring(0, cleanJson.length - 3);
     cleanJson = cleanJson.trim();
 
     Map<String, dynamic> decoded = {};
@@ -505,9 +535,11 @@ class CodeModificationEngine {
       }
     } catch (_) {}
 
-    final summary = decoded['summary'] as String? ?? 'Proposed code modifications for: ${request.requirement}';
+    final summary = decoded['summary'] as String? ??
+        'Proposed code modifications for: ${request.requirement}';
     final rawFiles = decoded['affectedFiles'] as List<dynamic>? ?? const [];
-    final affectedFiles = rawFiles.map((e) => e.toString().replaceAll('\\', '/')).toList();
+    final affectedFiles =
+        rawFiles.map((e) => e.toString().replaceAll('\\', '/')).toList();
 
     final rawPatches = decoded['patches'] as List<dynamic>? ?? const [];
     final patches = <FilePatch>[];

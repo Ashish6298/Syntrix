@@ -32,8 +32,10 @@ class MemoryCommand extends FpsCommand {
   Future<int> run() async {
     print('Usage: fps memory <subcommand> [arguments]');
     print('Subcommands:');
-    print('  query    Query documented engineering decisions and project memory.');
-    print('  record   Record a new engineering decision, limitation, or report.');
+    print(
+        '  query    Query documented engineering decisions and project memory.');
+    print(
+        '  record   Record a new engineering decision, limitation, or report.');
     print('  sessions List all engineering memory sessions in the workspace.');
     print('  purge    Purge expired knowledge memory entries.');
     return 0;
@@ -53,12 +55,14 @@ class MemoryQuerySubcommand extends FpsCommand {
     argParser.addOption(
       'query',
       abbr: 'q',
-      help: 'The natural language question (e.g. "Why did we choose this architecture?").',
+      help:
+          'The natural language question (e.g. "Why did we choose this architecture?").',
     );
     argParser.addOption(
       'type',
       abbr: 't',
-      help: 'Filter by knowledge type (decision, limitation, architecture, bug, releaseHistory, testHistory, implementationReport).',
+      help:
+          'Filter by knowledge type (decision, limitation, architecture, bug, releaseHistory, testHistory, implementationReport).',
     );
     argParser.addOption(
       'session',
@@ -90,7 +94,9 @@ class MemoryQuerySubcommand extends FpsCommand {
   @override
   Future<int> run() async {
     final queryArg = (argResults?['query'] as String?) ??
-        (argResults?.rest.isNotEmpty == true ? argResults!.rest.join(' ') : null);
+        (argResults?.rest.isNotEmpty == true
+            ? argResults!.rest.join(' ')
+            : null);
     final typeStr = argResults?['type'] as String?;
     final sessionId = argResults?['session'] as String?;
     final scope = argResults?['scope'] as String?;
@@ -157,7 +163,8 @@ class MemoryRecordSubcommand extends FpsCommand {
     argParser.addOption(
       'type',
       abbr: 'k',
-      help: 'Knowledge type (decision, limitation, architecture, bug, releaseHistory, testHistory, implementationReport, repeatedIssue).',
+      help:
+          'Knowledge type (decision, limitation, architecture, bug, releaseHistory, testHistory, implementationReport, repeatedIssue).',
       defaultsTo: 'decision',
     );
     argParser.addOption(
@@ -199,7 +206,8 @@ class MemoryRecordSubcommand extends FpsCommand {
       return 1;
     }
 
-    final entryType = KnowledgeEntryType.tryParse(typeStr) ?? KnowledgeEntryType.decision;
+    final entryType =
+        KnowledgeEntryType.tryParse(typeStr) ?? KnowledgeEntryType.decision;
     final engine = SessionMemoryEngine(projectRoot: projectDir.path);
 
     final outcome = await engine.recordKnowledge(
@@ -211,9 +219,11 @@ class MemoryRecordSubcommand extends FpsCommand {
       tags: tags,
     );
 
-    print('Recorded ${entryType.label} "${outcome.entry.title}" (ID: ${outcome.entry.id}) in session "$sessionId".');
+    print(
+        'Recorded ${entryType.label} "${outcome.entry.title}" (ID: ${outcome.entry.id}) in session "$sessionId".');
     if (outcome.conflicts.isNotEmpty) {
-      print('⚠️ Detected ${outcome.conflicts.length} architectural conflict(s):');
+      print(
+          '⚠️ Detected ${outcome.conflicts.length} architectural conflict(s):');
       for (final c in outcome.conflicts) {
         print('  - [${c.severity.toUpperCase()}] ${c.reason}');
       }
@@ -229,7 +239,8 @@ class MemorySessionsSubcommand extends FpsCommand {
   final String name = 'sessions';
 
   @override
-  final String description = 'List all recorded engineering memory sessions and summaries.';
+  final String description =
+      'List all recorded engineering memory sessions and summaries.';
 
   MemorySessionsSubcommand() {
     argParser.addOption(
@@ -266,9 +277,11 @@ class MemorySessionsSubcommand extends FpsCommand {
       if (sessions.isEmpty) {
         print('No engineering memory sessions found in workspace.');
       } else {
-        print('=== Project Engineering Memory Sessions (${sessions.length}) ===');
+        print(
+            '=== Project Engineering Memory Sessions (${sessions.length}) ===');
         for (final s in sessions) {
-          print('- [${s.sessionId}] ${s.summary} (${s.entries.length} entries, updated: ${s.lastAccessedAt.toIso8601String().split("T").first})');
+          print(
+              '- [${s.sessionId}] ${s.summary} (${s.entries.length} entries, updated: ${s.lastAccessedAt.toIso8601String().split("T").first})');
         }
       }
     }
@@ -283,7 +296,8 @@ class MemoryPurgeSubcommand extends FpsCommand {
   final String name = 'purge';
 
   @override
-  final String description = 'Purge expired knowledge entries across all sessions.';
+  final String description =
+      'Purge expired knowledge entries across all sessions.';
 
   MemoryPurgeSubcommand() {
     argParser.addOption(

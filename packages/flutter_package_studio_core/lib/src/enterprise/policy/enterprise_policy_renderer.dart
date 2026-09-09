@@ -23,7 +23,8 @@ class EnterprisePolicyRenderer {
     buffer.writeln('**Organization**: `${result.organizationId}`  ');
     buffer.writeln('**Scope**: `${result.scope.id}`  ');
     buffer.writeln('**Enforcement Mode**: `${result.enforcementMode.id}`  ');
-    buffer.writeln('**Status**: ${result.isCompliant ? "✅ COMPLIANT" : (result.isBlocked ? "❌ BLOCKED (STRICT VIOLATIONS)" : "⚠️ NON-COMPLIANT (PERMISSIVE)")}  ');
+    buffer.writeln(
+        '**Status**: ${result.isCompliant ? "✅ COMPLIANT" : (result.isBlocked ? "❌ BLOCKED (STRICT VIOLATIONS)" : "⚠️ NON-COMPLIANT (PERMISSIVE)")}  ');
     buffer.writeln('**Duration**: `${result.durationMs}ms`  ');
     buffer.writeln('**Timestamp**: `${result.timestamp.toIso8601String()}`');
     buffer.writeln();
@@ -37,7 +38,8 @@ class EnterprisePolicyRenderer {
     buffer.writeln('Medium Findings: ${result.mediumCount}');
     buffer.writeln('Low Findings: ${result.lowCount}');
     buffer.writeln('Passed Gates: ${result.passedGates.join(", ")}');
-    buffer.writeln('Failed Gates: ${result.failedGates.isEmpty ? "NONE" : result.failedGates.join(", ")}');
+    buffer.writeln(
+        'Failed Gates: ${result.failedGates.isEmpty ? "NONE" : result.failedGates.join(", ")}');
     buffer.writeln('```');
     buffer.writeln();
 
@@ -60,13 +62,15 @@ class EnterprisePolicyRenderer {
 
     buffer.writeln('## Policy Findings (${result.findings.length})');
     if (result.findings.isEmpty) {
-      buffer.writeln('🎉 **Zero policy findings! All enterprise governance rules satisfied.**');
+      buffer.writeln(
+          '🎉 **Zero policy findings! All enterprise governance rules satisfied.**');
     } else {
       for (final finding in result.findings) {
         final icon = finding.status == PolicyCheckStatus.failed
             ? '❌'
             : (finding.status == PolicyCheckStatus.warning ? '⚠️' : '✅');
-        buffer.writeln('- **$icon [${finding.ruleId}] ${finding.ruleName}** (`${finding.severity.label}`)');
+        buffer.writeln(
+            '- **$icon [${finding.ruleId}] ${finding.ruleName}** (`${finding.severity.label}`)');
         buffer.writeln('  - *Message*: ${finding.message}');
         if (finding.location != null) {
           buffer.writeln('  - *Location*: `${finding.location}`');

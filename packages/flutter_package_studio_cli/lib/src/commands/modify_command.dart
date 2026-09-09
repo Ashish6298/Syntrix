@@ -31,7 +31,8 @@ class ModifyCommand extends FpsCommand {
   Future<int> run() async {
     print('Usage: fps modify <subcommand> [arguments]');
     print('Subcommands:');
-    print('  plan     Analyze requirement and generate a controlled patch plan with diffs.');
+    print(
+        '  plan     Analyze requirement and generate a controlled patch plan with diffs.');
     print('  apply    Apply an approved patch proposal to the repository.');
     print('  rollback Rollback a previously applied modification proposal.');
     return 0;
@@ -51,7 +52,8 @@ class ModifyPlanSubcommand extends FpsCommand {
     argParser.addOption(
       'requirement',
       abbr: 'r',
-      help: 'The code modification requirement description (e.g. "Add timeout parameter to HTTP client").',
+      help:
+          'The code modification requirement description (e.g. "Add timeout parameter to HTTP client").',
     );
     argParser.addOption(
       'scope',
@@ -84,15 +86,20 @@ class ModifyPlanSubcommand extends FpsCommand {
   @override
   Future<int> run() async {
     final reqArg = (argResults?['requirement'] as String?) ??
-        (argResults?.rest.isNotEmpty == true ? argResults!.rest.join(' ') : null);
+        (argResults?.rest.isNotEmpty == true
+            ? argResults!.rest.join(' ')
+            : null);
     final scope = argResults?['scope'] as String?;
     final dirPath = argResults?['dir'] as String? ?? '.';
-    final maxFiles = int.tryParse(argResults?['max-files'] as String? ?? '10') ?? 10;
-    final maxLines = int.tryParse(argResults?['max-lines'] as String? ?? '500') ?? 500;
+    final maxFiles =
+        int.tryParse(argResults?['max-files'] as String? ?? '10') ?? 10;
+    final maxLines =
+        int.tryParse(argResults?['max-lines'] as String? ?? '500') ?? 500;
     final jsonOutput = argResults?['json'] as bool? ?? false;
 
     if (reqArg == null || reqArg.trim().isEmpty) {
-      print('Error: --requirement argument (or trailing requirement string) is required.');
+      print(
+          'Error: --requirement argument (or trailing requirement string) is required.');
       return 1;
     }
 
@@ -132,7 +139,8 @@ class ModifyPlanSubcommand extends FpsCommand {
       maxTotalLinesChanged: maxLines,
     );
 
-    final proposal = await engine.proposeModification(CodeModificationPlanRequest(
+    final proposal =
+        await engine.proposeModification(CodeModificationPlanRequest(
       requirement: reqArg,
       targetScope: scope,
       safetyPolicy: policy,
@@ -181,7 +189,8 @@ class ModifyApplySubcommand extends FpsCommand {
   Future<int> run() async {
     final confirmed = argResults?['confirm'] as bool? ?? false;
     if (!confirmed) {
-      print('Error: --confirm flag is required to explicitly authorize code changes.');
+      print(
+          'Error: --confirm flag is required to explicitly authorize code changes.');
       return 1;
     }
     print('Applying modification with confirmed execution approval...');

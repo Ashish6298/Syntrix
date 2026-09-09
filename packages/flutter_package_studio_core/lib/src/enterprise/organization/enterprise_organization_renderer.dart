@@ -23,7 +23,8 @@ class EnterpriseOrganizationRenderer {
     buffer.writeln('**Organization Name**: `${org.name}`  ');
     buffer.writeln('**Organization ID**: `${org.organizationId}`  ');
     buffer.writeln('**Domain**: `${org.domain}`  ');
-    buffer.writeln('**Default Policy Profile**: `${org.defaultPolicy.profile.id}`  ');
+    buffer.writeln(
+        '**Default Policy Profile**: `${org.defaultPolicy.profile.id}`  ');
     buffer.writeln('**Created At**: `${org.createdAt.toIso8601String()}`');
     buffer.writeln();
 
@@ -48,7 +49,8 @@ class EnterpriseOrganizationRenderer {
           buffer.writeln('  - *Projects*: ${team.projectIds.join(", ")}');
         }
         if (team.teamPolicyOverride != null) {
-          buffer.writeln('- **Policy Override**: `${team.teamPolicyOverride!.profile.id}` (${team.teamPolicyOverride!.enforcementMode.id})');
+          buffer.writeln(
+              '- **Policy Override**: `${team.teamPolicyOverride!.profile.id}` (${team.teamPolicyOverride!.enforcementMode.id})');
         }
         buffer.writeln();
       }
@@ -59,7 +61,8 @@ class EnterpriseOrganizationRenderer {
       buffer.writeln('*No shared organization packages registered.*');
     } else {
       for (final pkg in org.sharedPackages) {
-        buffer.writeln('- **`${pkg.name}`** (`${pkg.currentVersion}`) — Owner: `${pkg.ownerTeamId}`');
+        buffer.writeln(
+            '- **`${pkg.name}`** (`${pkg.currentVersion}`) — Owner: `${pkg.ownerTeamId}`');
       }
       buffer.writeln();
     }

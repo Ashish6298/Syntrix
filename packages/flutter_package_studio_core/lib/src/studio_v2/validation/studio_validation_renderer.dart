@@ -7,8 +7,10 @@ import 'package:flutter_package_studio_core/src/studio_v2/validation/studio_vali
 /// Formatter generating ASCII Package Health Dashboards, Markdown validation sheets, and JSON schemas.
 class StudioValidationRenderer {
   /// Render validation report as structured JSON.
-  static String renderJson(StudioValidationReport report, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+  static String renderJson(StudioValidationReport report,
+      {bool pretty = true}) {
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(report.toJson());
   }
 
@@ -20,7 +22,8 @@ class StudioValidationRenderer {
     buffer.writeln();
 
     for (final cat in StudioValidationCategory.values) {
-      final status = report.categorySummaries[cat] ?? ValidationCheckStatus.pass;
+      final status =
+          report.categorySummaries[cat] ?? ValidationCheckStatus.pass;
       buffer.writeln('${cat.label.padRight(19)}${status.label}');
     }
 
@@ -36,8 +39,10 @@ class StudioValidationRenderer {
 
     buffer.writeln('# Automated Validation Center — Package Health Report');
     buffer.writeln();
-    buffer.writeln('**Package:** `${report.packageName}` v`${report.packageVersion}`  ');
-    buffer.writeln('**Overall Health Status:** `${report.overallHealth.label}`  ');
+    buffer.writeln(
+        '**Package:** `${report.packageName}` v`${report.packageVersion}`  ');
+    buffer.writeln(
+        '**Overall Health Status:** `${report.overallHealth.label}`  ');
     buffer.writeln('**Validated At:** ${report.validatedAt.toIso8601String()}');
     buffer.writeln();
 
@@ -46,8 +51,10 @@ class StudioValidationRenderer {
     buffer.writeln('| Category | Status | Evaluation |');
     buffer.writeln('|---|:---:|:---:|');
     for (final cat in StudioValidationCategory.values) {
-      final status = report.categorySummaries[cat] ?? ValidationCheckStatus.pass;
-      buffer.writeln('| **${cat.label}** | ${status.symbol} | `${status.label}` |');
+      final status =
+          report.categorySummaries[cat] ?? ValidationCheckStatus.pass;
+      buffer.writeln(
+          '| **${cat.label}** | ${status.symbol} | `${status.label}` |');
     }
     buffer.writeln();
 
@@ -56,7 +63,8 @@ class StudioValidationRenderer {
     buffer.writeln('| Check | Category | Status | Duration | Details |');
     buffer.writeln('|---|---|:---:|:---:|---|');
     for (final c in report.checks) {
-      buffer.writeln('| **${c.title}** | ${c.category.label} | ${c.status.symbol} | `${c.durationMs.toStringAsFixed(0)} ms` | ${c.details} |');
+      buffer.writeln(
+          '| **${c.title}** | ${c.category.label} | ${c.status.symbol} | `${c.durationMs.toStringAsFixed(0)} ms` | ${c.details} |');
     }
     buffer.writeln();
 

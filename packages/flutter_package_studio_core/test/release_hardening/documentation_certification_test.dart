@@ -3,19 +3,23 @@ import 'package:test/test.dart';
 
 void main() {
   group('Phase 11.6: Documentation Certification Models', () {
-    test('DocumentationAuditItem and DocumentationCertificationReport JSON roundtrip', () {
+    test(
+        'DocumentationAuditItem and DocumentationCertificationReport JSON roundtrip',
+        () {
       const fileItem = DocumentationAuditItem(
         identifier: 'README.md',
         itemType: 'file',
         status: DocAuditStatus.certified,
-        verificationDetails: 'Root project overview, badges, quickstart, visual showcases.',
+        verificationDetails:
+            'Root project overview, badges, quickstart, visual showcases.',
       );
 
       const topicItem = DocumentationAuditItem(
         identifier: 'Installation',
         itemType: 'topic',
         status: DocAuditStatus.certified,
-        verificationDetails: 'CLI & Flutter package dependency declaration instructions.',
+        verificationDetails:
+            'CLI & Flutter package dependency declaration instructions.',
       );
 
       final report = DocumentationCertificationReport(
@@ -45,7 +49,8 @@ void main() {
   group('Phase 11.6: Documentation Certification Engine Operations', () {
     test('Audits all 8 mandatory files and 12 core documentation topics', () {
       final engine = DocumentationCertificationEngine();
-      final report = engine.runDocumentationCertification(targetVersion: '1.0.0');
+      final report =
+          engine.runDocumentationCertification(targetVersion: '1.0.0');
 
       expect(report.isDocCertified, isTrue);
       expect(report.targetVersion, equals('1.0.0'));
@@ -86,24 +91,36 @@ void main() {
   });
 
   group('Phase 11.6: Documentation Certification Renderer', () {
-    test('Renders ASCII Documentation Dashboard, Markdown report, and JSON schema', () {
+    test(
+        'Renders ASCII Documentation Dashboard, Markdown report, and JSON schema',
+        () {
       final engine = DocumentationCertificationEngine();
-      final report = engine.runDocumentationCertification(targetVersion: '1.0.0');
+      final report =
+          engine.runDocumentationCertification(targetVersion: '1.0.0');
 
       // 1. ASCII Dashboard
-      final ascii = DocumentationCertificationRenderer.renderAsciiDocDashboard(report);
+      final ascii =
+          DocumentationCertificationRenderer.renderAsciiDocDashboard(report);
       expect(ascii, contains('PHASE 11.6 — DOCUMENTATION CERTIFICATION AUDIT'));
       expect(ascii, contains('README.md'));
       expect(ascii, contains('Architecture'));
       expect(ascii, contains('Files: 8  | Topics: 12 | Status: CERTIFIED'));
 
       // 2. Markdown Report
-      final markdown = DocumentationCertificationRenderer.renderMarkdown(report);
-      expect(markdown, contains('# Milestone 11 — Phase 11.6: Documentation Certification Report'));
-      expect(markdown, contains('**Documentation Certification Status:** `CERTIFIED (100% Complete)`'));
+      final markdown =
+          DocumentationCertificationRenderer.renderMarkdown(report);
+      expect(
+          markdown,
+          contains(
+              '# Milestone 11 — Phase 11.6: Documentation Certification Report'));
+      expect(
+          markdown,
+          contains(
+              '**Documentation Certification Status:** `CERTIFIED (100% Complete)`'));
       expect(markdown, contains('## Mandatory File Verification'));
       expect(markdown, contains('## Mandatory Topic Coverage'));
-      expect(markdown, contains('**Phase 11.7 — Example Application Verification**'));
+      expect(markdown,
+          contains('**Phase 11.7 — Example Application Verification**'));
 
       // 3. JSON
       final json = DocumentationCertificationRenderer.renderJson(report);

@@ -30,30 +30,40 @@ class SafetyGovernanceRenderer {
   String renderMarkdown(SafetyGovernanceResult result) {
     final buf = StringBuffer();
 
-    buf.writeln('# AI Safety, Governance & Verification — Milestone 8 Final Report');
+    buf.writeln(
+        '# AI Safety, Governance & Verification — Milestone 8 Final Report');
     buf.writeln();
     buf.writeln('**Project Root**: `${_escapeHtml(result.projectRoot)}`  ');
-    buf.writeln('**Status**: ${result.allGatesPassed ? "✅ ALL GATES PASSED" : "❌ GATES FAILED"}  ');
+    buf.writeln(
+        '**Status**: ${result.allGatesPassed ? "✅ ALL GATES PASSED" : "❌ GATES FAILED"}  ');
     buf.writeln('**Duration**: `${result.durationMs}ms`  ');
     buf.writeln('**Timestamp**: `${result.timestamp.toIso8601String()}`');
     buf.writeln();
 
     buf.writeln('## Executive Verification Summary');
     buf.writeln('```text');
-    buf.writeln('All verification gates passed: ${result.allGatesPassed ? "YES" : "NO"}');
-    buf.writeln('Existing functionality preserved: ${result.existingFunctionalityPreserved ? "YES" : "NO"}');
-    buf.writeln('Security verification: ${result.securityVerificationPassed ? "PASS" : "FAIL"}');
-    buf.writeln('AI safety verification: ${result.aiSafetyVerificationPassed ? "PASS" : "FAIL"}');
-    buf.writeln('Unresolved blockers: ${result.unresolvedBlockers.isEmpty ? "NONE" : result.unresolvedBlockers.join(", ")}');
-    buf.writeln('Ready for Milestone 9: ${result.readyForMilestone9 ? "YES" : "NO"}');
+    buf.writeln(
+        'All verification gates passed: ${result.allGatesPassed ? "YES" : "NO"}');
+    buf.writeln(
+        'Existing functionality preserved: ${result.existingFunctionalityPreserved ? "YES" : "NO"}');
+    buf.writeln(
+        'Security verification: ${result.securityVerificationPassed ? "PASS" : "FAIL"}');
+    buf.writeln(
+        'AI safety verification: ${result.aiSafetyVerificationPassed ? "PASS" : "FAIL"}');
+    buf.writeln(
+        'Unresolved blockers: ${result.unresolvedBlockers.isEmpty ? "NONE" : result.unresolvedBlockers.join(", ")}');
+    buf.writeln(
+        'Ready for Milestone 9: ${result.readyForMilestone9 ? "YES" : "NO"}');
     buf.writeln('```');
     buf.writeln();
 
-    buf.writeln('## Evaluated Safety & Verification Gates (${result.checks.length})');
+    buf.writeln(
+        '## Evaluated Safety & Verification Gates (${result.checks.length})');
     buf.writeln();
 
     for (final category in SafetyVerificationCategory.values) {
-      final categoryChecks = result.checks.where((c) => c.category == category).toList();
+      final categoryChecks =
+          result.checks.where((c) => c.category == category).toList();
       if (categoryChecks.isEmpty) continue;
 
       buf.writeln('### ${category.name.toUpperCase()} CHECKS');

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:path/path.dart' as p;
@@ -10,7 +9,8 @@ void main() {
     late String rootPath;
 
     setUp(() {
-      tempDir = Directory.systemTemp.createTempSync('fps_enterprise_approval_test_');
+      tempDir =
+          Directory.systemTemp.createTempSync('fps_enterprise_approval_test_');
       rootPath = tempDir.path;
 
       // Scaffold project workspace
@@ -56,7 +56,9 @@ environment:
     // Test 1: Full Approval Lifecycle (Create -> Reviewer Vote -> RM Vote -> Approved)
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('1. Approval Lifecycle: Developer creates request, Reviewer & Release Manager approve', () async {
+    test(
+        '1. Approval Lifecycle: Developer creates request, Reviewer & Release Manager approve',
+        () async {
       final engine = EnterpriseApprovalEngine(projectRoot: rootPath);
 
       final req = await engine.createApprovalRequest(
@@ -104,7 +106,8 @@ environment:
     // Test 2: Rejection Flow
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('2. Rejection Flow: single rejection terminates request as REJECTED', () async {
+    test('2. Rejection Flow: single rejection terminates request as REJECTED',
+        () async {
       final engine = EnterpriseApprovalEngine(projectRoot: rootPath);
 
       final req = await engine.createApprovalRequest(
@@ -128,7 +131,9 @@ environment:
     // Test 3: Request Cancellation Flow
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('3. Cancellation Flow: requester or manager can cancel pending request', () async {
+    test(
+        '3. Cancellation Flow: requester or manager can cancel pending request',
+        () async {
       final engine = EnterpriseApprovalEngine(projectRoot: rootPath);
 
       final req = await engine.createApprovalRequest(
@@ -152,7 +157,9 @@ environment:
     // Test 4: Administrator Override Flow
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('4. Admin Override Flow: administrator can override pending approval with reason', () async {
+    test(
+        '4. Admin Override Flow: administrator can override pending approval with reason',
+        () async {
       final engine = EnterpriseApprovalEngine(projectRoot: rootPath);
 
       final req = await engine.createApprovalRequest(
@@ -181,7 +188,9 @@ environment:
     // Test 5: Separation of Technical Gates vs. Human Approval
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('5. Gate Separation: Approved human vote cannot bypass missing technical verification gates', () async {
+    test(
+        '5. Gate Separation: Approved human vote cannot bypass missing technical verification gates',
+        () async {
       final engine = EnterpriseApprovalEngine(projectRoot: rootPath);
 
       // Missing security_audit technical verification gate
@@ -215,13 +224,19 @@ environment:
     // Test 6: Pure Approval Renderer Conformance
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('6. Renderer Conformance: generates deterministic JSON and Markdown approval reports', () async {
+    test(
+        '6. Renderer Conformance: generates deterministic JSON and Markdown approval reports',
+        () async {
       final engine = EnterpriseApprovalEngine(projectRoot: rootPath);
       final req = await engine.createApprovalRequest(
         candidateName: 'approval_sample_pkg',
         candidateVersion: '1.0.0',
         requester: devIdentity,
-        satisfiedTechnicalGates: const ['security_audit', 'release_verification', 'pub_dev_validation'],
+        satisfiedTechnicalGates: const [
+          'security_audit',
+          'release_verification',
+          'pub_dev_validation'
+        ],
       );
 
       await engine.submitVote(

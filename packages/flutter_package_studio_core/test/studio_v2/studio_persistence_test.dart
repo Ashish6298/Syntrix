@@ -39,7 +39,8 @@ void main() {
   });
 
   group('Phase 10.12: Studio Persistence Engine Operations', () {
-    test('Saves entire workspace state and restores all parameters cleanly', () async {
+    test('Saves entire workspace state and restores all parameters cleanly',
+        () async {
       final controller = StudioV2Controller();
       final sceneEngine = StudioSceneBuilderEngine(controller: controller);
       final presetEngine = StudioPresetEngine(controller: controller);
@@ -72,10 +73,13 @@ void main() {
       expect(controller.state.activeConfiguration.animationSpeed, equals(1.0));
 
       // 4. Restore workspace state
-      final restored = await persistenceEngine.loadWorkspaceState('proj_nebula_experiment');
+      final restored =
+          await persistenceEngine.loadWorkspaceState('proj_nebula_experiment');
       expect(restored, isTrue);
-      expect(controller.state.currentSection, equals(StudioNavigationSection.inspector));
-      expect(controller.state.activeConfiguration.targetLoaderId, equals('nebula_storm'));
+      expect(controller.state.currentSection,
+          equals(StudioNavigationSection.inspector));
+      expect(controller.state.activeConfiguration.targetLoaderId,
+          equals('nebula_storm'));
       expect(controller.state.activeConfiguration.animationSpeed, equals(3.2));
       expect(controller.state.activeConfiguration.particleCount, equals(950));
 
@@ -83,13 +87,16 @@ void main() {
       final list = await persistenceEngine.listProjects();
       expect(list, contains('proj_nebula_experiment'));
 
-      final deleted = await persistenceEngine.deleteProject('proj_nebula_experiment');
+      final deleted =
+          await persistenceEngine.deleteProject('proj_nebula_experiment');
       expect(deleted, isTrue);
     });
   });
 
   group('Phase 10.12: Studio Persistence Renderer', () {
-    test('Renders ASCII Project Card, Markdown Summary, and JSON persistence schema', () async {
+    test(
+        'Renders ASCII Project Card, Markdown Summary, and JSON persistence schema',
+        () async {
       final controller = StudioV2Controller();
       final sceneEngine = StudioSceneBuilderEngine(controller: controller);
       final presetEngine = StudioPresetEngine(controller: controller);
@@ -112,7 +119,8 @@ void main() {
 
       // 2. Markdown Summary
       final markdown = StudioPersistenceRenderer.renderMarkdown(state);
-      expect(markdown, contains('# Studio Persistent Project State: Card Test Setup'));
+      expect(markdown,
+          contains('# Studio Persistent Project State: Card Test Setup'));
       expect(markdown, contains('**Project ID:** `proj_card_test`'));
       expect(markdown, contains('## Restored Parameter Snapshot'));
 

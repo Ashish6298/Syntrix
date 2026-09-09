@@ -7,8 +7,10 @@ import 'package:flutter_package_studio_core/src/studio_v2/interaction/studio_int
 /// Formatter generating ASCII Interaction Monitor wireframes, Markdown telemetry sheets, and JSON schemas.
 class StudioInteractionRenderer {
   /// Render interaction monitor state as structured JSON.
-  static String renderJson(InteractionMonitorState state, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+  static String renderJson(InteractionMonitorState state,
+      {bool pretty = true}) {
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(state.toJson());
   }
 
@@ -19,12 +21,18 @@ class StudioInteractionRenderer {
     buffer.writeln('┌──────────────────────────────────────┐');
     buffer.writeln('│ Interaction Monitor                  │');
     buffer.writeln('├──────────────────────────────────────┤');
-    buffer.writeln('│ Pointer Position:   ${state.pointerPosition.toString().padRight(16)} │');
-    buffer.writeln('│ Gesture State:      ${state.gestureState.label.padRight(16)} │');
-    buffer.writeln('│ Scale:              ${state.scale.toStringAsFixed(2)}x${"".padRight(13)} │');
-    buffer.writeln('│ Rotation:           ${state.rotationDegrees.toStringAsFixed(1)}°${"".padRight(13)} │');
-    buffer.writeln('│ Velocity:           ${state.velocity.toString().padRight(16)} │');
-    buffer.writeln('│ Active Interaction: ${(state.isInteractionActive ? "YES" : "NO").padRight(16)} │');
+    buffer.writeln(
+        '│ Pointer Position:   ${state.pointerPosition.toString().padRight(16)} │');
+    buffer.writeln(
+        '│ Gesture State:      ${state.gestureState.label.padRight(16)} │');
+    buffer.writeln(
+        '│ Scale:              ${state.scale.toStringAsFixed(2)}x${"".padRight(13)} │');
+    buffer.writeln(
+        '│ Rotation:           ${state.rotationDegrees.toStringAsFixed(1)}°${"".padRight(13)} │');
+    buffer.writeln(
+        '│ Velocity:           ${state.velocity.toString().padRight(16)} │');
+    buffer.writeln(
+        '│ Active Interaction: ${(state.isInteractionActive ? "YES" : "NO").padRight(16)} │');
     buffer.writeln('├──────────────────────────────────────┤');
     buffer.writeln('│ Controls: [Touch] [Drag] [Pinch] [↺] │');
     buffer.writeln('└──────────────────────────────────────┘');
@@ -49,10 +57,13 @@ class StudioInteractionRenderer {
     buffer.writeln('|---|---|');
     buffer.writeln('| **Pointer Position** | `${state.pointerPosition}` |');
     buffer.writeln('| **Gesture State** | `${state.gestureState.label}` |');
-    buffer.writeln('| **Scale Factor** | `${state.scale.toStringAsFixed(2)}x` |');
-    buffer.writeln('| **Rotation Angle** | `${state.rotationDegrees.toStringAsFixed(1)}°` (`${state.rotationRadians.toStringAsFixed(3)} rad`) |');
+    buffer
+        .writeln('| **Scale Factor** | `${state.scale.toStringAsFixed(2)}x` |');
+    buffer.writeln(
+        '| **Rotation Angle** | `${state.rotationDegrees.toStringAsFixed(1)}°` (`${state.rotationRadians.toStringAsFixed(3)} rad`) |');
     buffer.writeln('| **Pointer Velocity** | `${state.velocity}` |');
-    buffer.writeln('| **Simulated Inertia** | `${state.simulatedInertia.toStringAsFixed(2)}` |');
+    buffer.writeln(
+        '| **Simulated Inertia** | `${state.simulatedInertia.toStringAsFixed(2)}` |');
     buffer.writeln();
 
     return buffer.toString();

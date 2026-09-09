@@ -1,8 +1,6 @@
 /// Domain models and audit metrics for Phase 10.19: Studio UX & Accessibility Hardening.
 library;
 
-import 'dart:convert';
-
 /// Accessibility and UX audit check dimension.
 enum UxAuditDimension {
   responsiveLayouts,
@@ -110,7 +108,8 @@ class UxAuditItem {
         orElse: () => UxAuditStatus.verified,
       ),
       complianceDetails: json['compliance_details'] as String? ?? '',
-      minimumContrastRatio: (json['minimum_contrast_ratio'] as num?)?.toDouble() ?? 4.5,
+      minimumContrastRatio:
+          (json['minimum_contrast_ratio'] as num?)?.toDouble() ?? 4.5,
       keyboardAccessible: json['keyboard_accessible'] as bool? ?? true,
     );
   }

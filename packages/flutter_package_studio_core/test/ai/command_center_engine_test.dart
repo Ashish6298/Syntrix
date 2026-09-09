@@ -30,7 +30,8 @@ environment:
 ''');
 
       // Sample core lib
-      final libDir = Directory(p.join(rootPath, 'lib'))..createSync(recursive: true);
+      final libDir = Directory(p.join(rootPath, 'lib'))
+        ..createSync(recursive: true);
       File(p.join(libDir.path, 'main.dart')).writeAsStringSync('''
 void main() {
   print('Command Center Workspace');
@@ -42,81 +43,115 @@ void main() {
     // Test 1: Full Capability Enum & Label Coverage
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('1. Capability Coverage: supports all 13 unified engineering capabilities and alias parsing', () {
+    test(
+        '1. Capability Coverage: supports all 13 unified engineering capabilities and alias parsing',
+        () {
       final capabilities = CommandCenterCapability.values;
       expect(capabilities.length, equals(13));
 
-      expect(CommandCenterCapability.tryParse('analyze'), equals(CommandCenterCapability.analyze));
-      expect(CommandCenterCapability.tryParse('debug'), equals(CommandCenterCapability.debug));
-      expect(CommandCenterCapability.tryParse('review'), equals(CommandCenterCapability.review));
-      expect(CommandCenterCapability.tryParse('test'), equals(CommandCenterCapability.test));
-      expect(CommandCenterCapability.tryParse('document'), equals(CommandCenterCapability.document));
-      expect(CommandCenterCapability.tryParse('docs'), equals(CommandCenterCapability.document));
-      expect(CommandCenterCapability.tryParse('security'), equals(CommandCenterCapability.security));
-      expect(CommandCenterCapability.tryParse('sec'), equals(CommandCenterCapability.security));
-      expect(CommandCenterCapability.tryParse('architecture'), equals(CommandCenterCapability.architecture));
-      expect(CommandCenterCapability.tryParse('arch'), equals(CommandCenterCapability.architecture));
-      expect(CommandCenterCapability.tryParse('dependencies'), equals(CommandCenterCapability.dependencies));
-      expect(CommandCenterCapability.tryParse('deps'), equals(CommandCenterCapability.dependencies));
-      expect(CommandCenterCapability.tryParse('release'), equals(CommandCenterCapability.release));
-      expect(CommandCenterCapability.tryParse('plan'), equals(CommandCenterCapability.plan));
-      expect(CommandCenterCapability.tryParse('explain'), equals(CommandCenterCapability.explain));
-      expect(CommandCenterCapability.tryParse('memory'), equals(CommandCenterCapability.memory));
-      expect(CommandCenterCapability.tryParse('modify'), equals(CommandCenterCapability.modify));
-      expect(CommandCenterCapability.tryParse('patch'), equals(CommandCenterCapability.modify));
+      expect(CommandCenterCapability.tryParse('analyze'),
+          equals(CommandCenterCapability.analyze));
+      expect(CommandCenterCapability.tryParse('debug'),
+          equals(CommandCenterCapability.debug));
+      expect(CommandCenterCapability.tryParse('review'),
+          equals(CommandCenterCapability.review));
+      expect(CommandCenterCapability.tryParse('test'),
+          equals(CommandCenterCapability.test));
+      expect(CommandCenterCapability.tryParse('document'),
+          equals(CommandCenterCapability.document));
+      expect(CommandCenterCapability.tryParse('docs'),
+          equals(CommandCenterCapability.document));
+      expect(CommandCenterCapability.tryParse('security'),
+          equals(CommandCenterCapability.security));
+      expect(CommandCenterCapability.tryParse('sec'),
+          equals(CommandCenterCapability.security));
+      expect(CommandCenterCapability.tryParse('architecture'),
+          equals(CommandCenterCapability.architecture));
+      expect(CommandCenterCapability.tryParse('arch'),
+          equals(CommandCenterCapability.architecture));
+      expect(CommandCenterCapability.tryParse('dependencies'),
+          equals(CommandCenterCapability.dependencies));
+      expect(CommandCenterCapability.tryParse('deps'),
+          equals(CommandCenterCapability.dependencies));
+      expect(CommandCenterCapability.tryParse('release'),
+          equals(CommandCenterCapability.release));
+      expect(CommandCenterCapability.tryParse('plan'),
+          equals(CommandCenterCapability.plan));
+      expect(CommandCenterCapability.tryParse('explain'),
+          equals(CommandCenterCapability.explain));
+      expect(CommandCenterCapability.tryParse('memory'),
+          equals(CommandCenterCapability.memory));
+      expect(CommandCenterCapability.tryParse('modify'),
+          equals(CommandCenterCapability.modify));
+      expect(CommandCenterCapability.tryParse('patch'),
+          equals(CommandCenterCapability.modify));
     });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Test 2: Natural Language Intent Resolver
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('2. Intent Resolution: automatically routes natural-language queries to appropriate capability', () {
+    test(
+        '2. Intent Resolution: automatically routes natural-language queries to appropriate capability',
+        () {
       expect(
-        CommandCenterEngine.resolveCapabilityFromIntent('Check for secret tokens and security vulnerabilities'),
+        CommandCenterEngine.resolveCapabilityFromIntent(
+            'Check for secret tokens and security vulnerabilities'),
         equals(CommandCenterCapability.security),
       );
       expect(
-        CommandCenterEngine.resolveCapabilityFromIntent('Diagnose why the test crashed with LateInitializationError'),
+        CommandCenterEngine.resolveCapabilityFromIntent(
+            'Diagnose why the test crashed with LateInitializationError'),
         equals(CommandCenterCapability.debug),
       );
       expect(
-        CommandCenterEngine.resolveCapabilityFromIntent('Generate unit test suite for packager core'),
+        CommandCenterEngine.resolveCapabilityFromIntent(
+            'Generate unit test suite for packager core'),
         equals(CommandCenterCapability.test),
       );
       expect(
-        CommandCenterEngine.resolveCapabilityFromIntent('Review this pull request for code smells and lints'),
+        CommandCenterEngine.resolveCapabilityFromIntent(
+            'Review this pull request for code smells and lints'),
         equals(CommandCenterCapability.review),
       );
       expect(
-        CommandCenterEngine.resolveCapabilityFromIntent('Synthesize README documentation and API guide'),
+        CommandCenterEngine.resolveCapabilityFromIntent(
+            'Synthesize README documentation and API guide'),
         equals(CommandCenterCapability.document),
       );
       expect(
-        CommandCenterEngine.resolveCapabilityFromIntent('Upgrade dependencies and resolve pubspec version conflict'),
+        CommandCenterEngine.resolveCapabilityFromIntent(
+            'Upgrade dependencies and resolve pubspec version conflict'),
         equals(CommandCenterCapability.dependencies),
       );
       expect(
-        CommandCenterEngine.resolveCapabilityFromIntent('Evaluate release readiness and changelog milestone'),
+        CommandCenterEngine.resolveCapabilityFromIntent(
+            'Evaluate release readiness and changelog milestone'),
         equals(CommandCenterCapability.release),
       );
       expect(
-        CommandCenterEngine.resolveCapabilityFromIntent('Plan 9-stage engineering roadmap for Debian packaging'),
+        CommandCenterEngine.resolveCapabilityFromIntent(
+            'Plan 9-stage engineering roadmap for Debian packaging'),
         equals(CommandCenterCapability.plan),
       );
       expect(
-        CommandCenterEngine.resolveCapabilityFromIntent('Why did we choose this modular architecture?'),
+        CommandCenterEngine.resolveCapabilityFromIntent(
+            'Why did we choose this modular architecture?'),
         equals(CommandCenterCapability.memory),
       );
       expect(
-        CommandCenterEngine.resolveCapabilityFromIntent('Apply controlled code modification patch to client'),
+        CommandCenterEngine.resolveCapabilityFromIntent(
+            'Apply controlled code modification patch to client'),
         equals(CommandCenterCapability.modify),
       );
       expect(
-        CommandCenterEngine.resolveCapabilityFromIntent('Explain how state isolation pattern works'),
+        CommandCenterEngine.resolveCapabilityFromIntent(
+            'Explain how state isolation pattern works'),
         equals(CommandCenterCapability.explain),
       );
       expect(
-        CommandCenterEngine.resolveCapabilityFromIntent('Review architecture boundaries and layered design'),
+        CommandCenterEngine.resolveCapabilityFromIntent(
+            'Review architecture boundaries and layered design'),
         equals(CommandCenterCapability.architecture),
       );
     });
@@ -125,7 +160,9 @@ void main() {
     // Test 3: Subsystem Routing — Analyze & Explain
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('3. Subsystem Routing (Analyze & Explain): dispatches to AssistantEngine successfully', () async {
+    test(
+        '3. Subsystem Routing (Analyze & Explain): dispatches to AssistantEngine successfully',
+        () async {
       scaffoldWorkspace();
 
       final provider = MockAiProvider(
@@ -157,7 +194,9 @@ void main() {
     // Test 4: Subsystem Routing — Review & Security
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('4. Subsystem Routing (Review & Security): dispatches to CodeReviewEngine and SecurityAdvisorEngine', () async {
+    test(
+        '4. Subsystem Routing (Review & Security): dispatches to CodeReviewEngine and SecurityAdvisorEngine',
+        () async {
       scaffoldWorkspace();
 
       final provider = MockAiProvider(
@@ -195,7 +234,9 @@ void main() {
     // Test 5: Subsystem Routing — Debug, Test, & Document
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('5. Subsystem Routing (Debug, Test, Document): dispatches to diagnostic, test, and doc engines', () async {
+    test(
+        '5. Subsystem Routing (Debug, Test, Document): dispatches to diagnostic, test, and doc engines',
+        () async {
       scaffoldWorkspace();
 
       final provider = MockAiProvider(
@@ -240,7 +281,9 @@ void main() {
     // Test 6: Subsystem Routing — Architecture, Dependencies, & Release
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('6. Subsystem Routing (Architecture, Dependencies, Release): dispatches to advisory engines', () async {
+    test(
+        '6. Subsystem Routing (Architecture, Dependencies, Release): dispatches to advisory engines',
+        () async {
       scaffoldWorkspace();
 
       final provider = MockAiProvider(
@@ -284,7 +327,9 @@ void main() {
     // Test 7: Subsystem Routing — Plan, Memory, & Modify
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('7. Subsystem Routing (Plan, Memory, Modify): dispatches to planning, memory, and modification engines', () async {
+    test(
+        '7. Subsystem Routing (Plan, Memory, Modify): dispatches to planning, memory, and modification engines',
+        () async {
       scaffoldWorkspace();
 
       final provider = MockAiProvider(
@@ -341,7 +386,9 @@ void main() {
     // Test 8: Secret Redaction Across All Command Center Channels
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('8. Secret Redaction: sensitive tokens are never exposed in prompts, responses, or reports', () async {
+    test(
+        '8. Secret Redaction: sensitive tokens are never exposed in prompts, responses, or reports',
+        () async {
       scaffoldWorkspace();
 
       const secretToken = 'ghp_secretTokenInCommandCenter998877';
@@ -365,7 +412,8 @@ void main() {
       ));
 
       // Outbound prompt redacted
-      expect(provider.recordedRequests.first.prompt.contains(secretToken), isFalse);
+      expect(provider.recordedRequests.first.prompt.contains(secretToken),
+          isFalse);
 
       // Inbound response redacted
       expect(resp.summary.contains(secretToken), isFalse);
@@ -383,7 +431,9 @@ void main() {
     // Test 9: Dual-Format Rendering (JSON and Markdown)
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('9. Dual-Format Renderer: renders unified Markdown execution report and valid JSON', () {
+    test(
+        '9. Dual-Format Renderer: renders unified Markdown execution report and valid JSON',
+        () {
       final response = CommandCenterResponse(
         capability: CommandCenterCapability.plan,
         summary: 'Generated 9-stage engineering implementation plan.',
@@ -399,8 +449,10 @@ void main() {
       final mdStr = renderer.renderMarkdown(response);
       final jsonStr = renderer.renderJson(response);
 
-      expect(mdStr, contains('# AI Engineering Command Center — Execution Report'));
-      expect(mdStr, contains('**Capability**: `Plan (Engineering Workflow Planner)`'));
+      expect(mdStr,
+          contains('# AI Engineering Command Center — Execution Report'));
+      expect(mdStr,
+          contains('**Capability**: `Plan (Engineering Workflow Planner)`'));
       expect(mdStr, contains('**Status**: ✅ SUCCESS'));
       expect(mdStr, contains('## Executive Summary'));
 
@@ -414,11 +466,14 @@ void main() {
     // Test 10: Fail-Closed Error Containment
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('10. Fail-Closed Containment: provider failure wraps in structured error response without crashing', () async {
+    test(
+        '10. Fail-Closed Containment: provider failure wraps in structured error response without crashing',
+        () async {
       scaffoldWorkspace();
 
       final faultedProvider = MockAiProvider(
-        injectedException: Exception('Command Center AI Provider 503 Unavailable'),
+        injectedException:
+            Exception('Command Center AI Provider 503 Unavailable'),
       );
 
       final engine = CommandCenterEngine(

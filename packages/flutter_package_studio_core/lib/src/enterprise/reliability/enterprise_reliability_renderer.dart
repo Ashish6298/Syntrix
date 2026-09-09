@@ -7,8 +7,10 @@ import 'package:flutter_package_studio_core/src/enterprise/reliability/enterpris
 /// Formatter generating JSON telemetry payloads and Markdown recovery operation reports.
 class EnterpriseReliabilityRenderer {
   /// Render recovery result as structured JSON.
-  static String renderJson(RecoveryOperationResult result, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+  static String renderJson(RecoveryOperationResult result,
+      {bool pretty = true}) {
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(result.toJson());
   }
 
@@ -20,9 +22,12 @@ class EnterpriseReliabilityRenderer {
     buffer.writeln();
     buffer.writeln('**Workflow ID:** `${result.workflowId}`  ');
     buffer.writeln('**Operation Type:** `${result.operationType}`  ');
-    buffer.writeln('**Recovery Outcome:** `${result.isSuccess ? "SUCCESS" : "FAILED"}`  ');
-    buffer.writeln('**Recovered Checkpoints:** ${result.recoveredCheckpointsCount}  ');
-    buffer.writeln('**Destructive Ops Skipped (Idempotency Guard):** ${result.skippedDestructiveOperations}  ');
+    buffer.writeln(
+        '**Recovery Outcome:** `${result.isSuccess ? "SUCCESS" : "FAILED"}`  ');
+    buffer.writeln(
+        '**Recovered Checkpoints:** ${result.recoveredCheckpointsCount}  ');
+    buffer.writeln(
+        '**Destructive Ops Skipped (Idempotency Guard):** ${result.skippedDestructiveOperations}  ');
     buffer.writeln('**Executed At:** ${result.executedAt.toIso8601String()}');
     buffer.writeln();
 

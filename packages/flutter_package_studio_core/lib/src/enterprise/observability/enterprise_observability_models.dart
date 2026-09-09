@@ -1,8 +1,6 @@
 /// Domain models and data aggregations for Phase 9.12: Enterprise Observability & Operational Dashboard Foundation.
 library;
 
-import 'dart:convert';
-
 /// High-level operational health status indicator.
 enum OperationalHealthStatus {
   healthy,
@@ -96,7 +94,8 @@ class AiReviewTelemetry {
   factory AiReviewTelemetry.fromJson(Map<String, dynamic> json) {
     return AiReviewTelemetry(
       totalReviewsExecuted: json['total_reviews_executed'] as int? ?? 0,
-      averageQualityScore: (json['average_quality_score'] as num?)?.toDouble() ?? 100.0,
+      averageQualityScore:
+          (json['average_quality_score'] as num?)?.toDouble() ?? 100.0,
       totalFindingsReported: json['total_findings_reported'] as int? ?? 0,
       securityRelatedFindings: json['security_related_findings'] as int? ?? 0,
       approvedReleasesCount: json['approved_releases_count'] as int? ?? 0,
@@ -140,7 +139,8 @@ class WorkerPoolTelemetry {
       totalRegisteredWorkers: json['total_registered_workers'] as int? ?? 0,
       healthyWorkers: json['healthy_workers'] as int? ?? 0,
       busyWorkers: json['busy_workers'] as int? ?? 0,
-      degradedOrOfflineWorkers: json['degraded_or_offline_workers'] as int? ?? 0,
+      degradedOrOfflineWorkers:
+          json['degraded_or_offline_workers'] as int? ?? 0,
       activeTasksCount: json['active_tasks_count'] as int? ?? 0,
       completedTasksCount: json['completed_tasks_count'] as int? ?? 0,
       failedTasksCount: json['failed_tasks_count'] as int? ?? 0,
@@ -222,14 +222,17 @@ class EnterpriseDashboardSnapshot {
       ),
       generatedAt: DateTime.parse(json['generated_at'] as String),
       packageHealth: (json['package_health'] as List<dynamic>?)
-              ?.map((p) => PackageHealthMetric.fromJson(p as Map<String, dynamic>))
+              ?.map((p) =>
+                  PackageHealthMetric.fromJson(p as Map<String, dynamic>))
               .toList() ??
           const [],
       aiReviewStats: json['ai_review_stats'] != null
-          ? AiReviewTelemetry.fromJson(json['ai_review_stats'] as Map<String, dynamic>)
+          ? AiReviewTelemetry.fromJson(
+              json['ai_review_stats'] as Map<String, dynamic>)
           : const AiReviewTelemetry(),
       workerStats: json['worker_stats'] != null
-          ? WorkerPoolTelemetry.fromJson(json['worker_stats'] as Map<String, dynamic>)
+          ? WorkerPoolTelemetry.fromJson(
+              json['worker_stats'] as Map<String, dynamic>)
           : const WorkerPoolTelemetry(),
       totalWorkflowsExecuted: json['total_workflows_executed'] as int? ?? 0,
       successfulWorkflows: json['successful_workflows'] as int? ?? 0,
@@ -237,12 +240,14 @@ class EnterpriseDashboardSnapshot {
       gateBlockedWorkflows: json['gate_blocked_workflows'] as int? ?? 0,
       activePolicyViolations: json['active_policy_violations'] as int? ?? 0,
       blockedDependencyCount: json['blocked_dependency_count'] as int? ?? 0,
-      totalAuditEventsRecorded: json['total_audit_events_recorded'] as int? ?? 0,
+      totalAuditEventsRecorded:
+          json['total_audit_events_recorded'] as int? ?? 0,
       failedOperationsRecorded: json['failed_operations_recorded'] as int? ?? 0,
-      recentFailedOperations: (json['recent_failed_operations'] as List<dynamic>?)
-              ?.map((e) => e as Map<String, dynamic>)
-              .toList() ??
-          const [],
+      recentFailedOperations:
+          (json['recent_failed_operations'] as List<dynamic>?)
+                  ?.map((e) => e as Map<String, dynamic>)
+                  .toList() ??
+              const [],
       recentAuditActivity: (json['recent_audit_activity'] as List<dynamic>?)
               ?.map((e) => e as Map<String, dynamic>)
               .toList() ??

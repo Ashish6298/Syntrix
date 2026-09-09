@@ -1,7 +1,6 @@
 /// Domain models and persistence contract for Phase 10.12: Project / Workspace Persistence.
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/studio_v2/studio_v2_models.dart';
 import 'package:flutter_package_studio_core/src/studio_v2/scene/studio_scene_models.dart';
 import 'package:flutter_package_studio_core/src/studio_v2/presets/studio_preset_models.dart';
@@ -81,7 +80,8 @@ class StudioPersistentProjectState {
         'presets': presets.map((p) => p.toJson()).toList(),
         'inspector_state': inspectorState,
         'workspace_layout': workspaceLayout,
-        'recent_configurations': recentConfigurations.map((c) => c.toJson()).toList(),
+        'recent_configurations':
+            recentConfigurations.map((c) => c.toJson()).toList(),
         'favorite_loader_ids': favoriteLoaderIds.toList(),
         'last_saved_at': lastSavedAt.toIso8601String(),
       };
@@ -91,13 +91,16 @@ class StudioPersistentProjectState {
       projectId: json['project_id'] as String? ?? 'proj_default',
       name: json['name'] as String? ?? 'Default Project',
       activeSection: json['active_section'] as String? ?? 'workspace',
-      selectedLoaderId: json['selected_loader_id'] as String? ?? 'infinite_universe',
+      selectedLoaderId:
+          json['selected_loader_id'] as String? ?? 'infinite_universe',
       selectedThemeId: json['selected_theme_id'] as String? ?? 'deep_space',
       configuration: json['configuration'] != null
-          ? StudioConfigurationDescriptor.fromJson(json['configuration'] as Map<String, dynamic>)
+          ? StudioConfigurationDescriptor.fromJson(
+              json['configuration'] as Map<String, dynamic>)
           : const StudioConfigurationDescriptor(),
       activeScene: json['active_scene'] != null
-          ? VisualSceneDescriptor.fromJson(json['active_scene'] as Map<String, dynamic>)
+          ? VisualSceneDescriptor.fromJson(
+              json['active_scene'] as Map<String, dynamic>)
           : VisualSceneDescriptor(
               sceneId: 'scene_default',
               name: 'Default Scene',
@@ -106,13 +109,17 @@ class StudioPersistentProjectState {
               updatedAt: DateTime.now(),
             ),
       presets: (json['presets'] as List<dynamic>?)
-              ?.map((p) => StudioConfigurationPreset.fromJson(p as Map<String, dynamic>))
+              ?.map((p) =>
+                  StudioConfigurationPreset.fromJson(p as Map<String, dynamic>))
               .toList() ??
           const [],
-      inspectorState: (json['inspector_state'] as Map<String, dynamic>?) ?? const {},
-      workspaceLayout: (json['workspace_layout'] as Map<String, dynamic>?) ?? const {},
+      inspectorState:
+          (json['inspector_state'] as Map<String, dynamic>?) ?? const {},
+      workspaceLayout:
+          (json['workspace_layout'] as Map<String, dynamic>?) ?? const {},
       recentConfigurations: (json['recent_configurations'] as List<dynamic>?)
-              ?.map((c) => StudioConfigurationDescriptor.fromJson(c as Map<String, dynamic>))
+              ?.map((c) => StudioConfigurationDescriptor.fromJson(
+                  c as Map<String, dynamic>))
               .toList() ??
           const [],
       favoriteLoaderIds: (json['favorite_loader_ids'] as List<dynamic>?)
@@ -142,7 +149,8 @@ class InMemoryWorkspacePersistenceDriver implements WorkspacePersistenceDriver {
   }
 
   @override
-  Future<StudioPersistentProjectState?> loadProjectState(String projectId) async {
+  Future<StudioPersistentProjectState?> loadProjectState(
+      String projectId) async {
     return _storage[projectId];
   }
 

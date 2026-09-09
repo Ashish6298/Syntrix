@@ -1,8 +1,6 @@
 /// Domain models and audit criteria for Phase 11.6: Documentation Certification.
 library;
 
-import 'dart:convert';
-
 /// Essential project and repository documentation files.
 enum DocumentationFileTarget {
   readme,
@@ -104,7 +102,9 @@ enum DocAuditStatus {
     }
   }
 
-  String get symbol => this == DocAuditStatus.certified ? '✓' : (this == DocAuditStatus.incomplete ? '⚠' : '✗');
+  String get symbol => this == DocAuditStatus.certified
+      ? '✓'
+      : (this == DocAuditStatus.incomplete ? '⚠' : '✗');
 }
 
 /// Item representing an audited documentation file or topic.
@@ -182,14 +182,17 @@ class DocumentationCertificationReport {
       totalFilesAudited: json['total_files_audited'] as int? ?? 0,
       totalTopicsAudited: json['total_topics_audited'] as int? ?? 0,
       fileItems: (json['file_items'] as List<dynamic>?)
-              ?.map((i) => DocumentationAuditItem.fromJson(i as Map<String, dynamic>))
+              ?.map((i) =>
+                  DocumentationAuditItem.fromJson(i as Map<String, dynamic>))
               .toList() ??
           const [],
       topicItems: (json['topic_items'] as List<dynamic>?)
-              ?.map((i) => DocumentationAuditItem.fromJson(i as Map<String, dynamic>))
+              ?.map((i) =>
+                  DocumentationAuditItem.fromJson(i as Map<String, dynamic>))
               .toList() ??
           const [],
-      certifiedAt: DateTime.parse(json['tested_at'] as String? ?? json['certified_at'] as String),
+      certifiedAt: DateTime.parse(
+          json['tested_at'] as String? ?? json['certified_at'] as String),
     );
   }
 }

@@ -29,7 +29,8 @@ class EnvironmentCredentialProvider implements CredentialProvider {
   final String providerId;
 
   @override
-  final CredentialProviderType providerType = CredentialProviderType.environment;
+  final CredentialProviderType providerType =
+      CredentialProviderType.environment;
 
   @override
   final String displayName = 'Environment Variable Credential Provider';
@@ -68,7 +69,11 @@ class EnvironmentCredentialProvider implements CredentialProvider {
   Future<List<CredentialReference>> listReferences() async {
     final refs = <CredentialReference>[];
     for (final k in _environment.keys) {
-      if (k.startsWith('FPS_') || k.startsWith('PUB_') || k.startsWith('GITHUB_') || k.contains('TOKEN') || k.contains('SECRET')) {
+      if (k.startsWith('FPS_') ||
+          k.startsWith('PUB_') ||
+          k.startsWith('GITHUB_') ||
+          k.contains('TOKEN') ||
+          k.contains('SECRET')) {
         refs.add(CredentialReference(
           key: k,
           providerId: providerId,

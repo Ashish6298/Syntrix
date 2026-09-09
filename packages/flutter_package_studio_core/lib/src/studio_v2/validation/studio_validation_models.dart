@@ -1,8 +1,6 @@
 /// Domain models and validation checks for Phase 10.17: Automated Validation Center.
 library;
 
-import 'dart:convert';
-
 /// Status for an individual validation check or category.
 enum ValidationCheckStatus {
   pass,
@@ -141,7 +139,8 @@ class StudioValidationReport {
         'package_name': packageName,
         'package_version': packageVersion,
         'overall_health': overallHealth.id,
-        'category_summaries': categorySummaries.map((k, v) => MapEntry(k.id, v.id)),
+        'category_summaries':
+            categorySummaries.map((k, v) => MapEntry(k.id, v.id)),
         'checks': checks.map((c) => c.toJson()).toList(),
         'validated_at': validatedAt.toIso8601String(),
       };
@@ -168,12 +167,14 @@ class StudioValidationReport {
       packageName: json['package_name'] as String? ?? 'Syntrix',
       packageVersion: json['package_version'] as String? ?? '2.0.0',
       overallHealth: PackageHealthStatus.values.firstWhere(
-        (h) => h.id == json['overall_health'] || h.name == json['overall_health'],
+        (h) =>
+            h.id == json['overall_health'] || h.name == json['overall_health'],
         orElse: () => PackageHealthStatus.healthy,
       ),
       categorySummaries: catMap,
       checks: (json['checks'] as List<dynamic>?)
-              ?.map((c) => ValidationCheckItem.fromJson(c as Map<String, dynamic>))
+              ?.map((c) =>
+                  ValidationCheckItem.fromJson(c as Map<String, dynamic>))
               .toList() ??
           const [],
       validatedAt: DateTime.parse(json['validated_at'] as String),

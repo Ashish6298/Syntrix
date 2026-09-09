@@ -56,4 +56,3 @@ Future<void> main(List<String> arguments) async {
   final exitCode = await registry.run(arguments);
   io.exit(exitCode);
 }
-

@@ -8,12 +8,14 @@ import 'package:flutter_package_studio_core/src/studio_v2/export/studio_export_m
 class StudioExportRenderer {
   /// Render export bundle as structured JSON.
   static String renderJson(StudioExportBundle bundle, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(bundle.toJson());
   }
 
   /// Render ASCII Export Dialog wireframe matching Phase 10.13 mockup.
-  static String renderAsciiExportDialog(ExportTargetEntity target, ExportFormat selectedFormat) {
+  static String renderAsciiExportDialog(
+      ExportTargetEntity target, ExportFormat selectedFormat) {
     final buffer = StringBuffer();
     final jsonRad = selectedFormat == ExportFormat.json ? '●' : '○';
     final dartRad = selectedFormat == ExportFormat.dart ? '●' : '○';

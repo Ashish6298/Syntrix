@@ -1,7 +1,6 @@
 /// Domain models and storage contracts for Phase 10.11: Configuration Preset System.
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/studio_v2/studio_v2_models.dart';
 
 /// Complete studio configuration preset encapsulating all parameters across all subsystems.
@@ -74,10 +73,12 @@ class StudioConfigurationPreset {
       presetId: json['preset_id'] as String? ?? 'preset_default',
       name: json['name'] as String? ?? 'Default Preset',
       description: json['description'] as String? ?? '',
-      targetLoaderId: json['target_loader_id'] as String? ?? 'infinite_universe',
+      targetLoaderId:
+          json['target_loader_id'] as String? ?? 'infinite_universe',
       selectedThemeId: json['selected_theme_id'] as String? ?? 'deep_space',
       configuration: json['configuration'] != null
-          ? StudioConfigurationDescriptor.fromJson(json['configuration'] as Map<String, dynamic>)
+          ? StudioConfigurationDescriptor.fromJson(
+              json['configuration'] as Map<String, dynamic>)
           : const StudioConfigurationDescriptor(),
       metadata: (json['metadata'] as Map<String, dynamic>?) ?? const {},
       isBuiltIn: json['is_built_in'] as bool? ?? false,
@@ -108,10 +109,12 @@ class InMemoryPresetStorageDriver implements PresetStorageDriver {
   }
 
   @override
-  Future<List<StudioConfigurationPreset>> loadAllPresets() async => _storage.values.toList();
+  Future<List<StudioConfigurationPreset>> loadAllPresets() async =>
+      _storage.values.toList();
 
   @override
-  Future<StudioConfigurationPreset?> getPreset(String presetId) async => _storage[presetId];
+  Future<StudioConfigurationPreset?> getPreset(String presetId) async =>
+      _storage[presetId];
 
   @override
   Future<void> savePreset(StudioConfigurationPreset preset) async {

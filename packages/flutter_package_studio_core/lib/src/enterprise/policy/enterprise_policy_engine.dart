@@ -39,7 +39,7 @@ class EnterprisePolicyEngine {
     String? relativePackagePath,
   }) {
     if (_overridePolicy != null) {
-      return _overridePolicy!;
+      return _overridePolicy;
     }
 
     EnterprisePolicyDocument current = const EnterprisePolicyDocument();
@@ -56,7 +56,8 @@ class EnterprisePolicyEngine {
         final parsed = _parsePolicyFile(orgPolicyFile);
         if (parsed != null) {
           current = current.composeWith(parsed);
-          _logger.info('Loaded organization-level policy from ${orgPolicyFile.path}');
+          _logger.info(
+              'Loaded organization-level policy from ${orgPolicyFile.path}');
         }
       } catch (e) {
         _logger.warning('Failed to parse organization policy: $e');
@@ -76,7 +77,8 @@ class EnterprisePolicyEngine {
         final parsed = _parsePolicyFile(projectPolicyFile);
         if (parsed != null) {
           current = current.composeWith(parsed);
-          _logger.info('Loaded project-level policy from ${projectPolicyFile.path}');
+          _logger.info(
+              'Loaded project-level policy from ${projectPolicyFile.path}');
         }
       } catch (e) {
         _logger.warning('Failed to parse project policy: $e');
@@ -93,7 +95,8 @@ class EnterprisePolicyEngine {
             final parsed = _parsePolicyFile(pkgPolicyFile);
             if (parsed != null) {
               current = current.composeWith(parsed);
-              _logger.info('Loaded package-level policy from ${pkgPolicyFile.path}');
+              _logger.info(
+                  'Loaded package-level policy from ${pkgPolicyFile.path}');
             }
           } catch (e) {
             _logger.warning('Failed to parse package policy: $e');
@@ -116,13 +119,15 @@ class EnterprisePolicyEngine {
   }) async {
     final stopwatch = Stopwatch()..start();
     final now = executionTimestamp ?? DateTime.now();
-    final policy = activePolicy ?? resolvePolicy(relativePackagePath: targetPackagePath);
+    final policy =
+        activePolicy ?? resolvePolicy(relativePackagePath: targetPackagePath);
 
     final findings = <PolicyEvaluationFinding>[];
     final passedGates = <String>[];
     final failedGates = <String>[];
 
-    _logger.info('Evaluating enterprise policy for scope: ${scope.id}, profile: ${policy.profile.id}');
+    _logger.info(
+        'Evaluating enterprise policy for scope: ${scope.id}, profile: ${policy.profile.id}');
 
     // ─────────────────────────────────────────────────────────────────────────
     // 1. OPERATION POLICIES
@@ -142,8 +147,10 @@ class EnterprisePolicyEngine {
           ruleName: 'Operation Authorization Policy',
           severity: PolicyFindingSeverity.critical,
           status: PolicyCheckStatus.failed,
-          message: 'Operation "$operationName" is blocked or not in allowed list for profile ${policy.profile.id}.',
-          remediation: 'Request policy exception or allow operation in enterprise policy configuration.',
+          message:
+              'Operation "$operationName" is blocked or not in allowed list for profile ${policy.profile.id}.',
+          remediation:
+              'Request policy exception or allow operation in enterprise policy configuration.',
         ));
         failedGates.add('operation_policy');
       } else {
@@ -172,8 +179,10 @@ class EnterprisePolicyEngine {
               ruleName: 'Sensitive File Policy Violation',
               severity: PolicyFindingSeverity.critical,
               status: PolicyCheckStatus.failed,
-              message: 'Found plaintext environment file ".env" matching blocked pattern "$blockedPattern".',
-              remediation: 'Remove .env file or ensure it is added to .gitignore and removed from version control.',
+              message:
+                  'Found plaintext environment file ".env" matching blocked pattern "$blockedPattern".',
+              remediation:
+                  'Remove .env file or ensure it is added to .gitignore and removed from version control.',
               location: '.env',
             ));
             securityChecksPassed = false;
@@ -183,8 +192,10 @@ class EnterprisePolicyEngine {
     }
 
     // Check critical findings threshold from context if provided
-    final existingCriticalFindings = (operationContext?['critical_security_findings'] as int?) ?? 0;
-    final existingHighFindings = (operationContext?['high_security_findings'] as int?) ?? 0;
+    final existingCriticalFindings =
+        (operationContext?['critical_security_findings'] as int?) ?? 0;
+    final existingHighFindings =
+        (operationContext?['high_security_findings'] as int?) ?? 0;
 
     if (existingCriticalFindings > sec.maxAllowedCriticalFindings) {
       findings.add(PolicyEvaluationFinding(
@@ -192,8 +203,10 @@ class EnterprisePolicyEngine {
         ruleName: 'Security Finding Threshold Exceeded',
         severity: PolicyFindingSeverity.critical,
         status: PolicyCheckStatus.failed,
-        message: 'Security audit contains $existingCriticalFindings critical findings (max allowed: ${sec.maxAllowedCriticalFindings}).',
-        remediation: 'Remediate critical security vulnerabilities before proceeding.',
+        message:
+            'Security audit contains $existingCriticalFindings critical findings (max allowed: ${sec.maxAllowedCriticalFindings}).',
+        remediation:
+            'Remediate critical security vulnerabilities before proceeding.',
       ));
       securityChecksPassed = false;
     }
@@ -204,7 +217,8 @@ class EnterprisePolicyEngine {
         ruleName: 'High Security Finding Threshold Exceeded',
         severity: PolicyFindingSeverity.high,
         status: PolicyCheckStatus.failed,
-        message: 'Security audit contains $existingHighFindings high findings (max allowed: ${sec.maxAllowedHighFindings}).',
+        message:
+            'Security audit contains $existingHighFindings high findings (max allowed: ${sec.maxAllowedHighFindings}).',
         remediation: 'Remediate high security vulnerabilities.',
       ));
       securityChecksPassed = false;
@@ -233,8 +247,10 @@ class EnterprisePolicyEngine {
             ruleName: 'Mandatory Release Verification Gate',
             severity: PolicyFindingSeverity.critical,
             status: PolicyCheckStatus.failed,
-            message: 'Mandatory enterprise release gate "$gate" failed or was not satisfied.',
-            remediation: 'Ensure all required verification stages pass in the release verification pipeline.',
+            message:
+                'Mandatory enterprise release gate "$gate" failed or was not satisfied.',
+            remediation:
+                'Ensure all required verification stages pass in the release verification pipeline.',
           ));
           releaseChecksPassed = false;
         }
@@ -259,8 +275,10 @@ class EnterprisePolicyEngine {
           ruleName: 'Enterprise AI Governance Policy',
           severity: PolicyFindingSeverity.critical,
           status: PolicyCheckStatus.failed,
-          message: 'AI engineering assistance is disabled by enterprise policy.',
-          remediation: 'Enable AI assistance in enterprise_policy.json if authorized.',
+          message:
+              'AI engineering assistance is disabled by enterprise policy.',
+          remediation:
+              'Enable AI assistance in enterprise_policy.json if authorized.',
         ));
         failedGates.add('ai_usage_policy');
       } else if (!ai.allowedAiCapabilities.contains(aiCap)) {
@@ -269,8 +287,10 @@ class EnterprisePolicyEngine {
           ruleName: 'AI Capability Restriction',
           severity: PolicyFindingSeverity.high,
           status: PolicyCheckStatus.failed,
-          message: 'AI capability "$aiCap" is not in the allowed capabilities list for profile ${policy.profile.id}.',
-          remediation: 'Add capability "$aiCap" to allowed_ai_capabilities in policy config.',
+          message:
+              'AI capability "$aiCap" is not in the allowed capabilities list for profile ${policy.profile.id}.',
+          remediation:
+              'Add capability "$aiCap" to allowed_ai_capabilities in policy config.',
         ));
         failedGates.add('ai_usage_policy');
       } else {
@@ -295,7 +315,8 @@ class EnterprisePolicyEngine {
                 severity: PolicyFindingSeverity.critical,
                 status: PolicyCheckStatus.failed,
                 message: 'Package declares blocked dependency "$blocked".',
-                remediation: 'Remove or replace blocked dependency with an approved alternative.',
+                remediation:
+                    'Remove or replace blocked dependency with an approved alternative.',
                 location: 'pubspec.yaml',
               ));
               failedGates.add('dependency_policy');
@@ -311,13 +332,31 @@ class EnterprisePolicyEngine {
 
     stopwatch.stop();
 
-    final criticalCount = findings.where((f) => f.severity == PolicyFindingSeverity.critical && f.status == PolicyCheckStatus.failed).length;
-    final highCount = findings.where((f) => f.severity == PolicyFindingSeverity.high && f.status == PolicyCheckStatus.failed).length;
-    final mediumCount = findings.where((f) => f.severity == PolicyFindingSeverity.medium && f.status == PolicyCheckStatus.failed).length;
-    final lowCount = findings.where((f) => f.severity == PolicyFindingSeverity.low && f.status == PolicyCheckStatus.failed).length;
+    final criticalCount = findings
+        .where((f) =>
+            f.severity == PolicyFindingSeverity.critical &&
+            f.status == PolicyCheckStatus.failed)
+        .length;
+    final highCount = findings
+        .where((f) =>
+            f.severity == PolicyFindingSeverity.high &&
+            f.status == PolicyCheckStatus.failed)
+        .length;
+    final mediumCount = findings
+        .where((f) =>
+            f.severity == PolicyFindingSeverity.medium &&
+            f.status == PolicyCheckStatus.failed)
+        .length;
+    final lowCount = findings
+        .where((f) =>
+            f.severity == PolicyFindingSeverity.low &&
+            f.status == PolicyCheckStatus.failed)
+        .length;
 
-    final isCompliant = findings.every((f) => f.status != PolicyCheckStatus.failed);
-    final isBlocked = !isCompliant && policy.enforcementMode == PolicyEnforcementMode.strict;
+    final isCompliant =
+        findings.every((f) => f.status != PolicyCheckStatus.failed);
+    final isBlocked =
+        !isCompliant && policy.enforcementMode == PolicyEnforcementMode.strict;
 
     final summary = isCompliant
         ? 'Enterprise policy evaluation passed: 100% compliant with profile "${policy.profile.id}".'

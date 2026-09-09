@@ -3,7 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   group('Phase 11.5: Performance Certification Models', () {
-    test('PerformanceProfileMetrics and PerformanceCertificationReport JSON roundtrip', () {
+    test(
+        'PerformanceProfileMetrics and PerformanceCertificationReport JSON roundtrip',
+        () {
       const metric = PerformanceProfileMetrics(
         tier: HardwareProfileTier.normal,
         fps: 60.0,
@@ -42,7 +44,9 @@ void main() {
   });
 
   group('Phase 11.5: Performance Certification Engine Operations', () {
-    test('Evaluates real empirical performance baselines across low-end, normal, high-end tiers', () {
+    test(
+        'Evaluates real empirical performance baselines across low-end, normal, high-end tiers',
+        () {
       final engine = PerformanceCertificationEngine();
       final report = engine.runPerformanceCertification(targetVersion: '1.0.0');
 
@@ -68,21 +72,33 @@ void main() {
   });
 
   group('Phase 11.5: Performance Certification Renderer', () {
-    test('Renders ASCII Performance Dashboard, Markdown report, and JSON schema', () {
+    test(
+        'Renders ASCII Performance Dashboard, Markdown report, and JSON schema',
+        () {
       final engine = PerformanceCertificationEngine();
       final report = engine.runPerformanceCertification(targetVersion: '1.0.0');
 
       // 1. ASCII Dashboard
-      final ascii = PerformanceCertificationRenderer.renderAsciiPerformanceDashboard(report);
-      expect(ascii, contains('PHASE 11.5 — PERFORMANCE CERTIFICATION BASELINES'));
+      final ascii =
+          PerformanceCertificationRenderer.renderAsciiPerformanceDashboard(
+              report);
+      expect(
+          ascii, contains('PHASE 11.5 — PERFORMANCE CERTIFICATION BASELINES'));
       expect(ascii, contains('Target FPS'));
       expect(ascii, contains('Frame Time (ms)'));
-      expect(ascii, contains('Overall Certification: CERTIFIED (ALL TIERS PASS)'));
+      expect(
+          ascii, contains('Overall Certification: CERTIFIED (ALL TIERS PASS)'));
 
       // 2. Markdown Report
       final markdown = PerformanceCertificationRenderer.renderMarkdown(report);
-      expect(markdown, contains('# Milestone 11 — Phase 11.5: Performance Certification Report'));
-      expect(markdown, contains('**Performance Certification Status:** `CERTIFIED (Real Empirical Baselines)`'));
+      expect(
+          markdown,
+          contains(
+              '# Milestone 11 — Phase 11.5: Performance Certification Report'));
+      expect(
+          markdown,
+          contains(
+              '**Performance Certification Status:** `CERTIFIED (Real Empirical Baselines)`'));
       expect(markdown, contains('## Empirical Performance Baselines Matrix'));
       expect(markdown, contains('**Phase 11.6 — Stress & Soak Testing**'));
 

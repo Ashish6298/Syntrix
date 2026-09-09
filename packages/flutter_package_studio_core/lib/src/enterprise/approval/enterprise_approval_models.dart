@@ -1,7 +1,6 @@
 /// Domain models for Phase 9.5: Approval & Release Governance.
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/enterprise/identity/enterprise_identity_models.dart';
 
 /// Status of an approval request.
@@ -62,7 +61,8 @@ class ApprovalVote {
   factory ApprovalVote.fromJson(Map<String, dynamic> json) {
     return ApprovalVote(
       voterId: json['voter_id'] as String? ?? 'unknown',
-      voterDisplayName: json['voter_display_name'] as String? ?? 'Unknown Voter',
+      voterDisplayName:
+          json['voter_display_name'] as String? ?? 'Unknown Voter',
       voterRole: EnterpriseRole.fromString(json['voter_role'] as String?),
       action: ApprovalVoteAction.values.firstWhere(
         (a) => a.name == json['action'],
@@ -104,14 +104,22 @@ class ApprovalPolicy {
 
   factory ApprovalPolicy.fromJson(Map<String, dynamic> json) {
     return ApprovalPolicy(
-      requiredReviewerApprovals: json['required_reviewer_approvals'] as int? ?? 1,
-      requiredReleaseManagerApprovals: json['required_release_manager_approvals'] as int? ?? 1,
+      requiredReviewerApprovals:
+          json['required_reviewer_approvals'] as int? ?? 1,
+      requiredReleaseManagerApprovals:
+          json['required_release_manager_approvals'] as int? ?? 1,
       allowAdminOverride: json['allow_admin_override'] as bool? ?? true,
-      validityDuration: Duration(seconds: json['validity_duration_seconds'] as int? ?? (3 * 86400)),
-      requiredPreApprovalGates: (json['required_pre_approval_gates'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          const ['security_audit', 'release_verification', 'pub_dev_validation'],
+      validityDuration: Duration(
+          seconds: json['validity_duration_seconds'] as int? ?? (3 * 86400)),
+      requiredPreApprovalGates:
+          (json['required_pre_approval_gates'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toList() ??
+              const [
+                'security_audit',
+                'release_verification',
+                'pub_dev_validation'
+              ],
     );
   }
 }
@@ -154,17 +162,20 @@ class ApprovalRequest {
 
   int get reviewerApprovalCount => votes
       .where((v) =>
-          (v.voterRole == EnterpriseRole.reviewer || v.voterRole == EnterpriseRole.developer) &&
+          (v.voterRole == EnterpriseRole.reviewer ||
+              v.voterRole == EnterpriseRole.developer) &&
           v.action == ApprovalVoteAction.approve)
       .length;
 
   int get releaseManagerApprovalCount => votes
       .where((v) =>
-          (v.voterRole == EnterpriseRole.releaseManager || v.voterRole == EnterpriseRole.administrator) &&
+          (v.voterRole == EnterpriseRole.releaseManager ||
+              v.voterRole == EnterpriseRole.administrator) &&
           v.action == ApprovalVoteAction.approve)
       .length;
 
-  bool get hasRejection => votes.any((v) => v.action == ApprovalVoteAction.reject);
+  bool get hasRejection =>
+      votes.any((v) => v.action == ApprovalVoteAction.reject);
 
   ApprovalRequest copyWith({
     ApprovalStatus? status,
@@ -182,7 +193,8 @@ class ApprovalRequest {
       policy: policy,
       status: status ?? this.status,
       votes: votes ?? this.votes,
-      satisfiedTechnicalGates: satisfiedTechnicalGates ?? this.satisfiedTechnicalGates,
+      satisfiedTechnicalGates:
+          satisfiedTechnicalGates ?? this.satisfiedTechnicalGates,
       createdAt: createdAt,
       expiresAt: expiresAt,
       cancellationReason: cancellationReason ?? this.cancellationReason,
@@ -214,7 +226,8 @@ class ApprovalRequest {
       candidateName: json['candidate_name'] as String? ?? 'unknown',
       candidateVersion: json['candidate_version'] as String? ?? '0.0.0',
       targetChannel: json['target_channel'] as String? ?? 'stable',
-      requester: EnterpriseIdentity.fromJson(json['requester'] as Map<String, dynamic>),
+      requester: EnterpriseIdentity.fromJson(
+          json['requester'] as Map<String, dynamic>),
       policy: json['policy'] is Map<String, dynamic>
           ? ApprovalPolicy.fromJson(json['policy'] as Map<String, dynamic>)
           : const ApprovalPolicy(),
@@ -226,10 +239,11 @@ class ApprovalRequest {
               ?.map((v) => ApprovalVote.fromJson(v as Map<String, dynamic>))
               .toList() ??
           const [],
-      satisfiedTechnicalGates: (json['satisfied_technical_gates'] as List<dynamic>?)
-              ?.map((g) => g.toString())
-              .toList() ??
-          const [],
+      satisfiedTechnicalGates:
+          (json['satisfied_technical_gates'] as List<dynamic>?)
+                  ?.map((g) => g.toString())
+                  .toList() ??
+              const [],
       createdAt: DateTime.parse(json['created_at'] as String),
       expiresAt: DateTime.parse(json['expires_at'] as String),
       cancellationReason: json['cancellation_reason'] as String?,

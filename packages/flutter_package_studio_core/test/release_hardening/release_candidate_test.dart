@@ -3,11 +3,14 @@ import 'package:test/test.dart';
 
 void main() {
   group('Phase 11.8: Release Candidate Models', () {
-    test('FinalValidationGateItem and ReleaseCandidatePromotionReport JSON roundtrip', () {
+    test(
+        'FinalValidationGateItem and ReleaseCandidatePromotionReport JSON roundtrip',
+        () {
       const gateItem = FinalValidationGateItem(
         gate: IndependentValidationGate.apiFreezeCompliance,
         isPassed: true,
-        verificationDetails: 'Phase 11.1 API Freeze verified: 100% public symbols locked.',
+        verificationDetails:
+            'Phase 11.1 API Freeze verified: 100% public symbols locked.',
       );
 
       final report = ReleaseCandidatePromotionReport(
@@ -30,13 +33,16 @@ void main() {
       expect(restored.currentStage, equals(ReleaseStage.v100Promoted));
       expect(restored.isReadyForV100Promotion, isTrue);
       expect(restored.totalGatesEvaluated, equals(1));
-      expect(restored.gateItems.first.gate, equals(IndependentValidationGate.apiFreezeCompliance));
+      expect(restored.gateItems.first.gate,
+          equals(IndependentValidationGate.apiFreezeCompliance));
       expect(restored.gateItems.first.isPassed, isTrue);
     });
   });
 
   group('Phase 11.8: Release Candidate Engine Operations', () {
-    test('Evaluates all 8 independent validation gates and promotes v1.0.0-rc.1 to v1.0.0', () {
+    test(
+        'Evaluates all 8 independent validation gates and promotes v1.0.0-rc.1 to v1.0.0',
+        () {
       final engine = ReleaseCandidateEngine();
       final report = engine.runFinalValidationAndPromotion(
         rcTag: 'v1.0.0-rc.1',
@@ -51,13 +57,15 @@ void main() {
 
       final gates = report.gateItems.map((g) => g.gate).toSet();
       expect(gates, contains(IndependentValidationGate.apiFreezeCompliance));
-      expect(gates, contains(IndependentValidationGate.breakingChangeZeroPolicy));
+      expect(
+          gates, contains(IndependentValidationGate.breakingChangeZeroPolicy));
       expect(gates, contains(IndependentValidationGate.fullRegressionPass));
       expect(gates, contains(IndependentValidationGate.multiPlatformCertified));
       expect(gates, contains(IndependentValidationGate.performanceCertified));
       expect(gates, contains(IndependentValidationGate.documentationComplete));
       expect(gates, contains(IndependentValidationGate.pubArchiveClean));
-      expect(gates, contains(IndependentValidationGate.tamperProofAuditRecorded));
+      expect(
+          gates, contains(IndependentValidationGate.tamperProofAuditRecorded));
 
       for (final gate in report.gateItems) {
         expect(gate.isPassed, isTrue);
@@ -66,7 +74,8 @@ void main() {
   });
 
   group('Phase 11.8: Release Candidate Renderer', () {
-    test('Renders ASCII Lifecycle Dashboard, Markdown report, and JSON schema', () {
+    test('Renders ASCII Lifecycle Dashboard, Markdown report, and JSON schema',
+        () {
       final engine = ReleaseCandidateEngine();
       final report = engine.runFinalValidationAndPromotion(
         rcTag: 'v1.0.0-rc.1',
@@ -74,15 +83,24 @@ void main() {
       );
 
       // 1. ASCII Dashboard
-      final ascii = ReleaseHardeningCandidateRenderer.renderAsciiLifecycleDashboard(report);
-      expect(ascii, contains('PHASE 11.8 — FINAL RELEASE CANDIDATE & PROMOTION DASHBOARD'));
+      final ascii =
+          ReleaseHardeningCandidateRenderer.renderAsciiLifecycleDashboard(
+              report);
+      expect(
+          ascii,
+          contains(
+              'PHASE 11.8 — FINAL RELEASE CANDIDATE & PROMOTION DASHBOARD'));
       expect(ascii, contains('v1.0.0-rc.1        ──> Tagged Candidate'));
-      expect(ascii, contains('v1.0.0             ──> PROMOTED TO STABLE PRODUCTION'));
+      expect(ascii,
+          contains('v1.0.0             ──> PROMOTED TO STABLE PRODUCTION'));
       expect(ascii, contains('Status: ALL GATES PASSED (100%)'));
 
       // 2. Markdown Report
       final markdown = ReleaseHardeningCandidateRenderer.renderMarkdown(report);
-      expect(markdown, contains('# Milestone 11 — Phase 11.8: Final Release Candidate & Promotion Report'));
+      expect(
+          markdown,
+          contains(
+              '# Milestone 11 — Phase 11.8: Final Release Candidate & Promotion Report'));
       expect(markdown, contains('**Release Candidate Tag:** `v1.0.0-rc.1`'));
       expect(markdown, contains('**Promoted Production Release:** `v1.0.0`'));
       expect(markdown, contains('## Independent Validation Gates'));

@@ -3,7 +3,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('Phase 10.16: Cross-Platform Environment Models', () {
-    test('StudioPlatformProfile and StudioEnvironmentReport JSON roundtrip', () {
+    test('StudioPlatformProfile and StudioEnvironmentReport JSON roundtrip',
+        () {
       const profile = StudioPlatformProfile(
         platform: StudioPlatformType.ios,
         supportStatus: PlatformCapabilityStatus.verified,
@@ -29,13 +30,17 @@ void main() {
       expect(restored.reportId, equals('env_test_01'));
       expect(restored.activeHostPlatform, equals('macOS'));
       expect(restored.platformProfiles.length, equals(1));
-      expect(restored.platformProfiles.first.platform, equals(StudioPlatformType.ios));
-      expect(restored.platformProfiles.first.rendererBackend, equals('Impeller (Metal)'));
+      expect(restored.platformProfiles.first.platform,
+          equals(StudioPlatformType.ios));
+      expect(restored.platformProfiles.first.rendererBackend,
+          equals('Impeller (Metal)'));
     });
   });
 
   group('Phase 10.16: Studio Environment Engine Operations', () {
-    test('Inspects environment covering Android, iOS, Web, Windows, macOS, Linux', () {
+    test(
+        'Inspects environment covering Android, iOS, Web, Windows, macOS, Linux',
+        () {
       final controller = StudioV2Controller();
       final envEngine = StudioEnvironmentEngine(controller: controller);
 
@@ -51,19 +56,22 @@ void main() {
       expect(platforms, contains(StudioPlatformType.macos));
       expect(platforms, contains(StudioPlatformType.linux));
 
-      final android = report.platformProfiles.firstWhere((p) => p.platform == StudioPlatformType.android);
+      final android = report.platformProfiles
+          .firstWhere((p) => p.platform == StudioPlatformType.android);
       expect(android.supportStatus, equals(PlatformCapabilityStatus.verified));
       expect(android.rendererBackend, contains('Impeller'));
       expect(android.shadersSupported, isTrue);
 
-      final web = report.platformProfiles.firstWhere((p) => p.platform == StudioPlatformType.web);
+      final web = report.platformProfiles
+          .firstWhere((p) => p.platform == StudioPlatformType.web);
       expect(web.rendererBackend, contains('CanvasKit'));
       expect(web.knownLimitations, isNotEmpty);
     });
   });
 
   group('Phase 10.16: Studio Environment Renderer', () {
-    test('Renders ASCII Environment list, Markdown Report, and JSON schema', () {
+    test('Renders ASCII Environment list, Markdown Report, and JSON schema',
+        () {
       final controller = StudioV2Controller();
       final envEngine = StudioEnvironmentEngine(controller: controller);
 

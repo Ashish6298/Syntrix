@@ -7,7 +7,8 @@ void main() {
       const item = UxAuditItem(
         dimension: UxAuditDimension.themeCompatibility,
         status: UxAuditStatus.verified,
-        complianceDetails: 'Contrast ratio >= 4.5:1 verified across all themes.',
+        complianceDetails:
+            'Contrast ratio >= 4.5:1 verified across all themes.',
         minimumContrastRatio: 4.8,
         keyboardAccessible: true,
       );
@@ -25,7 +26,8 @@ void main() {
       expect(restored.reportId, equals('ux_test_01'));
       expect(restored.overallCompliant, isTrue);
       expect(restored.auditItems.length, equals(1));
-      expect(restored.auditItems.first.dimension, equals(UxAuditDimension.themeCompatibility));
+      expect(restored.auditItems.first.dimension,
+          equals(UxAuditDimension.themeCompatibility));
       expect(restored.auditItems.first.minimumContrastRatio, equals(4.8));
     });
   });
@@ -77,9 +79,12 @@ void main() {
 
       // 2. Markdown Report
       final markdown = StudioUxRenderer.renderMarkdown(report);
-      expect(markdown, contains('# Studio UX & Accessibility Hardening Report'));
-      expect(markdown, contains('**Audit Status:** `PASSED (Production-Grade)`'));
-      expect(markdown, contains('## Verification & Hardening Dimension Matrix'));
+      expect(
+          markdown, contains('# Studio UX & Accessibility Hardening Report'));
+      expect(
+          markdown, contains('**Audit Status:** `PASSED (Production-Grade)`'));
+      expect(
+          markdown, contains('## Verification & Hardening Dimension Matrix'));
       expect(markdown, contains('**Keyboard Navigation**'));
 
       // 3. JSON

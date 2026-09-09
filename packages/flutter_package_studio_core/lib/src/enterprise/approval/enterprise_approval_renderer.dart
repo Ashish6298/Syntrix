@@ -27,19 +27,25 @@ class EnterpriseApprovalRenderer {
     buffer.writeln('# Enterprise Release Approval Report');
     buffer.writeln();
     buffer.writeln('**Request ID**: `${request.requestId}`  ');
-    buffer.writeln('**Target Candidate**: `${request.candidateName}@${request.candidateVersion}` (`${request.targetChannel}`)  ');
-    buffer.writeln('**Requester**: `${request.requester.displayName}` (`${request.requester.id}`)  ');
+    buffer.writeln(
+        '**Target Candidate**: `${request.candidateName}@${request.candidateVersion}` (`${request.targetChannel}`)  ');
+    buffer.writeln(
+        '**Requester**: `${request.requester.displayName}` (`${request.requester.id}`)  ');
     buffer.writeln('**Status**: $statusIcon **${request.status.label}**  ');
-    buffer.writeln('**Created At**: `${request.createdAt.toIso8601String()}`  ');
+    buffer
+        .writeln('**Created At**: `${request.createdAt.toIso8601String()}`  ');
     buffer.writeln('**Expires At**: `${request.expiresAt.toIso8601String()}`');
     buffer.writeln();
 
     buffer.writeln('## Executive Approval Summary');
     buffer.writeln('```text');
     buffer.writeln('Status: ${request.status.label}');
-    buffer.writeln('Reviewer Approvals: ${request.reviewerApprovalCount} / ${request.policy.requiredReviewerApprovals}');
-    buffer.writeln('Release Manager Approvals: ${request.releaseManagerApprovalCount} / ${request.policy.requiredReleaseManagerApprovals}');
-    buffer.writeln('Satisfied Technical Gates: ${request.satisfiedTechnicalGates.join(", ")}');
+    buffer.writeln(
+        'Reviewer Approvals: ${request.reviewerApprovalCount} / ${request.policy.requiredReviewerApprovals}');
+    buffer.writeln(
+        'Release Manager Approvals: ${request.releaseManagerApprovalCount} / ${request.policy.requiredReleaseManagerApprovals}');
+    buffer.writeln(
+        'Satisfied Technical Gates: ${request.satisfiedTechnicalGates.join(", ")}');
     buffer.writeln('Has Rejection: ${request.hasRejection ? "YES" : "NO"}');
     buffer.writeln('Is Expired: ${request.isExpired ? "YES" : "NO"}');
     buffer.writeln('```');
@@ -49,7 +55,8 @@ class EnterpriseApprovalRenderer {
     for (final gate in request.policy.requiredPreApprovalGates) {
       final passed = request.satisfiedTechnicalGates.contains(gate);
       final icon = passed ? '✅' : '❌';
-      buffer.writeln('- $icon **`$gate`** (${passed ? "Satisfied" : "Pending/Failed"})');
+      buffer.writeln(
+          '- $icon **`$gate`** (${passed ? "Satisfied" : "Pending/Failed"})');
     }
     buffer.writeln();
 
@@ -63,8 +70,10 @@ class EnterpriseApprovalRenderer {
             : (vote.action == ApprovalVoteAction.reject
                 ? '❌'
                 : (vote.action == ApprovalVoteAction.override ? '⚡' : '📝'));
-        buffer.writeln('### $voteIcon ${vote.action.label} by `${vote.voterDisplayName}` (${vote.voterRole.displayName})');
-        buffer.writeln('- **Timestamp**: `${vote.timestamp.toIso8601String()}`');
+        buffer.writeln(
+            '### $voteIcon ${vote.action.label} by `${vote.voterDisplayName}` (${vote.voterRole.displayName})');
+        buffer
+            .writeln('- **Timestamp**: `${vote.timestamp.toIso8601String()}`');
         if (vote.comment != null && vote.comment!.isNotEmpty) {
           buffer.writeln('- **Comment**: "${vote.comment}"');
         }

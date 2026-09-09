@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:path/path.dart' as p;
@@ -26,7 +25,9 @@ void main() {
     // Test 1: Session Creation & Persistence
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('1. Session Lifecycle: SessionMemoryEngine creates, persists, and restores sessions', () async {
+    test(
+        '1. Session Lifecycle: SessionMemoryEngine creates, persists, and restores sessions',
+        () async {
       final engine = SessionMemoryEngine(
         projectRoot: rootPath,
         storagePath: storagePath,
@@ -52,7 +53,9 @@ void main() {
     // Test 2: Knowledge Entry Types Coverage
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('2. Knowledge Types: supports all 8 required project engineering knowledge categories', () async {
+    test(
+        '2. Knowledge Types: supports all 8 required project engineering knowledge categories',
+        () async {
       final engine = SessionMemoryEngine(
         projectRoot: rootPath,
         storagePath: storagePath,
@@ -95,7 +98,9 @@ void main() {
     // Test 3: Evidence References Anchoring
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('3. Evidence Grounding: records and restores concrete evidence references', () async {
+    test(
+        '3. Evidence Grounding: records and restores concrete evidence references',
+        () async {
       final engine = SessionMemoryEngine(
         projectRoot: rootPath,
         storagePath: storagePath,
@@ -117,7 +122,8 @@ void main() {
         sessionId: 'session_grounded',
         type: KnowledgeEntryType.architecture,
         title: 'Adopt Layered Core-CLI Architecture',
-        content: 'Core package contains no terminal I/O; CLI package handles commands.',
+        content:
+            'Core package contains no terminal I/O; CLI package handles commands.',
         evidenceRefs: refs,
         tags: ['architecture', 'layering'],
       );
@@ -132,14 +138,17 @@ void main() {
       expect(queryResult.isSuccess, isTrue);
       expect(queryResult.entries, isNotEmpty);
       expect(queryResult.synthesis, contains('Evidence References:'));
-      expect(queryResult.synthesis, contains('packages/core/lib/src/packager.dart'));
+      expect(queryResult.synthesis,
+          contains('packages/core/lib/src/packager.dart'));
     });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Test 4: Conflict Detection (Contradicting Decisions)
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('4. Conflict Detection: flags contradictions between opposing architectural choices', () async {
+    test(
+        '4. Conflict Detection: flags contradictions between opposing architectural choices',
+        () async {
       final engine = SessionMemoryEngine(
         projectRoot: rootPath,
         storagePath: storagePath,
@@ -150,7 +159,8 @@ void main() {
         sessionId: 'session_early',
         type: KnowledgeEntryType.architecture,
         title: 'State Management Architecture',
-        content: 'For UI state management, the system must use Riverpod for deterministic dependency injection.',
+        content:
+            'For UI state management, the system must use Riverpod for deterministic dependency injection.',
       );
 
       // Record contradicting decision
@@ -158,7 +168,8 @@ void main() {
         sessionId: 'session_late',
         type: KnowledgeEntryType.architecture,
         title: 'State Management Architecture Pattern',
-        content: 'For UI state management, the system must not use Riverpod and must use BLoC.',
+        content:
+            'For UI state management, the system must not use Riverpod and must use BLoC.',
       );
 
       expect(outcome.conflicts, isNotEmpty);
@@ -178,7 +189,9 @@ void main() {
     // Test 5: Expiration & Purge
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('5. Expiration & Versioning: respects expiresAt and purges outdated entries', () async {
+    test(
+        '5. Expiration & Versioning: respects expiresAt and purges outdated entries',
+        () async {
       final engine = SessionMemoryEngine(
         projectRoot: rootPath,
         storagePath: storagePath,
@@ -234,7 +247,9 @@ void main() {
     // Test 6: Question Answering Synthesis ("Why did we choose this architecture?")
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('6. Example Query: "Why did we choose this architecture?" resolves documented engineering decisions', () async {
+    test(
+        '6. Example Query: "Why did we choose this architecture?" resolves documented engineering decisions',
+        () async {
       final engine = SessionMemoryEngine(
         projectRoot: rootPath,
         storagePath: storagePath,
@@ -244,7 +259,8 @@ void main() {
         sessionId: 'session_m8',
         type: KnowledgeEntryType.architecture,
         title: 'Milestone 8 Modular Subsystem Architecture',
-        content: 'We chose a modular subsystem architecture where each AI advisory capability (security, dependency, review, planner, memory) lives in its own directory with dedicated models, engine, and renderer to ensure fail-closed isolation and testability.',
+        content:
+            'We chose a modular subsystem architecture where each AI advisory capability (security, dependency, review, planner, memory) lives in its own directory with dedicated models, engine, and renderer to ensure fail-closed isolation and testability.',
         tags: ['architecture', 'modular', 'subsystems'],
       );
 
@@ -263,7 +279,9 @@ void main() {
     // Test 7: Secret Redaction on Ingestion, Persistence, and Query Output
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('7. Secret Redaction: sensitive tokens are never written to disk or exposed in query outputs', () async {
+    test(
+        '7. Secret Redaction: sensitive tokens are never written to disk or exposed in query outputs',
+        () async {
       final engine = SessionMemoryEngine(
         projectRoot: rootPath,
         storagePath: storagePath,
@@ -276,7 +294,8 @@ void main() {
         sessionId: 'session_secure',
         type: KnowledgeEntryType.decision,
         title: 'API Authentication Setup with $secretToken',
-        content: 'Configure private pub repository using $secretPassword and token $secretToken.',
+        content:
+            'Configure private pub repository using $secretPassword and token $secretToken.',
       );
 
       // Verify file on disk is sanitized
@@ -300,7 +319,9 @@ void main() {
     // Test 8: Read-Only Query Safety Invariant
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('8. Read-Only Query Invariant: querying memory does not modify project workspace files', () async {
+    test(
+        '8. Read-Only Query Invariant: querying memory does not modify project workspace files',
+        () async {
       final engine = SessionMemoryEngine(
         projectRoot: rootPath,
         storagePath: storagePath,
@@ -327,7 +348,9 @@ void main() {
     // Test 9: Fail-Closed on Corrupted Storage File
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('9. Fail-Closed Error Containment: gracefully handles corrupted JSON storage file', () async {
+    test(
+        '9. Fail-Closed Error Containment: gracefully handles corrupted JSON storage file',
+        () async {
       final engine = SessionMemoryEngine(
         projectRoot: rootPath,
         storagePath: storagePath,
@@ -352,9 +375,13 @@ void main() {
     // Test 10: Regression Check on AssistantCapability.crossSessionMemory
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('10. Capability Alignment: verifies AssistantCapability.crossSessionMemory is registered', () {
-      expect(AssistantCapability.values, contains(AssistantCapability.crossSessionMemory));
-      expect(AssistantCapability.tryParse('crossSessionMemory'), equals(AssistantCapability.crossSessionMemory));
+    test(
+        '10. Capability Alignment: verifies AssistantCapability.crossSessionMemory is registered',
+        () {
+      expect(AssistantCapability.values,
+          contains(AssistantCapability.crossSessionMemory));
+      expect(AssistantCapability.tryParse('crossSessionMemory'),
+          equals(AssistantCapability.crossSessionMemory));
     });
   });
 }

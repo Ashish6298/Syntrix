@@ -22,7 +22,8 @@ class EnterpriseAuditEngine {
   String? _latestRecordHash;
 
   String get projectRoot => _projectRoot;
-  List<EnterpriseAuditRecord> get inMemoryRecords => List.unmodifiable(_inMemoryRecords);
+  List<EnterpriseAuditRecord> get inMemoryRecords =>
+      List.unmodifiable(_inMemoryRecords);
 
   EnterpriseAuditEngine({
     required String projectRoot,
@@ -30,7 +31,8 @@ class EnterpriseAuditEngine {
     _loadExistingAuditTrail();
   }
 
-  File get _auditLogFile => File(p.join(_projectRoot, '.fps', 'audit', 'audit_log.jsonl'));
+  File get _auditLogFile =>
+      File(p.join(_projectRoot, '.fps', 'audit', 'audit_log.jsonl'));
 
   /// Records an enterprise operation event into the tamper-evident audit log.
   Future<EnterpriseAuditRecord> recordEvent({
@@ -42,7 +44,8 @@ class EnterpriseAuditEngine {
     required AuditEventOutcome outcome,
     String? correlationId,
     String? relevantVersion,
-    AuditSecurityClassification securityClassification = AuditSecurityClassification.internal,
+    AuditSecurityClassification securityClassification =
+        AuditSecurityClassification.internal,
     String? failureInformation,
     String? policyDecision,
     Map<String, dynamic> metadata = const {},
@@ -52,11 +55,14 @@ class EnterpriseAuditEngine {
       id: actorIdentity.id,
       displayName: actorIdentity.displayName,
       type: actorIdentity.type.id,
-      role: actorIdentity.roles.isNotEmpty ? actorIdentity.roles.first.id : 'readOnly',
+      role: actorIdentity.roles.isNotEmpty
+          ? actorIdentity.roles.first.id
+          : 'readOnly',
       organizationId: actorIdentity.organizationId,
     );
 
-    final cid = correlationId ?? 'cor_${DateTime.now().millisecondsSinceEpoch}_${_inMemoryRecords.length + 1}';
+    final cid = correlationId ??
+        'cor_${DateTime.now().millisecondsSinceEpoch}_${_inMemoryRecords.length + 1}';
 
     final record = EnterpriseAuditRecord.create(
       correlationId: cid,
@@ -79,7 +85,8 @@ class EnterpriseAuditEngine {
     _latestRecordHash = record.recordHash;
 
     _appendRecordToFile(record);
-    _logger.info('Recorded audit event: [${record.eventType.displayName}] $operation ($packageOrProject) by ${actor.displayName} -> ${outcome.label}');
+    _logger.info(
+        'Recorded audit event: [${record.eventType.displayName}] $operation ($packageOrProject) by ${actor.displayName} -> ${outcome.label}');
 
     return record;
   }
@@ -93,13 +100,15 @@ class EnterpriseAuditEngine {
     for (final record in records) {
       // 1. Verify single record integrity
       if (!record.verifyIntegrity()) {
-        _logger.error('Audit record integrity corrupted: eventId=${record.eventId}');
+        _logger.error(
+            'Audit record integrity corrupted: eventId=${record.eventId}');
         return false;
       }
 
       // 2. Verify hash chain linking
       if (record.previousRecordHash != expectedPreviousHash) {
-        _logger.error('Audit chain broken: eventId=${record.eventId}, expectedPrev=$expectedPreviousHash, actualPrev=${record.previousRecordHash}');
+        _logger.error(
+            'Audit chain broken: eventId=${record.eventId}, expectedPrev=$expectedPreviousHash, actualPrev=${record.previousRecordHash}');
         return false;
       }
 
@@ -141,9 +150,13 @@ class EnterpriseAuditEngine {
     var filtered = all.where((r) {
       if (eventType != null && r.eventType != eventType) return false;
       if (actorId != null && r.actor.id != actorId) return false;
-      if (packageOrProject != null && !r.packageOrProject.toLowerCase().contains(packageOrProject.toLowerCase())) return false;
+      if (packageOrProject != null &&
+          !r.packageOrProject
+              .toLowerCase()
+              .contains(packageOrProject.toLowerCase())) return false;
       if (outcome != null && r.outcome != outcome) return false;
-      if (correlationId != null && r.correlationId != correlationId) return false;
+      if (correlationId != null && r.correlationId != correlationId)
+        return false;
       return true;
     }).toList();
 
@@ -176,7 +189,8 @@ class EnterpriseAuditEngine {
       if (!file.parent.existsSync()) {
         file.parent.createSync(recursive: true);
       }
-      file.writeAsStringSync('${jsonEncode(record.toJson())}\n', mode: FileMode.append, flush: true);
+      file.writeAsStringSync('${jsonEncode(record.toJson())}\n',
+          mode: FileMode.append, flush: true);
     } catch (e) {
       _logger.warning('Failed to persist audit log entry: $e');
     }

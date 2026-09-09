@@ -34,12 +34,14 @@ void main() {
       expect(restored.publicSymbolsFrozen, equals(1));
       expect(restored.auditedSymbols.length, equals(1));
       expect(restored.auditedSymbols.first.name, equals('DependencyContainer'));
-      expect(restored.auditedSymbols.first.kind, equals(FrozenApiSymbolKind.publicClass));
+      expect(restored.auditedSymbols.first.kind,
+          equals(FrozenApiSymbolKind.publicClass));
     });
   });
 
   group('Phase 11.1: Final API Freeze Engine Operations', () {
-    test('Audits public symbols and marks entire public API surface as frozen', () {
+    test('Audits public symbols and marks entire public API surface as frozen',
+        () {
       final engine = ApiFreezeEngine();
       final report = engine.runApiFreezeAudit(targetVersion: '1.0.0');
 
@@ -75,7 +77,8 @@ void main() {
   });
 
   group('Phase 11.1: Final API Freeze Renderer', () {
-    test('Renders ASCII Freeze Dashboard, Markdown report, and JSON schema', () {
+    test('Renders ASCII Freeze Dashboard, Markdown report, and JSON schema',
+        () {
       final engine = ApiFreezeEngine();
       final report = engine.runApiFreezeAudit(targetVersion: '1.0.0');
 
@@ -88,8 +91,12 @@ void main() {
 
       // 2. Markdown Report
       final markdown = ApiFreezeRenderer.renderMarkdown(report);
-      expect(markdown, contains('# Milestone 11 — Phase 11.1: Final API Freeze Report'));
-      expect(markdown, contains('**API Freeze Status:** `FROZEN (Ready for Release Hardening)`'));
+      expect(markdown,
+          contains('# Milestone 11 — Phase 11.1: Final API Freeze Report'));
+      expect(
+          markdown,
+          contains(
+              '**API Freeze Status:** `FROZEN (Ready for Release Hardening)`'));
       expect(markdown, contains('## Public API Surface Summary'));
       expect(markdown, contains('**`DependencyContainer`**'));
       expect(markdown, contains('**Phase 11.2 — Breaking-Change Audit**'));

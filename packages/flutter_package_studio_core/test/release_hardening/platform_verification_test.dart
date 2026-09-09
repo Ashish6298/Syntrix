@@ -8,7 +8,8 @@ void main() {
         platform: TargetPlatformType.windows,
         dimension: PlatformVerificationDimension.hotReload,
         status: PlatformCheckStatus.verified,
-        verificationDetails: 'Sub-second UI state preservation during Flutter hot reload.',
+        verificationDetails:
+            'Sub-second UI state preservation during Flutter hot reload.',
       );
 
       final report = PlatformVerificationReport(
@@ -30,14 +31,18 @@ void main() {
       expect(restored.totalPlatformsAudited, equals(1));
       expect(restored.totalChecksRun, equals(1));
       expect(restored.checkItems.length, equals(1));
-      expect(restored.checkItems.first.platform, equals(TargetPlatformType.windows));
-      expect(restored.checkItems.first.dimension, equals(PlatformVerificationDimension.hotReload));
-      expect(restored.checkItems.first.status, equals(PlatformCheckStatus.verified));
+      expect(restored.checkItems.first.platform,
+          equals(TargetPlatformType.windows));
+      expect(restored.checkItems.first.dimension,
+          equals(PlatformVerificationDimension.hotReload));
+      expect(restored.checkItems.first.status,
+          equals(PlatformCheckStatus.verified));
     });
   });
 
   group('Phase 11.4: Platform Verification Engine Operations', () {
-    test('Verifies all 6 platforms across all 12 dimensions (72 checks total)', () {
+    test('Verifies all 6 platforms across all 12 dimensions (72 checks total)',
+        () {
       final engine = PlatformVerificationEngine();
       final report = engine.runPlatformVerification(targetVersion: '1.0.0');
 
@@ -55,7 +60,8 @@ void main() {
       expect(platforms, contains(TargetPlatformType.linux));
 
       final dimensions = report.checkItems.map((i) => i.dimension).toSet();
-      expect(dimensions, contains(PlatformVerificationDimension.initialization));
+      expect(
+          dimensions, contains(PlatformVerificationDimension.initialization));
       expect(dimensions, contains(PlatformVerificationDimension.rendering));
       expect(dimensions, contains(PlatformVerificationDimension.animations));
       expect(dimensions, contains(PlatformVerificationDimension.lifecycle));
@@ -63,10 +69,16 @@ void main() {
       expect(dimensions, contains(PlatformVerificationDimension.disposal));
       expect(dimensions, contains(PlatformVerificationDimension.hotReload));
       expect(dimensions, contains(PlatformVerificationDimension.hotRestart));
-      expect(dimensions, contains(PlatformVerificationDimension.orientationChanges));
-      expect(dimensions, contains(PlatformVerificationDimension.backgroundForegroundTransitions));
-      expect(dimensions, contains(PlatformVerificationDimension.highDpiDisplays));
-      expect(dimensions, contains(PlatformVerificationDimension.differentScreenSizes));
+      expect(dimensions,
+          contains(PlatformVerificationDimension.orientationChanges));
+      expect(
+          dimensions,
+          contains(
+              PlatformVerificationDimension.backgroundForegroundTransitions));
+      expect(
+          dimensions, contains(PlatformVerificationDimension.highDpiDisplays));
+      expect(dimensions,
+          contains(PlatformVerificationDimension.differentScreenSizes));
 
       for (final item in report.checkItems) {
         expect(item.status, equals(PlatformCheckStatus.verified));
@@ -75,22 +87,35 @@ void main() {
   });
 
   group('Phase 11.4: Platform Verification Renderer', () {
-    test('Renders ASCII Platform Dashboard, Markdown report, and JSON schema', () {
+    test('Renders ASCII Platform Dashboard, Markdown report, and JSON schema',
+        () {
       final engine = PlatformVerificationEngine();
       final report = engine.runPlatformVerification(targetVersion: '1.0.0');
 
       // 1. ASCII Dashboard
-      final ascii = PlatformVerificationRenderer.renderAsciiPlatformDashboard(report);
-      expect(ascii, contains('PHASE 11.4 — TARGET PLATFORM VERIFICATION MATRIX'));
-      expect(ascii, contains('Dimension                     And  iOS  Web  Win  Mac  Lin'));
+      final ascii =
+          PlatformVerificationRenderer.renderAsciiPlatformDashboard(report);
+      expect(
+          ascii, contains('PHASE 11.4 — TARGET PLATFORM VERIFICATION MATRIX'));
+      expect(
+          ascii,
+          contains(
+              'Dimension                     And  iOS  Web  Win  Mac  Lin'));
       expect(ascii, contains('Initialization'));
       expect(ascii, contains('Hot reload'));
-      expect(ascii, contains('Multiplatform Compliance: 100% PASS (ALL PLATFORMS)'));
+      expect(ascii,
+          contains('Multiplatform Compliance: 100% PASS (ALL PLATFORMS)'));
 
       // 2. Markdown Report
       final markdown = PlatformVerificationRenderer.renderMarkdown(report);
-      expect(markdown, contains('# Milestone 11 — Phase 11.4: Platform Verification Report'));
-      expect(markdown, contains('**Platform Verification Status:** `VERIFIED (100% Cross-Platform)`'));
+      expect(
+          markdown,
+          contains(
+              '# Milestone 11 — Phase 11.4: Platform Verification Report'));
+      expect(
+          markdown,
+          contains(
+              '**Platform Verification Status:** `VERIFIED (100% Cross-Platform)`'));
       expect(markdown, contains('**Total Platform Checks Run:** `72`'));
       expect(markdown, contains('**Phase 11.5 — Memory & Leak Testing**'));
 

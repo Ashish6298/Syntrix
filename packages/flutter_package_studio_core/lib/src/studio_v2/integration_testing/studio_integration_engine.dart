@@ -14,7 +14,8 @@ class StudioFinalIntegrationEngine {
 
   /// Run complete integration & regression test pipeline covering all 9 subsystems and 9 test types.
   StudioFinalIntegrationReport runCompleteIntegrationPipeline() {
-    _logger.info('Executing Studio v2 Final Integration & Multi-Subsystem Pipeline Verification.');
+    _logger.info(
+        'Executing Studio v2 Final Integration & Multi-Subsystem Pipeline Verification.');
 
     final stages = <SubsystemStageVerification>[
       const SubsystemStageVerification(
@@ -22,63 +23,72 @@ class StudioFinalIntegrationEngine {
         status: TestExecutionStatus.passed,
         testsExecuted: 42,
         executionTimeMs: 180.0,
-        verificationDetails: 'Engine bootstrap, AST parser, and reactive model state machines fully operational.',
+        verificationDetails:
+            'Engine bootstrap, AST parser, and reactive model state machines fully operational.',
       ),
       const SubsystemStageVerification(
         stage: StudioSubsystemPipelineStage.loaders,
         status: TestExecutionStatus.passed,
         testsExecuted: 28,
         executionTimeMs: 140.0,
-        verificationDetails: 'Built-in loaders (Cyberpunk, Helix, Orbit, Wave, Pulse) render with 0 frame drops.',
+        verificationDetails:
+            'Built-in loaders (Cyberpunk, Helix, Orbit, Wave, Pulse) render with 0 frame drops.',
       ),
       const SubsystemStageVerification(
         stage: StudioSubsystemPipelineStage.themes,
         status: TestExecutionStatus.passed,
         testsExecuted: 24,
         executionTimeMs: 110.0,
-        verificationDetails: 'Theme token resolution, contrast validation, and code generator pass verification.',
+        verificationDetails:
+            'Theme token resolution, contrast validation, and code generator pass verification.',
       ),
       const SubsystemStageVerification(
         stage: StudioSubsystemPipelineStage.particles,
         status: TestExecutionStatus.passed,
         testsExecuted: 32,
         executionTimeMs: 195.0,
-        verificationDetails: 'High-density particle emitter (500+ particles) simulates at stable 60 FPS.',
+        verificationDetails:
+            'High-density particle emitter (500+ particles) simulates at stable 60 FPS.',
       ),
       const SubsystemStageVerification(
         stage: StudioSubsystemPipelineStage.physics,
         status: TestExecutionStatus.passed,
         testsExecuted: 30,
         executionTimeMs: 160.0,
-        verificationDetails: 'Verlet integration, damping springs, gravity, and collision responses verified.',
+        verificationDetails:
+            'Verlet integration, damping springs, gravity, and collision responses verified.',
       ),
       const SubsystemStageVerification(
         stage: StudioSubsystemPipelineStage.shaders,
         status: TestExecutionStatus.passed,
         testsExecuted: 22,
         executionTimeMs: 210.0,
-        verificationDetails: 'Fragment shader pipeline compiles and runs GLSL/Spir-V uniforms accurately.',
+        verificationDetails:
+            'Fragment shader pipeline compiles and runs GLSL/Spir-V uniforms accurately.',
       ),
       const SubsystemStageVerification(
         stage: StudioSubsystemPipelineStage.interactions,
         status: TestExecutionStatus.passed,
         testsExecuted: 26,
         executionTimeMs: 130.0,
-        verificationDetails: 'Touch gestures, pan velocity, pinch-to-scale, and release inertia transitions verified.',
+        verificationDetails:
+            'Touch gestures, pan velocity, pinch-to-scale, and release inertia transitions verified.',
       ),
       const SubsystemStageVerification(
         stage: StudioSubsystemPipelineStage.diagnostics,
         status: TestExecutionStatus.passed,
         testsExecuted: 35,
         executionTimeMs: 155.0,
-        verificationDetails: 'Frame timing profiler, GPU memory metrics, and live error boundaries active.',
+        verificationDetails:
+            'Frame timing profiler, GPU memory metrics, and live error boundaries active.',
       ),
       const SubsystemStageVerification(
         stage: StudioSubsystemPipelineStage.studioV2,
         status: TestExecutionStatus.passed,
         testsExecuted: 78,
         executionTimeMs: 380.0,
-        verificationDetails: 'Studio v2 4-quadrant layout, multi-panel docks, presets, persistence, and extensions verified.',
+        verificationDetails:
+            'Studio v2 4-quadrant layout, multi-panel docks, presets, persistence, and extensions verified.',
       ),
     ];
 
@@ -94,8 +104,10 @@ class StudioFinalIntegrationEngine {
       IntegrationTestType.regression: 27,
     };
 
-    final totalExecuted = stages.fold<int>(0, (sum, s) => sum + s.testsExecuted);
-    final overallSuccess = !stages.any((s) => s.status == TestExecutionStatus.failed);
+    final totalExecuted =
+        stages.fold<int>(0, (sum, s) => sum + s.testsExecuted);
+    final overallSuccess =
+        !stages.any((s) => s.status == TestExecutionStatus.failed);
 
     return StudioFinalIntegrationReport(
       reportId: 'final_int_${DateTime.now().millisecondsSinceEpoch}',

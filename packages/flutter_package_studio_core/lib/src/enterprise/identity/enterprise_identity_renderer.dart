@@ -15,7 +15,8 @@ class EnterpriseIdentityRenderer {
   }
 
   /// Renders structured Markdown profile.
-  String renderMarkdown(EnterpriseIdentity identity, {EnterpriseSession? session}) {
+  String renderMarkdown(EnterpriseIdentity identity,
+      {EnterpriseSession? session}) {
     final buffer = StringBuffer();
 
     buffer.writeln('# Enterprise Identity Profile');
@@ -27,7 +28,8 @@ class EnterpriseIdentityRenderer {
     if (identity.email.isNotEmpty) {
       buffer.writeln('**Email**: `${identity.email}`  ');
     }
-    buffer.writeln('**Assigned Roles**: `${identity.roles.map((r) => r.displayName).join(", ")}`');
+    buffer.writeln(
+        '**Assigned Roles**: `${identity.roles.map((r) => r.displayName).join(", ")}`');
     buffer.writeln();
 
     if (session != null) {
@@ -44,7 +46,8 @@ class EnterpriseIdentityRenderer {
 
     buffer.writeln('## Direct Permissions');
     if (identity.directPermissions.isEmpty) {
-      buffer.writeln('*No direct permissions assigned (inherited through role definitions).*');
+      buffer.writeln(
+          '*No direct permissions assigned (inherited through role definitions).*');
     } else {
       for (final perm in identity.directPermissions) {
         buffer.writeln('- `$perm`');

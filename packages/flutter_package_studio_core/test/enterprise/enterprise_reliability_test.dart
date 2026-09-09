@@ -25,7 +25,8 @@ void main() {
       expect(restored.stageId, equals('stg_13_publish'));
       expect(restored.isDestructiveOperation, isTrue);
       expect(restored.isCompleted, isTrue);
-      expect(restored.stateData['pub_url'], equals('https://pub.enterprise.internal/pkg'));
+      expect(restored.stateData['pub_url'],
+          equals('https://pub.enterprise.internal/pkg'));
     });
 
     test('PersistentExecutionState serialization and deserialization', () {
@@ -77,7 +78,8 @@ void main() {
       }
     });
 
-    test('Persists state, marks interrupted, and lists active executions', () async {
+    test('Persists state, marks interrupted, and lists active executions',
+        () async {
       final auditEngine = EnterpriseAuditEngine(projectRoot: tempDir.path);
       final reliabilityEngine = EnterpriseReliabilityEngine(
         projectRoot: tempDir.path,
@@ -116,7 +118,8 @@ void main() {
       expect(state.lastCompletedStageId, equals('stg_03_ai_review'));
 
       // Simulate crash / interruption
-      final interrupted = await reliabilityEngine.markInterrupted(plan.workflowId);
+      final interrupted =
+          await reliabilityEngine.markInterrupted(plan.workflowId);
       expect(interrupted, isNotNull);
       expect(interrupted!.isInterrupted, isTrue);
 
@@ -125,7 +128,9 @@ void main() {
       expect(list.first.workflowId, equals(plan.workflowId));
     });
 
-    test('Resumes interrupted workflow with Idempotency Guard preventing duplicate destructive ops', () async {
+    test(
+        'Resumes interrupted workflow with Idempotency Guard preventing duplicate destructive ops',
+        () async {
       final auditEngine = EnterpriseAuditEngine(projectRoot: tempDir.path);
       final workflowEngine = EnterpriseWorkflowEngine(auditEngine: auditEngine);
       final reliabilityEngine = EnterpriseReliabilityEngine(
@@ -171,8 +176,12 @@ void main() {
       expect(recoveryResult.isSuccess, isTrue);
       expect(recoveryResult.operationType, equals('RESUME'));
       expect(recoveryResult.recoveredCheckpointsCount, equals(13));
-      expect(recoveryResult.skippedDestructiveOperations, greaterThanOrEqualTo(2)); // gitRelease and packagePublish skipped!
-      expect(recoveryResult.actionsTaken.any((a) => a.contains('IDEMPOTENCY GUARD')), isTrue);
+      expect(recoveryResult.skippedDestructiveOperations,
+          greaterThanOrEqualTo(2)); // gitRelease and packagePublish skipped!
+      expect(
+          recoveryResult.actionsTaken
+              .any((a) => a.contains('IDEMPOTENCY GUARD')),
+          isTrue);
 
       // State on disk should now be completed
       final finalState = await reliabilityEngine.loadState(plan.workflowId);
@@ -180,7 +189,8 @@ void main() {
       expect(finalState!.executionStatus, equals(CheckpointStatus.completed));
     });
 
-    test('Rollback safely compensates completed stages and records audit trail', () async {
+    test('Rollback safely compensates completed stages and records audit trail',
+        () async {
       final auditEngine = EnterpriseAuditEngine(projectRoot: tempDir.path);
       final reliabilityEngine = EnterpriseReliabilityEngine(
         projectRoot: tempDir.path,
@@ -217,26 +227,39 @@ void main() {
 
       expect(rollbackResult.isSuccess, isTrue);
       expect(rollbackResult.operationType, equals('ROLLBACK'));
-      expect(rollbackResult.actionsTaken.any((a) => a.contains('Compensating/Rolling back')), isTrue);
+      expect(
+          rollbackResult.actionsTaken
+              .any((a) => a.contains('Compensating/Rolling back')),
+          isTrue);
 
-      final rolledBackState = await reliabilityEngine.loadState(plan.workflowId);
-      expect(rolledBackState!.executionStatus, equals(CheckpointStatus.rolledBack));
-      expect(auditEngine.inMemoryRecords.any((r) => r.operation == 'WORKFLOW_ROLLBACK'), isTrue);
+      final rolledBackState =
+          await reliabilityEngine.loadState(plan.workflowId);
+      expect(rolledBackState!.executionStatus,
+          equals(CheckpointStatus.rolledBack));
+      expect(
+          auditEngine.inMemoryRecords
+              .any((r) => r.operation == 'WORKFLOW_ROLLBACK'),
+          isTrue);
     });
 
     test('Gracefully handles corrupted state files without crashing', () async {
-      final reliabilityEngine = EnterpriseReliabilityEngine(projectRoot: tempDir.path);
+      final reliabilityEngine =
+          EnterpriseReliabilityEngine(projectRoot: tempDir.path);
 
       // Write corrupted JSON to recovery dir
       final recoveryDir = Directory('${tempDir.path}/.fps/recovery');
       recoveryDir.createSync(recursive: true);
-      File('${recoveryDir.path}/corrupt_wf.state.json').writeAsStringSync('{ INVALID JSON MALFORMED CORRUPTED ...');
+      File('${recoveryDir.path}/corrupt_wf.state.json')
+          .writeAsStringSync('{ INVALID JSON MALFORMED CORRUPTED ...');
 
       final loaded = await reliabilityEngine.loadState('corrupt_wf');
       expect(loaded, isNull);
 
       // Corrupted file was quarantined
-      final quarantined = recoveryDir.listSync().where((e) => e.path.contains('.corrupt_')).toList();
+      final quarantined = recoveryDir
+          .listSync()
+          .where((e) => e.path.contains('.corrupt_'))
+          .toList();
       expect(quarantined, isNotEmpty);
     });
   });
@@ -258,9 +281,11 @@ void main() {
       );
 
       final markdown = EnterpriseReliabilityRenderer.renderMarkdown(result);
-      expect(markdown, contains('# Enterprise Recovery & Disaster Readiness Report'));
+      expect(markdown,
+          contains('# Enterprise Recovery & Disaster Readiness Report'));
       expect(markdown, contains('**Workflow ID:** `wf_rec_999`'));
-      expect(markdown, contains('**Destructive Ops Skipped (Idempotency Guard):** 2'));
+      expect(markdown,
+          contains('**Destructive Ops Skipped (Idempotency Guard):** 2'));
       expect(markdown, contains('IDEMPOTENCY GUARD'));
 
       final jsonString = EnterpriseReliabilityRenderer.renderJson(result);

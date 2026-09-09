@@ -25,7 +25,9 @@ void main() {
   });
 
   group('Phase 10.13: Studio Export & Import Engine Operations', () {
-    test('Exports configuration, scene, diagnostics, and code deterministically', () {
+    test(
+        'Exports configuration, scene, diagnostics, and code deterministically',
+        () {
       final controller = StudioV2Controller();
       final sceneEngine = StudioSceneBuilderEngine(controller: controller);
       final presetEngine = StudioPresetEngine(controller: controller);
@@ -48,7 +50,8 @@ void main() {
         format: ExportFormat.json,
       );
       expect(configJsonBundle.format, equals(ExportFormat.json));
-      expect(configJsonBundle.content, contains('"target_loader_id": "infinite_universe"'));
+      expect(configJsonBundle.content,
+          contains('"target_loader_id": "infinite_universe"'));
 
       // 2. Export Scene in Dart
       final sceneDartBundle = exportEngine.export(
@@ -64,7 +67,8 @@ void main() {
         format: ExportFormat.markdown,
       );
       expect(diagMdBundle.format, equals(ExportFormat.markdown));
-      expect(diagMdBundle.content, contains('# Diagnostics & Performance Center Report'));
+      expect(diagMdBundle.content,
+          contains('# Diagnostics & Performance Center Report'));
 
       // 4. Import configuration back
       exportEngine.importConfigurationJson('''
@@ -76,14 +80,17 @@ void main() {
       }
       ''');
 
-      expect(controller.state.activeConfiguration.targetLoaderId, equals('galaxy_orbit'));
+      expect(controller.state.activeConfiguration.targetLoaderId,
+          equals('galaxy_orbit'));
       expect(controller.state.activeConfiguration.animationSpeed, equals(2.2));
       expect(controller.state.activeConfiguration.particleCount, equals(650));
     });
   });
 
   group('Phase 10.13: Studio Export Renderer', () {
-    test('Renders ASCII Export Dialog wireframe, Markdown summary, and JSON bundle', () {
+    test(
+        'Renders ASCII Export Dialog wireframe, Markdown summary, and JSON bundle',
+        () {
       final bundle = StudioExportBundle(
         bundleId: 'bundle_export_test',
         targetEntity: ExportTargetEntity.scene,
@@ -94,7 +101,8 @@ void main() {
       );
 
       // 1. ASCII Dialog Wireframe
-      final ascii = StudioExportRenderer.renderAsciiExportDialog(ExportTargetEntity.scene, ExportFormat.json);
+      final ascii = StudioExportRenderer.renderAsciiExportDialog(
+          ExportTargetEntity.scene, ExportFormat.json);
       expect(ascii, contains('Export Scene'));
       expect(ascii, contains('● JSON'));
       expect(ascii, contains('○ Dart'));

@@ -1,8 +1,6 @@
 /// Domain models and evaluation criteria for Phase 11.2: Breaking-Change Audit.
 library;
 
-import 'dart:convert';
-
 /// Dimensions audited for potential unintentional breaking changes.
 enum BreakingChangeDimension {
   constructorSignatures,
@@ -143,7 +141,8 @@ class BreakingChangeAuditReport {
       totalDimensionsAudited: json['total_dimensions_audited'] as int? ?? 0,
       totalViolationsFound: json['total_violations_found'] as int? ?? 0,
       auditItems: (json['audit_items'] as List<dynamic>?)
-              ?.map((i) => BreakingChangeAuditItem.fromJson(i as Map<String, dynamic>))
+              ?.map((i) =>
+                  BreakingChangeAuditItem.fromJson(i as Map<String, dynamic>))
               .toList() ??
           const [],
       auditedAt: DateTime.parse(json['audited_at'] as String),

@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 void main() {
   final content = '''<div align=" center\>
@@ -86,7 +86,8 @@ Syntrix Engineering Pipeline:
 | :--- | :---: | :---: | :---: |
 | **Scaffolding Core** | Basic skeleton | Brick-based scaffolding | **Multi-layered, composable template engine** |
 | **Execution Model** | Direct write | Direct write | **Plan-First (Preview before mutation)** |
-| **Audit Engine** | ❌ None | ❌ None | **✅ 5-Profile deterministic audit (asic, standard, strict, elease)** |
+| **Audit Engine** | ❌ None | ❌ None | **✅ 5-Profile deterministic audit (asic, standard, strict, 
+elease)** |
 | **AI Command Center** | ❌ None | ❌ None | **✅ 13 AI tools (Review, Debug, Plan, Modify, Memory, etc.)** |
 | **Architectural Analysis** | ❌ None | ❌ None | **✅ Circular dependency detection & layer violation checks** |
 | **Dependency Risk Engine** | ❌ None | ❌ None | **✅ Dependency conflict analysis & upgrade risk scoring** |
@@ -417,6 +418,6 @@ Syntrix (Flutter Package Studio) is distributed under the **MIT License**. See [
 </div>
 ''';
 
- File('d:/Syntrix/README.md').writeAsStringSync(content);
- print('README.md successfully updated.');
+  File('d:/Syntrix/README.md').writeAsStringSync(content);
+  print('README.md successfully updated.');
 }

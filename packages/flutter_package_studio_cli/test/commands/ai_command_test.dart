@@ -11,7 +11,8 @@ void main() {
         ..addCommand(AiCommand());
     });
 
-    test('AiCommand registers with all 13 subcommands and alias ai-assistant', () {
+    test('AiCommand registers with all 13 subcommands and alias ai-assistant',
+        () {
       final cmd = runner.commands['ai'];
       expect(cmd, isNotNull);
       expect(cmd!.name, equals('ai'));
@@ -35,12 +36,14 @@ void main() {
     });
 
     test('fps ai analyze runs successfully and exits 0', () async {
-      final code = await runner.run(['ai', 'analyze', '--prompt', 'analyze template']);
+      final code =
+          await runner.run(['ai', 'analyze', '--prompt', 'analyze template']);
       expect(code, equals(0));
     });
 
     test('fps ai review runs successfully and exits 0', () async {
-      final code = await runner.run(['ai', 'review', '--prompt', 'inspect code']);
+      final code =
+          await runner.run(['ai', 'review', '--prompt', 'inspect code']);
       expect(code, equals(0));
     });
 

@@ -187,7 +187,8 @@ class CommandCenterResponse {
   }) =>
       CommandCenterResponse(
         capability: capability,
-        summary: 'Command Center execution failed for capability: ${capability.name}',
+        summary:
+            'Command Center execution failed for capability: ${capability.name}',
         durationMs: durationMs,
         timestamp: timestamp ?? DateTime.now(),
         errorMessage: SecretRedactor.redact(errorMessage),
@@ -215,7 +216,8 @@ class CommandCenterResponse {
       if (structuredPayload != null) 'payload': payloadJson,
       'durationMs': durationMs,
       'timestamp': timestamp.toIso8601String(),
-      if (errorMessage != null) 'errorMessage': SecretRedactor.redact(errorMessage!),
+      if (errorMessage != null)
+        'errorMessage': SecretRedactor.redact(errorMessage!),
     };
   }
 }

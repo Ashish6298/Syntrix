@@ -112,7 +112,8 @@ class AiSubcommand extends FpsCommand {
     }
 
     final provider = MockAiProvider(
-      defaultResponse: '{"summary": "Command Center executed ${capability.name} successfully."}',
+      defaultResponse:
+          '{"summary": "Command Center executed ${capability.name} successfully."}',
     );
 
     final engine = CommandCenterEngine(
@@ -124,7 +125,8 @@ class AiSubcommand extends FpsCommand {
     final req = CommandCenterRequest(
       capability: capability,
       target: targetArg,
-      prompt: promptArg.isNotEmpty ? promptArg : (targetArg ?? capability.label),
+      prompt:
+          promptArg.isNotEmpty ? promptArg : (targetArg ?? capability.label),
       tokenBudget: tokenBudget,
     );
 

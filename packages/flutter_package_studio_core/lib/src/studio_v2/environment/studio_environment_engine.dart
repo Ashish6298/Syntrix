@@ -15,7 +15,8 @@ class StudioEnvironmentEngine {
 
   /// Generate a complete cross-platform environment report.
   StudioEnvironmentReport inspectEnvironment() {
-    _logger.info('Inspecting target platforms and runtime environment capabilities.');
+    _logger.info(
+        'Inspecting target platforms and runtime environment capabilities.');
 
     final profiles = <StudioPlatformProfile>[
       const StudioPlatformProfile(
@@ -24,7 +25,12 @@ class StudioEnvironmentEngine {
         rendererBackend: 'Impeller (Vulkan / OpenGLES)',
         shadersSupported: true,
         diagnosticsSupported: true,
-        supportedFeatures: ['Hardware Acceleration', 'Custom Fragment Shaders', 'Touch Gestures', 'Live Metrics'],
+        supportedFeatures: [
+          'Hardware Acceleration',
+          'Custom Fragment Shaders',
+          'Touch Gestures',
+          'Live Metrics'
+        ],
         knownLimitations: ['Requires API Level 21+ for Vulkan runtime'],
       ),
       const StudioPlatformProfile(
@@ -33,7 +39,12 @@ class StudioEnvironmentEngine {
         rendererBackend: 'Impeller (Metal)',
         shadersSupported: true,
         diagnosticsSupported: true,
-        supportedFeatures: ['Metal Pipeline', 'High-Refresh 120Hz ProMotion', 'Custom Shaders', 'Gestures'],
+        supportedFeatures: [
+          'Metal Pipeline',
+          'High-Refresh 120Hz ProMotion',
+          'Custom Shaders',
+          'Gestures'
+        ],
         knownLimitations: ['iOS 12.0 minimum target required'],
       ),
       const StudioPlatformProfile(
@@ -42,8 +53,14 @@ class StudioEnvironmentEngine {
         rendererBackend: 'CanvasKit (WebAssembly / WebGL2)',
         shadersSupported: true,
         diagnosticsSupported: true,
-        supportedFeatures: ['CanvasKit Wasm', 'Mouse & Touch Interactivity', 'Responsive Viewport'],
-        knownLimitations: ['HTML renderer fallback does not support GLSL fragment shaders'],
+        supportedFeatures: [
+          'CanvasKit Wasm',
+          'Mouse & Touch Interactivity',
+          'Responsive Viewport'
+        ],
+        knownLimitations: [
+          'HTML renderer fallback does not support GLSL fragment shaders'
+        ],
       ),
       const StudioPlatformProfile(
         platform: StudioPlatformType.windows,
@@ -51,7 +68,11 @@ class StudioEnvironmentEngine {
         rendererBackend: 'ANGLE (DirectX 11 / Skia)',
         shadersSupported: true,
         diagnosticsSupported: true,
-        supportedFeatures: ['DirectX Hardware Pipeline', 'Window Resizing', 'Multi-Window Previews'],
+        supportedFeatures: [
+          'DirectX Hardware Pipeline',
+          'Window Resizing',
+          'Multi-Window Previews'
+        ],
         knownLimitations: [],
       ),
       const StudioPlatformProfile(
@@ -60,7 +81,11 @@ class StudioEnvironmentEngine {
         rendererBackend: 'Impeller (Metal)',
         shadersSupported: true,
         diagnosticsSupported: true,
-        supportedFeatures: ['Metal Desktop Pipeline', 'High-DPI Retina Rendering', 'Trackpad Gestures'],
+        supportedFeatures: [
+          'Metal Desktop Pipeline',
+          'High-DPI Retina Rendering',
+          'Trackpad Gestures'
+        ],
         knownLimitations: [],
       ),
       const StudioPlatformProfile(
@@ -69,17 +94,26 @@ class StudioEnvironmentEngine {
         rendererBackend: 'Skia (OpenGL)',
         shadersSupported: true,
         diagnosticsSupported: true,
-        supportedFeatures: ['OpenGL Hardware Rasterization', 'Wayland / X11 Support'],
-        knownLimitations: ['Requires libGL and Wayland/X11 development headers on host'],
+        supportedFeatures: [
+          'OpenGL Hardware Rasterization',
+          'Wayland / X11 Support'
+        ],
+        knownLimitations: [
+          'Requires libGL and Wayland/X11 development headers on host'
+        ],
       ),
     ];
 
     String hostPlatform = 'Unknown';
     try {
-      if (Platform.isWindows) hostPlatform = 'Windows';
-      else if (Platform.isMacOS) hostPlatform = 'macOS';
-      else if (Platform.isLinux) hostPlatform = 'Linux';
-      else if (Platform.isAndroid) hostPlatform = 'Android';
+      if (Platform.isWindows)
+        hostPlatform = 'Windows';
+      else if (Platform.isMacOS)
+        hostPlatform = 'macOS';
+      else if (Platform.isLinux)
+        hostPlatform = 'Linux';
+      else if (Platform.isAndroid)
+        hostPlatform = 'Android';
       else if (Platform.isIOS) hostPlatform = 'iOS';
     } catch (_) {
       hostPlatform = 'Host Machine';

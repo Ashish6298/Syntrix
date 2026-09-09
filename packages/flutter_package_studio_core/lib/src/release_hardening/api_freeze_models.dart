@@ -1,8 +1,6 @@
 /// Domain models and API freeze catalog for Phase 11.1: Final API Freeze.
 library;
 
-import 'dart:convert';
-
 /// API artifact kind in the public surface.
 enum FrozenApiSymbolKind {
   publicClass,
@@ -72,7 +70,9 @@ enum ApiFreezeDecision {
     }
   }
 
-  String get symbol => this == ApiFreezeDecision.freezeAsPublic ? '✓' : (this == ApiFreezeDecision.privatizeToSrc ? '🔒' : '⚠');
+  String get symbol => this == ApiFreezeDecision.freezeAsPublic
+      ? '✓'
+      : (this == ApiFreezeDecision.privatizeToSrc ? '🔒' : '⚠');
 }
 
 /// Description of an audited API symbol.
@@ -160,7 +160,8 @@ class ApiFreezeAuditReport {
       isFrozen: json['is_frozen'] as bool? ?? true,
       totalSymbolsAudited: json['total_symbols_audited'] as int? ?? 0,
       publicSymbolsFrozen: json['public_symbols_frozen'] as int? ?? 0,
-      internalSymbolsRestricted: json['internal_symbols_restricted'] as int? ?? 0,
+      internalSymbolsRestricted:
+          json['internal_symbols_restricted'] as int? ?? 0,
       auditedSymbols: (json['audited_symbols'] as List<dynamic>?)
               ?.map((s) => FrozenApiSymbol.fromJson(s as Map<String, dynamic>))
               .toList() ??

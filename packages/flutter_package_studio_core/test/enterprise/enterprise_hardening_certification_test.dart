@@ -26,7 +26,9 @@ dependencies:
       }
     });
 
-    test('1. Authorization & Privilege Escalation Prevention: Developer cannot perform Admin/Publish operations', () {
+    test(
+        '1. Authorization & Privilege Escalation Prevention: Developer cannot perform Admin/Publish operations',
+        () {
       final rbac = RbacEngine();
       const devIdentity = EnterpriseIdentity(
         id: 'dev_01',
@@ -35,18 +37,57 @@ dependencies:
       );
 
       // Inspect & Review: Allowed
-      expect(rbac.authorize(const AuthorizationRequest(identity: devIdentity, operation: EnterpriseOperation.inspectProject)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: devIdentity, operation: EnterpriseOperation.runAiReview)).isAllowed, isTrue);
-      expect(rbac.authorize(const AuthorizationRequest(identity: devIdentity, operation: EnterpriseOperation.modifyPackage)).isAllowed, isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: devIdentity,
+                  operation: EnterpriseOperation.inspectProject))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: devIdentity,
+                  operation: EnterpriseOperation.runAiReview))
+              .isAllowed,
+          isTrue);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: devIdentity,
+                  operation: EnterpriseOperation.modifyPackage))
+              .isAllowed,
+          isTrue);
 
       // Publish & Policy Change: Denied
-      expect(rbac.authorize(const AuthorizationRequest(identity: devIdentity, operation: EnterpriseOperation.publishPackage)).isAllowed, isFalse);
-      expect(rbac.authorize(const AuthorizationRequest(identity: devIdentity, operation: EnterpriseOperation.changeEnterprisePolicy)).isAllowed, isFalse);
-      expect(rbac.authorize(const AuthorizationRequest(identity: devIdentity, operation: EnterpriseOperation.overrideSecurityGate)).isAllowed, isFalse);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: devIdentity,
+                  operation: EnterpriseOperation.publishPackage))
+              .isAllowed,
+          isFalse);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: devIdentity,
+                  operation: EnterpriseOperation.changeEnterprisePolicy))
+              .isAllowed,
+          isFalse);
+      expect(
+          rbac
+              .authorize(const AuthorizationRequest(
+                  identity: devIdentity,
+                  operation: EnterpriseOperation.overrideSecurityGate))
+              .isAllowed,
+          isFalse);
     });
 
-    test('2. Policy Bypass & Path Traversal Prevention: Rejects malicious traversal paths in credential references', () async {
-      final credManager = EnterpriseCredentialManager(projectRoot: tempDir.path);
+    test(
+        '2. Policy Bypass & Path Traversal Prevention: Rejects malicious traversal paths in credential references',
+        () async {
+      final credManager =
+          EnterpriseCredentialManager(projectRoot: tempDir.path);
 
       // Check availability for path-traversal style key safely
       final check = await credManager.checkAvailability('../../../etc/shadow');
@@ -72,20 +113,24 @@ dependencies:
 
       final record = await auditEngine.recordEvent(
         eventType: AuditEventType.securityAuditExecuted,
-        actorIdentity: const EnterpriseIdentity(id: 'auditor', displayName: 'Security Auditor'),
+        actorIdentity: const EnterpriseIdentity(
+            id: 'auditor', displayName: 'Security Auditor'),
         operation: 'AUDIT_SCAN',
         packageOrProject: 'hardened_pkg',
         outcome: AuditEventOutcome.failure,
         failureInformation: 'Found GitHub PAT in config: token=$secretPayload',
       );
 
-      expect(record.failureInformation, isNot(contains('ghp_SECRETTOKEN99999999999999999999')));
+      expect(record.failureInformation,
+          isNot(contains('ghp_SECRETTOKEN99999999999999999999')));
       expect(record.failureInformation, contains('[REDACTED_'));
     });
 
-    test('4. Audit Trail Integrity & Tamper-Evident Hash Chain Verification', () async {
+    test('4. Audit Trail Integrity & Tamper-Evident Hash Chain Verification',
+        () async {
       final auditEngine = EnterpriseAuditEngine(projectRoot: tempDir.path);
-      const actor = EnterpriseIdentity(id: 'dev_user', displayName: 'Developer Alice');
+      const actor =
+          EnterpriseIdentity(id: 'dev_user', displayName: 'Developer Alice');
 
       for (int i = 0; i < 5; i++) {
         await auditEngine.recordEvent(
@@ -101,7 +146,9 @@ dependencies:
       expect(isIntact, isTrue);
     });
 
-    test('5. Approval Bypass Prevention: Release workflow cannot publish without human approval gate', () async {
+    test(
+        '5. Approval Bypass Prevention: Release workflow cannot publish without human approval gate',
+        () async {
       const initiator = EnterpriseIdentity(
         id: 'rel_lead',
         displayName: 'Release Lead',
@@ -143,14 +190,19 @@ dependencies:
       final result = await workflowEngine.executeWorkflow(rejectingPlan);
 
       expect(result.isSuccess, isFalse);
-      expect(result.status, equals(EnterpriseWorkflowExecutionStatus.blockedByGate));
+      expect(result.status,
+          equals(EnterpriseWorkflowExecutionStatus.blockedByGate));
 
       // Publishing MUST be skipped
-      final publishStage = result.stageResults.firstWhere((s) => s.stageType == WorkflowStageType.packagePublish);
-      expect(publishStage.status, equals(EnterpriseWorkflowStageStatus.skipped));
+      final publishStage = result.stageResults
+          .firstWhere((s) => s.stageType == WorkflowStageType.packagePublish);
+      expect(
+          publishStage.status, equals(EnterpriseWorkflowStageStatus.skipped));
     });
 
-    test('6. Idempotent Crash Recovery: Interrupted workflow resumes without repeating destructive publish', () async {
+    test(
+        '6. Idempotent Crash Recovery: Interrupted workflow resumes without repeating destructive publish',
+        () async {
       final auditEngine = EnterpriseAuditEngine(projectRoot: tempDir.path);
       final workflowEngine = EnterpriseWorkflowEngine(auditEngine: auditEngine);
       final reliabilityEngine = EnterpriseReliabilityEngine(
@@ -191,26 +243,37 @@ dependencies:
       );
 
       expect(resumeResult.isSuccess, isTrue);
-      expect(resumeResult.skippedDestructiveOperations, greaterThanOrEqualTo(2));
-      expect(resumeResult.actionsTaken.any((a) => a.contains('IDEMPOTENCY GUARD')), isTrue);
+      expect(
+          resumeResult.skippedDestructiveOperations, greaterThanOrEqualTo(2));
+      expect(
+          resumeResult.actionsTaken.any((a) => a.contains('IDEMPOTENCY GUARD')),
+          isTrue);
     });
 
     test('7. Malformed Input & Fault-Tolerant Engine Resiliency', () async {
-      final reliabilityEngine = EnterpriseReliabilityEngine(projectRoot: tempDir.path);
+      final reliabilityEngine =
+          EnterpriseReliabilityEngine(projectRoot: tempDir.path);
       final recoveryDir = Directory('${tempDir.path}/.fps/recovery');
       recoveryDir.createSync(recursive: true);
-      File('${recoveryDir.path}/garbage_state.state.json').writeAsStringSync('{{{ MALFORMED NOT JSON');
+      File('${recoveryDir.path}/garbage_state.state.json')
+          .writeAsStringSync('{{{ MALFORMED NOT JSON');
 
       final loaded = await reliabilityEngine.loadState('garbage_state');
       expect(loaded, isNull);
 
-      final quarantined = recoveryDir.listSync().where((e) => e.path.contains('.corrupt_')).toList();
+      final quarantined = recoveryDir
+          .listSync()
+          .where((e) => e.path.contains('.corrupt_'))
+          .toList();
       expect(quarantined, isNotEmpty);
     });
 
-    test('8. End-to-End Enterprise Governance Certification Report Generation', () async {
-      final securityEngine = EnterpriseSecurityComplianceEngine(projectRoot: tempDir.path);
-      final depEngine = EnterpriseDependencyGovernanceEngine(projectRoot: tempDir.path);
+    test('8. End-to-End Enterprise Governance Certification Report Generation',
+        () async {
+      final securityEngine =
+          EnterpriseSecurityComplianceEngine(projectRoot: tempDir.path);
+      final depEngine =
+          EnterpriseDependencyGovernanceEngine(projectRoot: tempDir.path);
       final auditEngine = EnterpriseAuditEngine(projectRoot: tempDir.path);
 
       final reportingEngine = EnterpriseReportingEngine(
@@ -228,7 +291,10 @@ dependencies:
       expect(certReport.summaryMetrics['overall_compliant'], isTrue);
 
       final markdown = EnterpriseReportingRenderer.renderMarkdown(certReport);
-      expect(markdown, contains('Comprehensive Enterprise Governance & Compliance Certification Report'));
+      expect(
+          markdown,
+          contains(
+              'Comprehensive Enterprise Governance & Compliance Certification Report'));
       expect(markdown, contains('COMPLIANT'));
 
       final json = EnterpriseReportingRenderer.renderJson(certReport);

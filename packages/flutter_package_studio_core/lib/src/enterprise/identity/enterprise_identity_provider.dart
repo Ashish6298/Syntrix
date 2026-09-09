@@ -1,7 +1,6 @@
 /// Abstract Enterprise Identity Provider and built-in local/mock implementations.
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/enterprise/identity/enterprise_identity_models.dart';
 
 /// Abstract Enterprise Identity Provider interface.
@@ -88,7 +87,8 @@ class MockEnterpriseIdentityProvider implements EnterpriseIdentityProvider {
   }
 
   @override
-  Future<AuthenticationResult> authenticate(AuthenticationRequest request) async {
+  Future<AuthenticationResult> authenticate(
+      AuthenticationRequest request) async {
     final sw = Stopwatch()..start();
     final now = DateTime.now();
 
@@ -99,7 +99,8 @@ class MockEnterpriseIdentityProvider implements EnterpriseIdentityProvider {
     if (username == null || username.isEmpty) {
       sw.stop();
       return AuthenticationResult.failure(
-        errorMessage: 'Missing credentials: username, token, or key is required.',
+        errorMessage:
+            'Missing credentials: username, token, or key is required.',
         errorCode: 'MISSING_CREDENTIALS',
         durationMs: sw.elapsedMilliseconds,
         timestamp: now,
@@ -140,7 +141,8 @@ class MockEnterpriseIdentityProvider implements EnterpriseIdentityProvider {
   Future<bool> validateSession(EnterpriseSession session) async {
     if (session.isExpired) return false;
     final stored = _activeSessions[session.sessionId];
-    return stored != null && stored.status == AuthenticationStatus.authenticated;
+    return stored != null &&
+        stored.status == AuthenticationStatus.authenticated;
   }
 
   @override

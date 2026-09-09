@@ -1,8 +1,6 @@
 /// Domain models, code templates, and generation options for Phase 10.8: Code Generation Studio.
 library;
 
-import 'dart:convert';
-
 /// Target style/structure for the generated Flutter code.
 enum CodeGenStyle {
   standaloneWidget,

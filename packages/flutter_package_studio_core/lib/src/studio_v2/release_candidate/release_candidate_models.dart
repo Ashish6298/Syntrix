@@ -1,8 +1,6 @@
 /// Domain models and gate verification criteria for Phase 10.21: Release Candidate Audit.
 library;
 
-import 'dart:convert';
-
 /// Dimensions evaluated in Milestone 10 Release Gate.
 enum Milestone10GateDimension {
   coreFunctionality,
@@ -81,7 +79,9 @@ enum GateStatus {
 
   String get label => name.toUpperCase();
 
-  String get symbol => this == GateStatus.pass ? 'PASS' : (this == GateStatus.warning ? 'WARN' : 'FAIL');
+  String get symbol => this == GateStatus.pass
+      ? 'PASS'
+      : (this == GateStatus.warning ? 'WARN' : 'FAIL');
 }
 
 /// Verification result for a single release gate.
@@ -152,12 +152,15 @@ class ReleaseCandidateAuditReport {
       reportId: json['report_id'] as String? ?? 'rc_audit_default',
       targetVersion: json['target_version'] as String? ?? '1.0.0',
       isMilestone10Complete: json['is_milestone10_complete'] as bool? ?? true,
-      isReleaseCandidateReady: json['is_release_candidate_ready'] as bool? ?? true,
+      isReleaseCandidateReady:
+          json['is_release_candidate_ready'] as bool? ?? true,
       gates: (json['gates'] as List<dynamic>?)
-              ?.map((g) => ReleaseCandidateGateItem.fromJson(g as Map<String, dynamic>))
+              ?.map((g) =>
+                  ReleaseCandidateGateItem.fromJson(g as Map<String, dynamic>))
               .toList() ??
           const [],
-      packageMetadataCheck: (json['package_metadata_check'] as Map<String, dynamic>?) ?? {},
+      packageMetadataCheck:
+          (json['package_metadata_check'] as Map<String, dynamic>?) ?? {},
       auditedAt: DateTime.parse(json['audited_at'] as String),
     );
   }

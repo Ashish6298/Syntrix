@@ -1,16 +1,17 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 void main() {
-  group('Phase 9.10 — Enterprise Remote Execution & Controlled Workers Tests', () {
+  group('Phase 9.10 — Enterprise Remote Execution & Controlled Workers Tests',
+      () {
     late Directory tempDir;
     late String rootPath;
 
     setUp(() {
-      tempDir = Directory.systemTemp.createTempSync('fps_enterprise_worker_test_');
+      tempDir =
+          Directory.systemTemp.createTempSync('fps_enterprise_worker_test_');
       rootPath = tempDir.path;
 
       // Scaffold clean workspace
@@ -32,7 +33,9 @@ environment:
     // Test 1: Worker Model Conformance & Capability Matching
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('1. Worker Model: defines capabilities, health status, and resource limits', () {
+    test(
+        '1. Worker Model: defines capabilities, health status, and resource limits',
+        () {
       final worker = ControlledWorkerInfo(
         workerId: 'w_heavy_01',
         displayName: 'Heavy Build Worker',
@@ -51,8 +54,10 @@ environment:
         lastHeartbeat: DateTime.now(),
       );
 
-      expect(worker.capabilities.contains(WorkerCapability.buildArtifacts), isTrue);
-      expect(worker.capabilities.contains(WorkerCapability.aiAnalysis), isFalse);
+      expect(worker.capabilities.contains(WorkerCapability.buildArtifacts),
+          isTrue);
+      expect(
+          worker.capabilities.contains(WorkerCapability.aiAnalysis), isFalse);
       expect(worker.capacity.maxMemoryMb, equals(8192));
 
       // JSON roundtrip
@@ -66,7 +71,9 @@ environment:
     // Test 2: Worker Dispatch & Execution
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('2. Worker Dispatch: successfully schedules and executes isolated task', () async {
+    test(
+        '2. Worker Dispatch: successfully schedules and executes isolated task',
+        () async {
       final manager = EnterpriseWorkerManager(projectRoot: rootPath);
 
       final request = WorkerExecutionRequest(
@@ -85,7 +92,8 @@ environment:
       expect(result.status, equals(WorkerExecutionStatus.completed));
       expect(result.exitCode, equals(0));
       expect(result.isSuccess, isTrue);
-      expect(result.stdoutLog, contains('executed successfully in worker isolation'));
+      expect(result.stdoutLog,
+          contains('executed successfully in worker isolation'));
       expect(manager.executionHistory.length, equals(1));
     });
 
@@ -93,7 +101,9 @@ environment:
     // Test 3: Capability Mismatch Handling
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('3. Capability Filter: rejects or throws when no worker supports requested capability', () async {
+    test(
+        '3. Capability Filter: rejects or throws when no worker supports requested capability',
+        () async {
       // Worker only supports analyzerCheck
       final specializedWorker = LocalControlledWorker(
         workerId: 'w_lint_only',
@@ -126,7 +136,8 @@ environment:
     // Test 4: Task Cancellation
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('4. Task Cancellation: cancels active worker task on request', () async {
+    test('4. Task Cancellation: cancels active worker task on request',
+        () async {
       final worker = LocalControlledWorker(
         workerId: 'w_cancel_test',
         displayName: 'Cancel Worker',
@@ -140,7 +151,9 @@ environment:
     // Test 5: Pure Worker Renderer Conformance
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('5. Renderer Conformance: generates deterministic JSON and Markdown worker reports', () {
+    test(
+        '5. Renderer Conformance: generates deterministic JSON and Markdown worker reports',
+        () {
       final manager = EnterpriseWorkerManager(projectRoot: rootPath);
       const renderer = EnterpriseWorkerRenderer();
 
@@ -149,7 +162,10 @@ environment:
       expect(json1, equals(json2));
 
       final md = renderer.renderMarkdown(manager.registeredWorkers);
-      expect(md, contains('# Enterprise Controlled Workers & Remote Execution Report'));
+      expect(
+          md,
+          contains(
+              '# Enterprise Controlled Workers & Remote Execution Report'));
       expect(md, contains('Total Workers: 1'));
       expect(md, contains('Healthy Workers: 1'));
     });

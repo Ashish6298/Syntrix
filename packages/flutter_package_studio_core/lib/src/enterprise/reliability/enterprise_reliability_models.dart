@@ -1,9 +1,6 @@
 /// Domain models and abstractions for Phase 9.13: Enterprise Reliability, Recovery & Disaster Readiness.
 library;
 
-import 'dart:convert';
-import 'package:flutter_package_studio_core/src/enterprise/orchestration/enterprise_orchestration_models.dart';
-
 /// Status of an operation checkpoint or recovery state.
 enum CheckpointStatus {
   active,
@@ -69,7 +66,8 @@ class OperationCheckpoint {
         (e) => e.name == json['status'],
         orElse: () => CheckpointStatus.failed,
       ),
-      isDestructiveOperation: json['is_destructive_operation'] as bool? ?? false,
+      isDestructiveOperation:
+          json['is_destructive_operation'] as bool? ?? false,
       isCompleted: json['is_completed'] as bool? ?? false,
       stateData: (json['state_data'] as Map<String, dynamic>?) ?? const {},
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -134,10 +132,13 @@ class PersistentExecutionState {
       ),
       lastCompletedStageId: json['last_completed_stage_id'] as String?,
       checkpoints: (json['checkpoints'] as List<dynamic>?)
-              ?.map((c) => OperationCheckpoint.fromJson(c as Map<String, dynamic>))
+              ?.map((c) =>
+                  OperationCheckpoint.fromJson(c as Map<String, dynamic>))
               .toList() ??
           const [],
-      completedStageResults: (json['completed_stage_results'] as Map<String, dynamic>?) ?? const {},
+      completedStageResults:
+          (json['completed_stage_results'] as Map<String, dynamic>?) ??
+              const {},
       startedAt: DateTime.parse(json['started_at'] as String),
       lastHeartbeat: DateTime.parse(json['last_heartbeat'] as String),
     );
@@ -182,8 +183,10 @@ class RecoveryOperationResult {
       workflowId: json['workflow_id'] as String? ?? '',
       isSuccess: json['is_success'] as bool? ?? false,
       operationType: json['operation_type'] as String? ?? 'RESUME',
-      recoveredCheckpointsCount: json['recovered_checkpoints_count'] as int? ?? 0,
-      skippedDestructiveOperations: json['skipped_destructive_operations'] as int? ?? 0,
+      recoveredCheckpointsCount:
+          json['recovered_checkpoints_count'] as int? ?? 0,
+      skippedDestructiveOperations:
+          json['skipped_destructive_operations'] as int? ?? 0,
       actionsTaken: (json['actions_taken'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??

@@ -1,7 +1,6 @@
 /// Domain models and permission definitions for Phase 9.3: Role-Based Access Control (RBAC).
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/enterprise/identity/enterprise_identity_models.dart';
 
 /// Standard Enterprise Operations.
@@ -47,7 +46,8 @@ enum EnterpriseOperation {
   static EnterpriseOperation fromString(String? val) {
     if (val == null) return EnterpriseOperation.inspectProject;
     return EnterpriseOperation.values.firstWhere(
-      (e) => e.name.toLowerCase() == val.toLowerCase() ||
+      (e) =>
+          e.name.toLowerCase() == val.toLowerCase() ||
           e.permissionKey.toLowerCase() == val.toLowerCase(),
       orElse: () => EnterpriseOperation.inspectProject,
     );
@@ -144,9 +144,12 @@ class AuthorizationResult {
               ?.map((r) => EnterpriseRole.fromString(r.toString()))
               .toList() ??
           const [],
-      requiresAdditionalApproval: json['requires_additional_approval'] as bool? ?? false,
+      requiresAdditionalApproval:
+          json['requires_additional_approval'] as bool? ?? false,
       durationMs: json['duration_ms'] as int? ?? 0,
-      timestamp: json['timestamp'] is String ? DateTime.parse(json['timestamp'] as String) : DateTime.now(),
+      timestamp: json['timestamp'] is String
+          ? DateTime.parse(json['timestamp'] as String)
+          : DateTime.now(),
     );
   }
 }

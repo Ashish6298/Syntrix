@@ -1,9 +1,6 @@
 /// Domain models and credential references for Phase 9.9: Enterprise Secrets & Credential Abstraction.
 library;
 
-import 'dart:convert';
-import 'package:flutter_package_studio_core/src/ai/security/secret_redactor.dart';
-
 /// Supported Credential Vault / Provider Types.
 enum CredentialProviderType {
   environment,
@@ -32,7 +29,8 @@ enum CredentialProviderType {
   static CredentialProviderType fromString(String? val) {
     if (val == null) return CredentialProviderType.environment;
     return CredentialProviderType.values.firstWhere(
-      (e) => e.name.toLowerCase() == val.toLowerCase() ||
+      (e) =>
+          e.name.toLowerCase() == val.toLowerCase() ||
           e.displayName.toLowerCase() == val.toLowerCase(),
       orElse: () => CredentialProviderType.custom,
     );
@@ -90,14 +88,19 @@ class CredentialReference {
     return CredentialReference(
       key: json['key'] as String? ?? '',
       providerId: json['provider_id'] as String? ?? 'env',
-      providerType: CredentialProviderType.fromString(json['provider_type'] as String?),
+      providerType:
+          CredentialProviderType.fromString(json['provider_type'] as String?),
       scope: CredentialScope.values.firstWhere(
         (s) => s.name == json['scope'],
         orElse: () => CredentialScope.global,
       ),
       description: json['description'] as String? ?? '',
-      createdAt: json['created_at'] is String ? DateTime.parse(json['created_at'] as String) : null,
-      expiresAt: json['expires_at'] is String ? DateTime.parse(json['expires_at'] as String) : null,
+      createdAt: json['created_at'] is String
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
+      expiresAt: json['expires_at'] is String
+          ? DateTime.parse(json['expires_at'] as String)
+          : null,
       metadata: (json['metadata'] as Map<String, dynamic>?) ?? const {},
     );
   }
@@ -162,5 +165,6 @@ class EphemeralCredentialToken {
   }
 
   @override
-  String toString() => 'EphemeralCredentialToken(key: $key, scope: ${scope.id}, value: [REDACTED_SECRET])';
+  String toString() =>
+      'EphemeralCredentialToken(key: $key, scope: ${scope.id}, value: [REDACTED_SECRET])';
 }

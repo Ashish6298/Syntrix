@@ -1,8 +1,6 @@
 /// Domain models and evaluation criteria for Phase 11.3: Full Regression Testing.
 library;
 
-import 'dart:convert';
-
 /// Categories evaluated in the regression test matrix.
 enum RegressionTestCategory {
   cleanAndDeps,
@@ -137,9 +135,11 @@ class RegressionTestReport {
       isRegressionPassed: json['is_regression_passed'] as bool? ?? true,
       totalChecks: json['total_checks'] as int? ?? 0,
       totalTestsRun: json['total_tests_run'] as int? ?? 0,
-      coveragePercentage: (json['coverage_percentage'] as num?)?.toDouble() ?? 0.0,
+      coveragePercentage:
+          (json['coverage_percentage'] as num?)?.toDouble() ?? 0.0,
       testItems: (json['test_items'] as List<dynamic>?)
-              ?.map((i) => RegressionTestItem.fromJson(i as Map<String, dynamic>))
+              ?.map(
+                  (i) => RegressionTestItem.fromJson(i as Map<String, dynamic>))
               .toList() ??
           const [],
       testedAt: DateTime.parse(json['tested_at'] as String),

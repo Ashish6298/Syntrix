@@ -3,7 +3,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('Phase 10.11: Configuration Preset Models', () {
-    test('StudioConfigurationPreset JSON serialization and deserialization', () {
+    test('StudioConfigurationPreset JSON serialization and deserialization',
+        () {
       final preset = StudioConfigurationPreset(
         presetId: 'preset_custom_01',
         name: 'High Density Nebula',
@@ -34,7 +35,9 @@ void main() {
   });
 
   group('Phase 10.11: Studio Preset Engine Operations', () {
-    test('Performs complete lifecycle: create, save, load, duplicate, rename, delete', () async {
+    test(
+        'Performs complete lifecycle: create, save, load, duplicate, rename, delete',
+        () async {
       final controller = StudioV2Controller();
       final presetEngine = StudioPresetEngine(controller: controller);
 
@@ -58,7 +61,8 @@ void main() {
 
       // 2. Load preset
       await presetEngine.loadPreset('preset_minimal_zen_pulse');
-      expect(controller.state.activeConfiguration.targetLoaderId, equals('pulsar_wave'));
+      expect(controller.state.activeConfiguration.targetLoaderId,
+          equals('pulsar_wave'));
       expect(controller.state.activeConfiguration.animationSpeed, equals(0.5));
 
       // 3. Duplicate preset
@@ -71,7 +75,8 @@ void main() {
       expect(duplicated.name, equals('My Quantum V2'));
 
       // 4. Rename preset
-      final renamed = await presetEngine.renamePreset('preset_my_quantum_v2', 'My Quantum Ultimate');
+      final renamed = await presetEngine.renamePreset(
+          'preset_my_quantum_v2', 'My Quantum Ultimate');
       expect(renamed, isTrue);
       final fetched = await presetEngine.getPreset('preset_my_quantum_v2');
       expect(fetched?.name, equals('My Quantum Ultimate'));
@@ -87,12 +92,14 @@ void main() {
       final controller = StudioV2Controller();
       final presetEngine = StudioPresetEngine(controller: controller);
 
-      final jsonString = await presetEngine.exportPresetToJson('preset_cosmic_vortex_ultra');
+      final jsonString =
+          await presetEngine.exportPresetToJson('preset_cosmic_vortex_ultra');
       expect(jsonString, contains('"preset_id": "preset_cosmic_vortex_ultra"'));
       expect(jsonString, contains('"target_loader_id": "infinite_universe"'));
 
       // Modify ID and re-import
-      final modifiedJson = jsonString.replaceAll('preset_cosmic_vortex_ultra', 'preset_imported_vortex');
+      final modifiedJson = jsonString.replaceAll(
+          'preset_cosmic_vortex_ultra', 'preset_imported_vortex');
       final imported = await presetEngine.importPresetFromJson(modifiedJson);
 
       expect(imported.presetId, equals('preset_imported_vortex'));
@@ -102,7 +109,8 @@ void main() {
   });
 
   group('Phase 10.11: Studio Preset Renderer', () {
-    test('Renders ASCII Preset Tree, Markdown Catalog, and JSON array', () async {
+    test('Renders ASCII Preset Tree, Markdown Catalog, and JSON array',
+        () async {
       final controller = StudioV2Controller();
       final presetEngine = StudioPresetEngine(controller: controller);
 

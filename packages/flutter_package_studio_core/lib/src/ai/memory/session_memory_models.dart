@@ -204,8 +204,8 @@ class KnowledgeEntry {
 
   factory KnowledgeEntry.fromJson(Map<String, dynamic> json) {
     final rawType = json['type'] as String?;
-    final entryType = KnowledgeEntryType.tryParse(rawType) ??
-        KnowledgeEntryType.decision;
+    final entryType =
+        KnowledgeEntryType.tryParse(rawType) ?? KnowledgeEntryType.decision;
 
     final rawRefs = json['evidenceRefs'] as List<dynamic>? ?? const [];
     final refs = rawRefs

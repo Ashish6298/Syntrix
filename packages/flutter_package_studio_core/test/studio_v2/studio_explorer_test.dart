@@ -60,7 +60,8 @@ void main() {
       expect(querySearch.matches(entryB), isFalse);
 
       // Category match
-      const queryCategory = LoaderExplorerQuery(category: LoaderCategory.minimal);
+      const queryCategory =
+          LoaderExplorerQuery(category: LoaderCategory.minimal);
       expect(queryCategory.matches(entryA), isFalse);
       expect(queryCategory.matches(entryB), isTrue);
 
@@ -84,9 +85,11 @@ void main() {
       expect(explorer.allLoaders.length, greaterThanOrEqualTo(6));
 
       // 1. Search query
-      final cosmicLoaders = explorer.queryLoaders(const LoaderExplorerQuery(category: LoaderCategory.cosmic));
+      final cosmicLoaders = explorer.queryLoaders(
+          const LoaderExplorerQuery(category: LoaderCategory.cosmic));
       expect(cosmicLoaders.length, greaterThanOrEqualTo(2));
-      expect(cosmicLoaders.every((l) => l.category == LoaderCategory.cosmic), isTrue);
+      expect(cosmicLoaders.every((l) => l.category == LoaderCategory.cosmic),
+          isTrue);
 
       // 2. Filter by shaders & physics
       final gpuPhysicsLoaders = explorer.queryLoaders(const LoaderExplorerQuery(
@@ -98,7 +101,8 @@ void main() {
 
       // 3. Filter by favorites
       controller.toggleFavoriteLoader('infinite_universe');
-      final favs = explorer.queryLoaders(const LoaderExplorerQuery(onlyFavorites: true));
+      final favs =
+          explorer.queryLoaders(const LoaderExplorerQuery(onlyFavorites: true));
       expect(favs.length, equals(1));
       expect(favs.first.id, equals('infinite_universe'));
     });
@@ -109,8 +113,10 @@ void main() {
 
       explorer.selectAndApplyLoader('nebula_storm');
 
-      expect(controller.state.activeConfiguration.targetLoaderId, equals('nebula_storm'));
-      expect(controller.state.activeConfiguration.selectedThemeId, equals('nebula_storm'));
+      expect(controller.state.activeConfiguration.targetLoaderId,
+          equals('nebula_storm'));
+      expect(controller.state.activeConfiguration.selectedThemeId,
+          equals('nebula_storm'));
       expect(controller.state.activeConfiguration.shadersEnabled, isTrue);
       expect(controller.state.activeConfiguration.isInteractive, isTrue);
     });
@@ -119,7 +125,8 @@ void main() {
       final controller = StudioV2Controller();
       final explorer = StudioLoaderExplorerEngine(controller: controller);
 
-      final comparison = explorer.compareLoaders('infinite_universe', 'pulsar_wave');
+      final comparison =
+          explorer.compareLoaders('infinite_universe', 'pulsar_wave');
       expect(comparison.containsKey('error'), isFalse);
       expect(comparison['comparison']['both_have_particles'], isFalse);
       expect(comparison['comparison']['both_have_physics'], isFalse);
@@ -128,22 +135,26 @@ void main() {
   });
 
   group('Phase 10.3: Studio Explorer Renderer', () {
-    test('Renders ASCII Loader Card, Markdown Catalog, and Comparison Matrix', () {
+    test('Renders ASCII Loader Card, Markdown Catalog, and Comparison Matrix',
+        () {
       final controller = StudioV2Controller();
       final explorer = StudioLoaderExplorerEngine(controller: controller);
 
       final loader = explorer.getLoader('infinite_universe')!;
 
       // 1. ASCII Card
-      final card = StudioExplorerRenderer.renderLoaderCardAscii(loader, isFavorite: true);
+      final card = StudioExplorerRenderer.renderLoaderCardAscii(loader,
+          isFavorite: true);
       expect(card, contains('Infinite Universe'));
       expect(card, contains('FAVORITE'));
       expect(card, contains('Category:    Cosmic & Space'));
       expect(card, contains('Particles:   ✓ Enabled'));
-      expect(card, contains('[Preview]  [Configure]  [Generate Code] [Export]'));
+      expect(
+          card, contains('[Preview]  [Configure]  [Generate Code] [Export]'));
 
       // 2. Markdown Catalog
-      final catalogMd = StudioExplorerRenderer.renderMarkdownCatalog(explorer.allLoaders);
+      final catalogMd =
+          StudioExplorerRenderer.renderMarkdownCatalog(explorer.allLoaders);
       expect(catalogMd, contains('# Loader Explorer Catalog'));
       expect(catalogMd, contains('Infinite Universe'));
       expect(catalogMd, contains('Galaxy Orbit'));

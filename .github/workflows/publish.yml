@@ -1,0 +1,32 @@
+﻿name: Pub.dev Release & Verification
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  pre-publish-validation:
+    name: Validate pub.dev Readiness
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🎯 Setup Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: 📦 Install dependencies
+        run: dart pub get
+
+      - name: 🧪 Verify core package publication dry-run
+        working-directory: packages/flutter_package_studio_core
+        run: dart pub publish --dry-run
+
+      - name: 🧪 Verify CLI package publication dry-run
+        working-directory: packages/flutter_package_studio_cli
+        run: dart pub publish --dry-run

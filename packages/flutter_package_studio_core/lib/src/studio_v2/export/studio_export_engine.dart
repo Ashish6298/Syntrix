@@ -8,7 +8,6 @@ import 'package:flutter_package_studio_core/src/studio_v2/studio_v2_controller.d
 import 'package:flutter_package_studio_core/src/studio_v2/scene/studio_scene_engine.dart';
 import 'package:flutter_package_studio_core/src/studio_v2/scene/studio_scene_renderer.dart';
 import 'package:flutter_package_studio_core/src/studio_v2/presets/studio_preset_engine.dart';
-import 'package:flutter_package_studio_core/src/studio_v2/presets/studio_preset_renderer.dart';
 import 'package:flutter_package_studio_core/src/studio_v2/codegen/studio_codegen_engine.dart';
 import 'package:flutter_package_studio_core/src/studio_v2/codegen/studio_codegen_models.dart';
 import 'package:flutter_package_studio_core/src/studio_v2/diagnostics/studio_diagnostics_engine.dart';
@@ -42,7 +41,8 @@ class StudioExportEngine {
     required ExportFormat format,
     String? customPresetId,
   }) {
-    _logger.info('Exporting target "${target.label}" in format "${format.name.toUpperCase()}"');
+    _logger.info(
+        'Exporting target "${target.label}" in format "${format.name.toUpperCase()}"');
     final now = DateTime.now();
     final bundleId = 'export_${now.millisecondsSinceEpoch}';
 
@@ -57,7 +57,9 @@ class StudioExportEngine {
           content = encoder.convert(cfg.toJson());
           filename = 'configuration_${cfg.targetLoaderId}.json';
         } else if (format == ExportFormat.dart) {
-          final res = codeGenEngine.generateLoaderCode(cfg, options: const CodeGenOptions(style: CodeGenStyle.configurationSnippet));
+          final res = codeGenEngine.generateLoaderCode(cfg,
+              options: const CodeGenOptions(
+                  style: CodeGenStyle.configurationSnippet));
           content = res.sourceCode;
           filename = 'configuration_${cfg.targetLoaderId}.dart';
         } else {
@@ -87,22 +89,24 @@ class StudioExportEngine {
 
       case ExportTargetEntity.preset:
         if (format == ExportFormat.json) {
-          final presets = presetEngine.storageDriver.loadAllPresets();
           // synchronous snapshot for preset export
           content = jsonEncode(controller.state.activeConfiguration.toJson());
           filename = 'preset_export.json';
         } else if (format == ExportFormat.dart) {
-          final res = codeGenEngine.generateLoaderCode(controller.state.activeConfiguration);
+          final res = codeGenEngine
+              .generateLoaderCode(controller.state.activeConfiguration);
           content = res.sourceCode;
           filename = 'preset_export.dart';
         } else {
-          content = '# Preset Export\n\nPreset for loader: `${controller.state.activeConfiguration.targetLoaderId}`\n';
+          content =
+              '# Preset Export\n\nPreset for loader: `${controller.state.activeConfiguration.targetLoaderId}`\n';
           filename = 'preset_export.md';
         }
         break;
 
       case ExportTargetEntity.generatedCode:
-        final res = codeGenEngine.generateLoaderCode(controller.state.activeConfiguration);
+        final res = codeGenEngine
+            .generateLoaderCode(controller.state.activeConfiguration);
         content = format == ExportFormat.json
             ? jsonEncode(res.toJson())
             : res.sourceCode;

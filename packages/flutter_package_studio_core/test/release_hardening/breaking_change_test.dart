@@ -3,7 +3,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('Phase 11.2: Breaking-Change Audit Models', () {
-    test('BreakingChangeAuditItem and BreakingChangeAuditReport JSON roundtrip', () {
+    test('BreakingChangeAuditItem and BreakingChangeAuditReport JSON roundtrip',
+        () {
       const item = BreakingChangeAuditItem(
         dimension: BreakingChangeDimension.constructorSignatures,
         status: BreakingChangeStatus.compliant,
@@ -30,13 +31,17 @@ void main() {
       expect(restored.totalDimensionsAudited, equals(1));
       expect(restored.totalViolationsFound, equals(0));
       expect(restored.auditItems.length, equals(1));
-      expect(restored.auditItems.first.dimension, equals(BreakingChangeDimension.constructorSignatures));
-      expect(restored.auditItems.first.status, equals(BreakingChangeStatus.compliant));
+      expect(restored.auditItems.first.dimension,
+          equals(BreakingChangeDimension.constructorSignatures));
+      expect(restored.auditItems.first.status,
+          equals(BreakingChangeStatus.compliant));
     });
   });
 
   group('Phase 11.2: Breaking-Change Audit Engine Operations', () {
-    test('Audits all 10 breaking-change dimensions and confirms 100% backward compatibility', () {
+    test(
+        'Audits all 10 breaking-change dimensions and confirms 100% backward compatibility',
+        () {
       final engine = BreakingChangeAuditEngine();
       final report = engine.runBreakingChangeAudit(targetVersion: '1.0.0');
 
@@ -46,7 +51,8 @@ void main() {
       expect(report.totalViolationsFound, equals(0));
 
       final dimensions = report.auditItems.map((i) => i.dimension).toSet();
-      expect(dimensions, contains(BreakingChangeDimension.constructorSignatures));
+      expect(
+          dimensions, contains(BreakingChangeDimension.constructorSignatures));
       expect(dimensions, contains(BreakingChangeDimension.parameterNames));
       expect(dimensions, contains(BreakingChangeDimension.defaultValues));
       expect(dimensions, contains(BreakingChangeDimension.nullabilityTypes));
@@ -69,16 +75,24 @@ void main() {
       final report = engine.runBreakingChangeAudit(targetVersion: '1.0.0');
 
       // 1. ASCII Dashboard
-      final ascii = BreakingChangeRenderer.renderAsciiBreakingChangeDashboard(report);
+      final ascii =
+          BreakingChangeRenderer.renderAsciiBreakingChangeDashboard(report);
       expect(ascii, contains('PHASE 11.2 — BREAKING-CHANGE AUDIT MATRIX'));
       expect(ascii, contains('Constructor signatures'));
       expect(ascii, contains('Nullable/non-nullable types'));
-      expect(ascii, contains('Backward Compatibility: PASSED (100% Compatible)'));
+      expect(
+          ascii, contains('Backward Compatibility: PASSED (100% Compatible)'));
 
       // 2. Markdown Report
       final markdown = BreakingChangeRenderer.renderMarkdown(report);
-      expect(markdown, contains('# Milestone 11 — Phase 11.2: Breaking-Change Audit Report'));
-      expect(markdown, contains('**Backward Compatibility Status:** `PASSED (100% Compatible)`'));
+      expect(
+          markdown,
+          contains(
+              '# Milestone 11 — Phase 11.2: Breaking-Change Audit Report'));
+      expect(
+          markdown,
+          contains(
+              '**Backward Compatibility Status:** `PASSED (100% Compatible)`'));
       expect(markdown, contains('## Breaking-Change Evaluation Summary'));
       expect(markdown, contains('**Constructor signatures**'));
       expect(markdown, contains('**Phase 11.3 — Full Regression Testing**'));

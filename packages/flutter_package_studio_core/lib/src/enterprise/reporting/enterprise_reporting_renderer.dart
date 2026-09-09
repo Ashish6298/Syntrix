@@ -7,8 +7,10 @@ import 'package:flutter_package_studio_core/src/enterprise/reporting/enterprise_
 /// Formatter generating Markdown tables, JSON data schemas, and CSV exports for compliance audits.
 class EnterpriseReportingRenderer {
   /// Render compliance report as structured JSON.
-  static String renderJson(EnterpriseComplianceReport report, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+  static String renderJson(EnterpriseComplianceReport report,
+      {bool pretty = true}) {
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(report.toJson());
   }
 
@@ -21,7 +23,8 @@ class EnterpriseReportingRenderer {
     buffer.writeln('**Report ID:** `${report.reportId}`  ');
     buffer.writeln('**Organization:** `${report.organizationId}`  ');
     buffer.writeln('**Report Type:** `${report.reportType.displayName}`  ');
-    buffer.writeln('**Compliance Status:** `${report.isCompliant ? "COMPLIANT" : "NON-COMPLIANT"}`  ');
+    buffer.writeln(
+        '**Compliance Status:** `${report.isCompliant ? "COMPLIANT" : "NON-COMPLIANT"}`  ');
     buffer.writeln('**Generated At:** ${report.generatedAt.toIso8601String()}');
     buffer.writeln();
 

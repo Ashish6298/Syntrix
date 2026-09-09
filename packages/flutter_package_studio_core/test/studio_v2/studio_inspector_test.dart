@@ -27,21 +27,36 @@ void main() {
       expect(restored.defaultValue, equals(200));
     });
 
-    test('VisualInspectorSchema standardPackageSchema covers all required property categories', () {
+    test(
+        'VisualInspectorSchema standardPackageSchema covers all required property categories',
+        () {
       final schema = VisualInspectorSchema.standardPackageSchema();
 
-      expect(schema.getPropertiesByCategory(InspectorPropertyCategory.animation), isNotEmpty);
-      expect(schema.getPropertiesByCategory(InspectorPropertyCategory.particles), isNotEmpty);
-      expect(schema.getPropertiesByCategory(InspectorPropertyCategory.physics), isNotEmpty);
-      expect(schema.getPropertiesByCategory(InspectorPropertyCategory.dimensions), isNotEmpty);
-      expect(schema.getPropertiesByCategory(InspectorPropertyCategory.theming), isNotEmpty);
-      expect(schema.getPropertiesByCategory(InspectorPropertyCategory.shaders), isNotEmpty);
-      expect(schema.getPropertiesByCategory(InspectorPropertyCategory.interaction), isNotEmpty);
+      expect(
+          schema.getPropertiesByCategory(InspectorPropertyCategory.animation),
+          isNotEmpty);
+      expect(
+          schema.getPropertiesByCategory(InspectorPropertyCategory.particles),
+          isNotEmpty);
+      expect(schema.getPropertiesByCategory(InspectorPropertyCategory.physics),
+          isNotEmpty);
+      expect(
+          schema.getPropertiesByCategory(InspectorPropertyCategory.dimensions),
+          isNotEmpty);
+      expect(schema.getPropertiesByCategory(InspectorPropertyCategory.theming),
+          isNotEmpty);
+      expect(schema.getPropertiesByCategory(InspectorPropertyCategory.shaders),
+          isNotEmpty);
+      expect(
+          schema.getPropertiesByCategory(InspectorPropertyCategory.interaction),
+          isNotEmpty);
     });
   });
 
   group('Phase 10.4: Studio Inspector Engine Operations', () {
-    test('Mutates and retrieves property values cleanly across all supported controls', () {
+    test(
+        'Mutates and retrieves property values cleanly across all supported controls',
+        () {
       final controller = StudioV2Controller();
       final inspectorEngine = StudioInspectorEngine(controller: controller);
 
@@ -49,7 +64,8 @@ void main() {
       expect(inspectorEngine.getPropertyValue('animation_speed'), equals(1.0));
       expect(inspectorEngine.getPropertyValue('particle_count'), equals(200));
       expect(inspectorEngine.getPropertyValue('gravity'), equals(9.8));
-      expect(inspectorEngine.getPropertyValue('theme_id'), equals('deep_space'));
+      expect(
+          inspectorEngine.getPropertyValue('theme_id'), equals('deep_space'));
       expect(inspectorEngine.getPropertyValue('shaders_enabled'), isTrue);
       expect(inspectorEngine.getPropertyValue('is_interactive'), isTrue);
 
@@ -68,7 +84,8 @@ void main() {
 
       // Mutate theme & shaders
       inspectorEngine.setPropertyValue('theme_id', 'cyber_galaxy');
-      expect(inspectorEngine.getPropertyValue('theme_id'), equals('cyber_galaxy'));
+      expect(
+          inspectorEngine.getPropertyValue('theme_id'), equals('cyber_galaxy'));
 
       inspectorEngine.setPropertyValue('shaders_enabled', false);
       expect(inspectorEngine.getPropertyValue('shaders_enabled'), isFalse);
@@ -89,7 +106,8 @@ void main() {
       inspectorEngine.setPropertyValue('particle_count', 500);
 
       // 1. ASCII Inspector Panel
-      final ascii = StudioInspectorRenderer.renderAsciiInspector(inspectorEngine);
+      final ascii =
+          StudioInspectorRenderer.renderAsciiInspector(inspectorEngine);
       expect(ascii, contains('VISUAL CONFIGURATION INSPECTOR'));
       expect(ascii, contains('Animation'));
       expect(ascii, contains('Speed'));

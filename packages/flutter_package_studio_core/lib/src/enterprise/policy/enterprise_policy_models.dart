@@ -1,8 +1,6 @@
 /// Domain models for Phase 9.1: Enterprise Configuration & Policy Engine.
 library;
 
-import 'dart:convert';
-
 /// Policy enforcement mode.
 enum PolicyEnforcementMode {
   /// Strict enforcement: policy violations block operations.
@@ -145,16 +143,25 @@ class ReleasePolicyConfig {
   factory ReleasePolicyConfig.fromJson(Map<String, dynamic> json) {
     return ReleasePolicyConfig(
       requireSecurityAudit: json['require_security_audit'] as bool? ?? true,
-      requirePubDevValidation: json['require_pub_dev_validation'] as bool? ?? true,
+      requirePubDevValidation:
+          json['require_pub_dev_validation'] as bool? ?? true,
       requireManifest: json['require_manifest'] as bool? ?? true,
-      requireReleaseVerification: json['require_release_verification'] as bool? ?? true,
+      requireReleaseVerification:
+          json['require_release_verification'] as bool? ?? true,
       requireChangelog: json['require_changelog'] as bool? ?? true,
       requireGitTag: json['require_git_tag'] as bool? ?? true,
-      blockOnCriticalSecurityFindings: json['block_on_critical_security_findings'] as bool? ?? true,
-      requiredVerificationGates: (json['required_verification_gates'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          const ['security_audit', 'pub_dev_validation', 'release_verification', 'manifest_generation'],
+      blockOnCriticalSecurityFindings:
+          json['block_on_critical_security_findings'] as bool? ?? true,
+      requiredVerificationGates:
+          (json['required_verification_gates'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toList() ??
+              const [
+                'security_audit',
+                'pub_dev_validation',
+                'release_verification',
+                'manifest_generation'
+              ],
       allowedChannels: (json['allowed_channels'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
@@ -201,13 +208,23 @@ class SecurityPolicyConfig {
   factory SecurityPolicyConfig.fromJson(Map<String, dynamic> json) {
     return SecurityPolicyConfig(
       blockPlaintextSecrets: json['block_plaintext_secrets'] as bool? ?? true,
-      enforceSensitiveFileExclusion: json['enforce_sensitive_file_exclusion'] as bool? ?? true,
+      enforceSensitiveFileExclusion:
+          json['enforce_sensitive_file_exclusion'] as bool? ?? true,
       requireSecretRedaction: json['require_secret_redaction'] as bool? ?? true,
       blockedFilePatterns: (json['blocked_file_patterns'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
-          const ['.env*', '*.key', '*.pem', '*.p12', 'key.properties', 'credentials.json', 'secrets.json'],
-      maxAllowedCriticalFindings: json['max_allowed_critical_findings'] as int? ?? 0,
+          const [
+            '.env*',
+            '*.key',
+            '*.pem',
+            '*.p12',
+            'key.properties',
+            'credentials.json',
+            'secrets.json'
+          ],
+      maxAllowedCriticalFindings:
+          json['max_allowed_critical_findings'] as int? ?? 0,
       maxAllowedHighFindings: json['max_allowed_high_findings'] as int? ?? 0,
     );
   }
@@ -250,7 +267,8 @@ class AiUsagePolicyConfig {
         'allow_ai_assistance': allowAiAssistance,
         'allow_local_ai_provider': allowLocalAiProvider,
         'allow_external_ai_provider': allowExternalAiProvider,
-        'require_explicit_approval_for_modifications': requireExplicitApprovalForModifications,
+        'require_explicit_approval_for_modifications':
+            requireExplicitApprovalForModifications,
         'enforce_prompt_sanitization': enforcePromptSanitization,
         'disallow_direct_command_execution': disallowDirectCommandExecution,
         'allowed_ai_capabilities': allowedAiCapabilities,
@@ -260,10 +278,14 @@ class AiUsagePolicyConfig {
     return AiUsagePolicyConfig(
       allowAiAssistance: json['allow_ai_assistance'] as bool? ?? true,
       allowLocalAiProvider: json['allow_local_ai_provider'] as bool? ?? true,
-      allowExternalAiProvider: json['allow_external_ai_provider'] as bool? ?? true,
-      requireExplicitApprovalForModifications: json['require_explicit_approval_for_modifications'] as bool? ?? true,
-      enforcePromptSanitization: json['enforce_prompt_sanitization'] as bool? ?? true,
-      disallowDirectCommandExecution: json['disallow_direct_command_execution'] as bool? ?? true,
+      allowExternalAiProvider:
+          json['allow_external_ai_provider'] as bool? ?? true,
+      requireExplicitApprovalForModifications:
+          json['require_explicit_approval_for_modifications'] as bool? ?? true,
+      enforcePromptSanitization:
+          json['enforce_prompt_sanitization'] as bool? ?? true,
+      disallowDirectCommandExecution:
+          json['disallow_direct_command_execution'] as bool? ?? true,
       allowedAiCapabilities: (json['allowed_ai_capabilities'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
@@ -296,7 +318,13 @@ class DependencyPolicyConfig {
   const DependencyPolicyConfig({
     this.allowedPackages = const [],
     this.blockedPackages = const [],
-    this.allowedLicenseTypes = const ['MIT', 'Apache-2.0', 'BSD-3-Clause', 'BSD-2-Clause', 'ISC'],
+    this.allowedLicenseTypes = const [
+      'MIT',
+      'Apache-2.0',
+      'BSD-3-Clause',
+      'BSD-2-Clause',
+      'ISC'
+    ],
     this.disallowGitDependenciesInRelease = true,
     this.disallowPathDependenciesInRelease = true,
   });
@@ -305,18 +333,30 @@ class DependencyPolicyConfig {
         'allowed_packages': allowedPackages,
         'blocked_packages': blockedPackages,
         'allowed_license_types': allowedLicenseTypes,
-        'disallow_git_dependencies_in_release': disallowGitDependenciesInRelease,
-        'disallow_path_dependencies_in_release': disallowPathDependenciesInRelease,
+        'disallow_git_dependencies_in_release':
+            disallowGitDependenciesInRelease,
+        'disallow_path_dependencies_in_release':
+            disallowPathDependenciesInRelease,
       };
 
   factory DependencyPolicyConfig.fromJson(Map<String, dynamic> json) {
     return DependencyPolicyConfig(
-      allowedPackages: (json['allowed_packages'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
-      blockedPackages: (json['blocked_packages'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
-      allowedLicenseTypes: (json['allowed_license_types'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+      allowedPackages: (json['allowed_packages'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      blockedPackages: (json['blocked_packages'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      allowedLicenseTypes: (json['allowed_license_types'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
           const ['MIT', 'Apache-2.0', 'BSD-3-Clause', 'BSD-2-Clause', 'ISC'],
-      disallowGitDependenciesInRelease: json['disallow_git_dependencies_in_release'] as bool? ?? true,
-      disallowPathDependenciesInRelease: json['disallow_path_dependencies_in_release'] as bool? ?? true,
+      disallowGitDependenciesInRelease:
+          json['disallow_git_dependencies_in_release'] as bool? ?? true,
+      disallowPathDependenciesInRelease:
+          json['disallow_path_dependencies_in_release'] as bool? ?? true,
     );
   }
 }
@@ -350,11 +390,13 @@ class NamingAndVersioningPolicyConfig {
       packagePrefix: json['package_prefix'] as String?,
       orgDomainPrefix: json['org_domain_prefix'] as String?,
       enforceSemver: json['enforce_semver'] as bool? ?? true,
-      disallowPrereleaseInProduction: json['disallow_prerelease_in_production'] as bool? ?? true,
-      allowedPackageNameRegexes: (json['allowed_package_name_regexes'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          const [r'^[a-z][a-z0-9_]*$'],
+      disallowPrereleaseInProduction:
+          json['disallow_prerelease_in_production'] as bool? ?? true,
+      allowedPackageNameRegexes:
+          (json['allowed_package_name_regexes'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toList() ??
+              const [r'^[a-z][a-z0-9_]*$'],
     );
   }
 }
@@ -374,16 +416,22 @@ class OperationPolicyConfig {
   Map<String, dynamic> toJson() => {
         'allowed_operations': allowedOperations,
         'blocked_operations': blockedOperations,
-        'require_audit_logging_for_all_operations': requireAuditLoggingForAllOperations,
+        'require_audit_logging_for_all_operations':
+            requireAuditLoggingForAllOperations,
       };
 
   factory OperationPolicyConfig.fromJson(Map<String, dynamic> json) {
     return OperationPolicyConfig(
-      allowedOperations:
-          (json['allowed_operations'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const ['*'],
-      blockedOperations:
-          (json['blocked_operations'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
-      requireAuditLoggingForAllOperations: json['require_audit_logging_for_all_operations'] as bool? ?? true,
+      allowedOperations: (json['allowed_operations'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const ['*'],
+      blockedOperations: (json['blocked_operations'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      requireAuditLoggingForAllOperations:
+          json['require_audit_logging_for_all_operations'] as bool? ?? true,
     );
   }
 }
@@ -452,7 +500,8 @@ class EnterprisePolicyDocument {
           aiUsagePolicy: const AiUsagePolicyConfig(
             allowAiAssistance: true,
             allowLocalAiProvider: true,
-            allowExternalAiProvider: false, // Disallow external AI for government/financial strictness
+            allowExternalAiProvider:
+                false, // Disallow external AI for government/financial strictness
             requireExplicitApprovalForModifications: true,
             enforcePromptSanitization: true,
             disallowDirectCommandExecution: true,
@@ -535,28 +584,38 @@ class EnterprisePolicyDocument {
     return EnterprisePolicyDocument(
       version: json['version'] as String? ?? '1.0.0',
       organizationId: json['organization_id'] as String? ?? 'default_org',
-      organizationName: json['organization_name'] as String? ?? 'Enterprise Default Organization',
+      organizationName: json['organization_name'] as String? ??
+          'Enterprise Default Organization',
       profile: EnterprisePolicyProfile.fromString(json['profile'] as String?),
-      enforcementMode: PolicyEnforcementMode.fromString(json['enforcement_mode'] as String?),
+      enforcementMode:
+          PolicyEnforcementMode.fromString(json['enforcement_mode'] as String?),
       releasePolicy: json['release_policy'] is Map<String, dynamic>
-          ? ReleasePolicyConfig.fromJson(json['release_policy'] as Map<String, dynamic>)
+          ? ReleasePolicyConfig.fromJson(
+              json['release_policy'] as Map<String, dynamic>)
           : const ReleasePolicyConfig(),
       securityPolicy: json['security_policy'] is Map<String, dynamic>
-          ? SecurityPolicyConfig.fromJson(json['security_policy'] as Map<String, dynamic>)
+          ? SecurityPolicyConfig.fromJson(
+              json['security_policy'] as Map<String, dynamic>)
           : const SecurityPolicyConfig(),
       aiUsagePolicy: json['ai_usage_policy'] is Map<String, dynamic>
-          ? AiUsagePolicyConfig.fromJson(json['ai_usage_policy'] as Map<String, dynamic>)
+          ? AiUsagePolicyConfig.fromJson(
+              json['ai_usage_policy'] as Map<String, dynamic>)
           : const AiUsagePolicyConfig(),
       dependencyPolicy: json['dependency_policy'] is Map<String, dynamic>
-          ? DependencyPolicyConfig.fromJson(json['dependency_policy'] as Map<String, dynamic>)
+          ? DependencyPolicyConfig.fromJson(
+              json['dependency_policy'] as Map<String, dynamic>)
           : const DependencyPolicyConfig(),
-      namingAndVersioningPolicy: json['naming_and_versioning_policy'] is Map<String, dynamic>
-          ? NamingAndVersioningPolicyConfig.fromJson(json['naming_and_versioning_policy'] as Map<String, dynamic>)
-          : const NamingAndVersioningPolicyConfig(),
+      namingAndVersioningPolicy:
+          json['naming_and_versioning_policy'] is Map<String, dynamic>
+              ? NamingAndVersioningPolicyConfig.fromJson(
+                  json['naming_and_versioning_policy'] as Map<String, dynamic>)
+              : const NamingAndVersioningPolicyConfig(),
       operationPolicy: json['operation_policy'] is Map<String, dynamic>
-          ? OperationPolicyConfig.fromJson(json['operation_policy'] as Map<String, dynamic>)
+          ? OperationPolicyConfig.fromJson(
+              json['operation_policy'] as Map<String, dynamic>)
           : const OperationPolicyConfig(),
-      customMetadata: (json['custom_metadata'] as Map<String, dynamic>?) ?? const {},
+      customMetadata:
+          (json['custom_metadata'] as Map<String, dynamic>?) ?? const {},
     );
   }
 
@@ -564,11 +623,16 @@ class EnterprisePolicyDocument {
   EnterprisePolicyDocument composeWith(EnterprisePolicyDocument child) {
     return EnterprisePolicyDocument(
       version: child.version.isNotEmpty ? child.version : version,
-      organizationId: child.organizationId != 'default_org' ? child.organizationId : organizationId,
-      organizationName: child.organizationName != 'Enterprise Default Organization'
-          ? child.organizationName
-          : organizationName,
-      profile: child.profile != EnterprisePolicyProfile.custom ? child.profile : profile,
+      organizationId: child.organizationId != 'default_org'
+          ? child.organizationId
+          : organizationId,
+      organizationName:
+          child.organizationName != 'Enterprise Default Organization'
+              ? child.organizationName
+              : organizationName,
+      profile: child.profile != EnterprisePolicyProfile.custom
+          ? child.profile
+          : profile,
       enforcementMode: child.enforcementMode,
       releasePolicy: child.releasePolicy,
       securityPolicy: child.securityPolicy,
@@ -687,20 +751,30 @@ class PolicyEvaluationResult {
       isBlocked: json['is_blocked'] as bool? ?? true,
       organizationId: json['organization_id'] as String? ?? 'default_org',
       scope: EnterprisePolicyScope.fromString(json['scope'] as String?),
-      enforcementMode: PolicyEnforcementMode.fromString(json['enforcement_mode'] as String?),
+      enforcementMode:
+          PolicyEnforcementMode.fromString(json['enforcement_mode'] as String?),
       findings: (json['findings'] as List<dynamic>?)
-              ?.map((f) => PolicyEvaluationFinding.fromJson(f as Map<String, dynamic>))
+              ?.map((f) =>
+                  PolicyEvaluationFinding.fromJson(f as Map<String, dynamic>))
               .toList() ??
           const [],
-      passedGates: (json['passed_gates'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
-      failedGates: (json['failed_gates'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+      passedGates: (json['passed_gates'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      failedGates: (json['failed_gates'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
       criticalCount: json['critical_count'] as int? ?? 0,
       highCount: json['high_count'] as int? ?? 0,
       mediumCount: json['medium_count'] as int? ?? 0,
       lowCount: json['low_count'] as int? ?? 0,
       summary: json['summary'] as String? ?? '',
       durationMs: json['duration_ms'] as int? ?? 0,
-      timestamp: json['timestamp'] is String ? DateTime.parse(json['timestamp'] as String) : DateTime.now(),
+      timestamp: json['timestamp'] is String
+          ? DateTime.parse(json['timestamp'] as String)
+          : DateTime.now(),
     );
   }
 }

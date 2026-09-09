@@ -17,12 +17,15 @@ void main() {
   });
 
   group('Phase 10.18: Studio Extension Engine Operations', () {
-    test('Registers default extensions and handles tool/action discovery and execution', () async {
+    test(
+        'Registers default extensions and handles tool/action discovery and execution',
+        () async {
       final controller = StudioV2Controller();
       final extEngine = StudioExtensionEngine(controller: controller);
 
       expect(extEngine.registeredExtensions.length, equals(5));
-      final names = extEngine.registeredExtensions.values.map((e) => e.name).toSet();
+      final names =
+          extEngine.registeredExtensions.values.map((e) => e.name).toSet();
       expect(names, contains('Shader Studio'));
       expect(names, contains('AI Assistant'));
       expect(names, contains('Animation Timeline'));
@@ -44,12 +47,14 @@ void main() {
 
       // Unregister extension
       await extEngine.unregisterExtension('ext_ai_assistant');
-      expect(extEngine.registeredExtensions.containsKey('ext_ai_assistant'), isFalse);
+      expect(extEngine.registeredExtensions.containsKey('ext_ai_assistant'),
+          isFalse);
     });
   });
 
   group('Phase 10.18: Studio Extension Renderer', () {
-    test('Renders ASCII Extensions list, Markdown Catalog, and JSON schema', () {
+    test('Renders ASCII Extensions list, Markdown Catalog, and JSON schema',
+        () {
       final controller = StudioV2Controller();
       final extEngine = StudioExtensionEngine(controller: controller);
 

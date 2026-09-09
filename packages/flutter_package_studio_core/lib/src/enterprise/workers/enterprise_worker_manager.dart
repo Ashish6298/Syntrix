@@ -1,7 +1,6 @@
 /// Central Enterprise Worker Pool & Execution Manager for Phase 9.10.
 library;
 
-import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:flutter_package_studio_core/src/logging/logger.dart';
 import 'package:flutter_package_studio_core/src/enterprise/workers/enterprise_worker_models.dart';
@@ -23,7 +22,8 @@ class EnterpriseWorkerManager {
   String get projectRoot => _projectRoot;
   List<ControlledWorkerInfo> get registeredWorkers =>
       _workers.values.map((w) => w.workerInfo).toList();
-  List<WorkerExecutionResult> get executionHistory => List.unmodifiable(_executionHistory);
+  List<WorkerExecutionResult> get executionHistory =>
+      List.unmodifiable(_executionHistory);
 
   EnterpriseWorkerManager({
     required String projectRoot,
@@ -47,12 +47,15 @@ class EnterpriseWorkerManager {
   /// Registers a controlled worker executor into the pool.
   void registerWorker(ControlledWorkerExecutor worker) {
     _workers[worker.workerInfo.workerId] = worker;
-    _logger.info('Registered controlled worker: ${worker.workerInfo.workerId} (${worker.workerInfo.displayName})');
+    _logger.info(
+        'Registered controlled worker: ${worker.workerInfo.workerId} (${worker.workerInfo.displayName})');
   }
 
   /// Dispatches an execution request to an available worker supporting the required capability.
-  Future<WorkerExecutionResult> dispatchExecution(WorkerExecutionRequest request) async {
-    _logger.info('Dispatching task "${request.taskType}" (${request.taskId}) requiring capability: ${request.requiredCapability.id}');
+  Future<WorkerExecutionResult> dispatchExecution(
+      WorkerExecutionRequest request) async {
+    _logger.info(
+        'Dispatching task "${request.taskType}" (${request.taskId}) requiring capability: ${request.requiredCapability.id}');
 
     // Find suitable healthy worker
     final candidate = _workers.values.firstWhere(
@@ -67,7 +70,8 @@ class EnterpriseWorkerManager {
     final result = await candidate.executeTask(request);
     _executionHistory.add(result);
 
-    _logger.info('Task "${request.taskId}" completed on worker "${candidate.workerInfo.workerId}" with status: ${result.status.label}');
+    _logger.info(
+        'Task "${request.taskId}" completed on worker "${candidate.workerInfo.workerId}" with status: ${result.status.label}');
     return result;
   }
 
@@ -76,7 +80,8 @@ class EnterpriseWorkerManager {
     for (final worker in _workers.values) {
       final cancelled = await worker.cancelTask(taskId);
       if (cancelled) {
-        _logger.info('Cancelled task "$taskId" on worker "${worker.workerInfo.workerId}".');
+        _logger.info(
+            'Cancelled task "$taskId" on worker "${worker.workerInfo.workerId}".');
         return true;
       }
     }

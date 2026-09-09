@@ -9,7 +9,8 @@ class EnterpriseWorkerRenderer {
   const EnterpriseWorkerRenderer();
 
   /// Renders formatted JSON string.
-  String renderJson(List<ControlledWorkerInfo> workers, {List<WorkerExecutionResult>? executions}) {
+  String renderJson(List<ControlledWorkerInfo> workers,
+      {List<WorkerExecutionResult>? executions}) {
     const encoder = JsonEncoder.withIndent('  ');
     return encoder.convert({
       'workers': workers.map((w) => w.toJson()).toList(),
@@ -18,7 +19,8 @@ class EnterpriseWorkerRenderer {
   }
 
   /// Renders structured Markdown worker status report.
-  String renderMarkdown(List<ControlledWorkerInfo> workers, {List<WorkerExecutionResult>? executions}) {
+  String renderMarkdown(List<ControlledWorkerInfo> workers,
+      {List<WorkerExecutionResult>? executions}) {
     final buffer = StringBuffer();
 
     buffer.writeln('# Enterprise Controlled Workers & Remote Execution Report');
@@ -30,8 +32,10 @@ class EnterpriseWorkerRenderer {
     buffer.writeln('## Executive Summary');
     buffer.writeln('```text');
     buffer.writeln('Total Workers: ${workers.length}');
-    buffer.writeln('Healthy Workers: ${workers.where((w) => w.healthStatus == WorkerHealthStatus.healthy).length}');
-    buffer.writeln('Busy Workers: ${workers.where((w) => w.healthStatus == WorkerHealthStatus.busy).length}');
+    buffer.writeln(
+        'Healthy Workers: ${workers.where((w) => w.healthStatus == WorkerHealthStatus.healthy).length}');
+    buffer.writeln(
+        'Busy Workers: ${workers.where((w) => w.healthStatus == WorkerHealthStatus.busy).length}');
     buffer.writeln('Total Executions: ${executions?.length ?? 0}');
     buffer.writeln('```');
     buffer.writeln();
@@ -45,11 +49,14 @@ class EnterpriseWorkerRenderer {
             ? '🟢'
             : (w.healthStatus == WorkerHealthStatus.busy ? '🟡' : '🔴');
 
-        buffer.writeln('### $icon Worker: `${w.displayName}` (`${w.workerId}`)');
+        buffer
+            .writeln('### $icon Worker: `${w.displayName}` (`${w.workerId}`)');
         buffer.writeln('- **Host**: `${w.host}`');
         buffer.writeln('- **Status**: `${w.healthStatus.label}`');
-        buffer.writeln('- **Capabilities**: ${w.capabilities.map((c) => c.id).join(", ")}');
-        buffer.writeln('- **Limits**: Max ${w.capacity.maxMemoryMb}MB RAM, ${w.capacity.maxCpuCores} Cores, ${w.capacity.timeout.inMinutes}m timeout');
+        buffer.writeln(
+            '- **Capabilities**: ${w.capabilities.map((c) => c.id).join(", ")}');
+        buffer.writeln(
+            '- **Limits**: Max ${w.capacity.maxMemoryMb}MB RAM, ${w.capacity.maxCpuCores} Cores, ${w.capacity.timeout.inMinutes}m timeout');
         buffer.writeln();
       }
     }

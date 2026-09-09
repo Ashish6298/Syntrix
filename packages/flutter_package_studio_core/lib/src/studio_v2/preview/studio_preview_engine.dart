@@ -21,7 +21,8 @@ class StudioLivePreviewEngine {
   }) : _previewState = initialState ??
             LivePreviewSessionState(
               previewId: 'prev_${DateTime.now().millisecondsSinceEpoch}',
-              activeLoaderId: controller.state.activeConfiguration.targetLoaderId,
+              activeLoaderId:
+                  controller.state.activeConfiguration.targetLoaderId,
               configuration: controller.state.activeConfiguration,
               startedAt: DateTime.now(),
             ) {
@@ -97,24 +98,31 @@ class StudioLivePreviewEngine {
 
   /// Record a new frame timing sample and update FPS / frame time metrics.
   void recordFrameTiming(FrameTimingSample sample) {
-    final recent = List<FrameTimingSample>.from(_previewState.recentTimingSamples);
+    final recent =
+        List<FrameTimingSample>.from(_previewState.recentTimingSamples);
     if (recent.length >= 60) {
       recent.removeAt(0);
     }
     recent.add(sample);
 
     final avgFps = recent.isNotEmpty
-        ? recent.map((s) => 1000.0 / s.frameDurationMs).reduce((a, b) => a + b) / recent.length
+        ? recent
+                .map((s) => 1000.0 / s.frameDurationMs)
+                .reduce((a, b) => a + b) /
+            recent.length
         : 60.0;
 
     final updatedMetrics = LivePreviewMetrics(
       currentFps: 1000.0 / sample.frameDurationMs,
       averageFps: avgFps,
       currentFrameTimeMs: sample.frameDurationMs,
-      minFrameTimeMs: recent.map((s) => s.frameDurationMs).reduce((a, b) => a < b ? a : b),
-      maxFrameTimeMs: recent.map((s) => s.frameDurationMs).reduce((a, b) => a > b ? a : b),
+      minFrameTimeMs:
+          recent.map((s) => s.frameDurationMs).reduce((a, b) => a < b ? a : b),
+      maxFrameTimeMs:
+          recent.map((s) => s.frameDurationMs).reduce((a, b) => a > b ? a : b),
       totalFramesRendered: _previewState.metrics.totalFramesRendered + 1,
-      droppedFrames: _previewState.metrics.droppedFrames + (sample.frameDurationMs > 20.0 ? 1 : 0),
+      droppedFrames: _previewState.metrics.droppedFrames +
+          (sample.frameDurationMs > 20.0 ? 1 : 0),
       currentParticleCount: sample.activeParticleCount,
     );
 

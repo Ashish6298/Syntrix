@@ -76,7 +76,8 @@ class StudioInspectorEngine {
         case 'is_interactive':
           return cfg.copyWith(isInteractive: value as bool);
         default:
-          final updatedCustom = Map<String, dynamic>.from(cfg.customParameters)..[propertyKey] = value;
+          final updatedCustom = Map<String, dynamic>.from(cfg.customParameters)
+            ..[propertyKey] = value;
           return cfg.copyWith(customParameters: updatedCustom);
       }
     });

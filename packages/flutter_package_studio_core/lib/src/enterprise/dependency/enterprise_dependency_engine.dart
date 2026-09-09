@@ -36,9 +36,10 @@ class EnterpriseDependencyGovernanceEngine {
     final sw = Stopwatch()..start();
     final now = executionTimestamp ?? DateTime.now();
 
-    final targetDir = relativePackagePath != null && relativePackagePath.isNotEmpty
-        ? Directory(p.join(_projectRoot, relativePackagePath))
-        : Directory(_projectRoot);
+    final targetDir =
+        relativePackagePath != null && relativePackagePath.isNotEmpty
+            ? Directory(p.join(_projectRoot, relativePackagePath))
+            : Directory(_projectRoot);
 
     final pubspecFile = File(p.join(targetDir.path, 'pubspec.yaml'));
     if (!pubspecFile.existsSync()) {
@@ -104,20 +105,32 @@ class EnterpriseDependencyGovernanceEngine {
         }
       }
     } catch (e) {
-      _logger.error('Failed to parse pubspec.yaml for dependency governance: $e');
+      _logger
+          .error('Failed to parse pubspec.yaml for dependency governance: $e');
     }
 
     sw.stop();
 
     final totalDeps = findings.length;
-    final approvedCount = findings.where((f) => f.status == DependencyGovernanceStatus.approved).length;
-    final restrictedCount = findings.where((f) => f.status == DependencyGovernanceStatus.restricted).length;
-    final blockedCount = findings.where((f) => f.status == DependencyGovernanceStatus.blocked).length;
-    final vulnerableCount = findings.where((f) => f.status == DependencyGovernanceStatus.vulnerable).length;
-    final licenseViolationCount = findings.where((f) => f.status == DependencyGovernanceStatus.licenseViolation).length;
+    final approvedCount = findings
+        .where((f) => f.status == DependencyGovernanceStatus.approved)
+        .length;
+    final restrictedCount = findings
+        .where((f) => f.status == DependencyGovernanceStatus.restricted)
+        .length;
+    final blockedCount = findings
+        .where((f) => f.status == DependencyGovernanceStatus.blocked)
+        .length;
+    final vulnerableCount = findings
+        .where((f) => f.status == DependencyGovernanceStatus.vulnerable)
+        .length;
+    final licenseViolationCount = findings
+        .where((f) => f.status == DependencyGovernanceStatus.licenseViolation)
+        .length;
 
     final isBlocked = findings.any((f) => f.isBlocking);
-    final isCompliant = !isBlocked && licenseViolationCount == 0 && vulnerableCount == 0;
+    final isCompliant =
+        !isBlocked && licenseViolationCount == 0 && vulnerableCount == 0;
 
     final summary = isCompliant
         ? 'Dependency governance audit passed: $totalDeps dependencies analyzed, 0 blocking violations.'
@@ -151,7 +164,8 @@ class EnterpriseDependencyGovernanceEngine {
     for (final entry in depMap.entries) {
       final name = entry.key.toString();
       final val = entry.value;
-      final versionStr = val is String ? val : (val is Map ? val.toString() : 'any');
+      final versionStr =
+          val is String ? val : (val is Map ? val.toString() : 'any');
 
       // 1. Check for Path / Git dependencies in release policy
       if (val is Map) {
@@ -161,8 +175,10 @@ class EnterpriseDependencyGovernanceEngine {
             declaredVersion: versionStr,
             dependencyType: type,
             status: DependencyGovernanceStatus.blocked,
-            reason: 'Path dependency is disallowed in enterprise release packages.',
-            recommendation: 'Publish dependency to private enterprise repository or reference hosted package.',
+            reason:
+                'Path dependency is disallowed in enterprise release packages.',
+            recommendation:
+                'Publish dependency to private enterprise repository or reference hosted package.',
             isBlocking: true,
           ));
           continue;
@@ -174,7 +190,8 @@ class EnterpriseDependencyGovernanceEngine {
             declaredVersion: versionStr,
             dependencyType: type,
             status: DependencyGovernanceStatus.blocked,
-            reason: 'Git dependency is disallowed in enterprise release packages.',
+            reason:
+                'Git dependency is disallowed in enterprise release packages.',
             recommendation: 'Publish dependency to private hosted repository.',
             isBlocking: true,
           ));
@@ -222,8 +239,10 @@ class EnterpriseDependencyGovernanceEngine {
           dependencyType: type,
           license: license,
           status: DependencyGovernanceStatus.licenseViolation,
-          reason: 'License "$license" violates enterprise license restriction policy.',
-          recommendation: 'Use a library with permissive licensing (${policy.allowedLicenses.join(", ")}).',
+          reason:
+              'License "$license" violates enterprise license restriction policy.',
+          recommendation:
+              'Use a library with permissive licensing (${policy.allowedLicenses.join(", ")}).',
           isBlocking: true,
         ));
         continue;
@@ -237,7 +256,8 @@ class EnterpriseDependencyGovernanceEngine {
           dependencyType: type,
           license: license,
           status: DependencyGovernanceStatus.restricted,
-          reason: 'Package is classified as restricted; requires security approval before production release.',
+          reason:
+              'Package is classified as restricted; requires security approval before production release.',
           recommendation: 'Obtain security review sign-off.',
           isBlocking: false,
         ));
@@ -262,8 +282,10 @@ class EnterpriseDependencyGovernanceEngine {
           dependencyType: type,
           license: license,
           status: DependencyGovernanceStatus.blocked,
-          reason: 'Package is not in the enterprise approved list (Strict Allowlist Policy).',
-          recommendation: 'Submit dependency for organizational whitelist approval.',
+          reason:
+              'Package is not in the enterprise approved list (Strict Allowlist Policy).',
+          recommendation:
+              'Submit dependency for organizational whitelist approval.',
           isBlocking: true,
         ));
       } else {

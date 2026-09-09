@@ -1,8 +1,6 @@
 /// Domain models and audit criteria for Phase 11.7: Pub.dev Forensic Audit.
 library;
 
-import 'dart:convert';
-
 /// Status of an archive file audit check.
 enum ArchiveCheckStatus {
   compliant,
@@ -22,7 +20,9 @@ enum ArchiveCheckStatus {
     }
   }
 
-  String get symbol => this == ArchiveCheckStatus.compliant ? '✓' : (this == ArchiveCheckStatus.violating ? '✗' : '⚠');
+  String get symbol => this == ArchiveCheckStatus.compliant
+      ? '✓'
+      : (this == ArchiveCheckStatus.violating ? '✗' : '⚠');
 }
 
 /// Category of published archive items audited.
@@ -120,10 +120,12 @@ class PubForensicAuditReport {
       isDryRunClean: json['is_dry_run_clean'] as bool? ?? true,
       totalChecksRun: json['total_checks_run'] as int? ?? 0,
       checkItems: (json['check_items'] as List<dynamic>?)
-              ?.map((i) => PubArchiveCheckItem.fromJson(i as Map<String, dynamic>))
+              ?.map((i) =>
+                  PubArchiveCheckItem.fromJson(i as Map<String, dynamic>))
               .toList() ??
           const [],
-      auditedAt: DateTime.parse(json['audited_at'] as String? ?? DateTime.now().toIso8601String()),
+      auditedAt: DateTime.parse(
+          json['audited_at'] as String? ?? DateTime.now().toIso8601String()),
     );
   }
 }

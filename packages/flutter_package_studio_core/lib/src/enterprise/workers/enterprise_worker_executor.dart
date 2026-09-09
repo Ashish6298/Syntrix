@@ -47,7 +47,8 @@ class LocalControlledWorker implements ControlledWorkerExecutor {
         );
 
   @override
-  Future<WorkerExecutionResult> executeTask(WorkerExecutionRequest request) async {
+  Future<WorkerExecutionResult> executeTask(
+      WorkerExecutionRequest request) async {
     final sw = Stopwatch()..start();
     final startedAt = DateTime.now();
 
@@ -59,7 +60,8 @@ class LocalControlledWorker implements ControlledWorkerExecutor {
         workerId: workerInfo.workerId,
         status: WorkerExecutionStatus.failed,
         exitCode: 1,
-        errorMessage: 'Worker "${workerInfo.workerId}" does not support capability "${request.requiredCapability.id}".',
+        errorMessage:
+            'Worker "${workerInfo.workerId}" does not support capability "${request.requiredCapability.id}".',
         durationMs: sw.elapsedMilliseconds,
         startedAt: startedAt,
         completedAt: DateTime.now(),
@@ -81,7 +83,8 @@ class LocalControlledWorker implements ControlledWorkerExecutor {
               workerId: workerInfo.workerId,
               status: WorkerExecutionStatus.timedOut,
               exitCode: 124,
-              errorMessage: 'Task timed out after ${request.limits.timeout.inSeconds}s.',
+              errorMessage:
+                  'Task timed out after ${request.limits.timeout.inSeconds}s.',
               durationMs: sw.elapsedMilliseconds,
               startedAt: startedAt,
               completedAt: DateTime.now(),
@@ -102,7 +105,8 @@ class LocalControlledWorker implements ControlledWorkerExecutor {
             workerId: workerInfo.workerId,
             status: WorkerExecutionStatus.completed,
             exitCode: 0,
-            stdoutLog: 'Task "${request.taskType}" executed successfully in worker isolation.',
+            stdoutLog:
+                'Task "${request.taskType}" executed successfully in worker isolation.',
             outputData: {
               'executed_by': workerInfo.workerId,
               'task_type': request.taskType,

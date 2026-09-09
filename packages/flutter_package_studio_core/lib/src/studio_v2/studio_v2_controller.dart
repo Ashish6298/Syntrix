@@ -118,7 +118,8 @@ class FileSystemStudioPersistenceDriver implements StudioPersistenceDriver {
   final String _storageDirectory;
 
   FileSystemStudioPersistenceDriver({required String projectRoot})
-      : _storageDirectory = p.join(p.normalize(projectRoot), '.fps', 'studio_v2');
+      : _storageDirectory =
+            p.join(p.normalize(projectRoot), '.fps', 'studio_v2');
 
   Directory get _dir => Directory(_storageDirectory);
 
@@ -181,7 +182,8 @@ class StudioV2Controller {
     StudioV2State? initialState,
   })  : registry = registry ?? StudioV2Registry(),
         persistenceDriver = persistenceDriver ??
-            FileSystemStudioPersistenceDriver(projectRoot: Directory.current.path),
+            FileSystemStudioPersistenceDriver(
+                projectRoot: Directory.current.path),
         _state = initialState ??
             StudioV2State(
               workspaceId: 'default_workspace',
@@ -222,7 +224,9 @@ class StudioV2Controller {
   }
 
   /// Update loader / component preview configuration.
-  void updateConfiguration(StudioConfigurationDescriptor Function(StudioConfigurationDescriptor) updater) {
+  void updateConfiguration(
+      StudioConfigurationDescriptor Function(StudioConfigurationDescriptor)
+          updater) {
     _state = _state.copyWith(
       activeConfiguration: updater(_state.activeConfiguration),
       lastModifiedAt: DateTime.now(),

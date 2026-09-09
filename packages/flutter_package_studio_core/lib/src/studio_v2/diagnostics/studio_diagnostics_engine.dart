@@ -16,7 +16,8 @@ class StudioDiagnosticsEngine {
   StudioDiagnosticsEngine({required this.controller});
 
   /// Capture and record an exception event.
-  void recordException(Object error, {StackTrace? stackTrace, String context = 'General'}) {
+  void recordException(Object error,
+      {StackTrace? stackTrace, String context = 'General'}) {
     final event = DiagnosticExceptionEvent(
       eventId: 'exc_${DateTime.now().millisecondsSinceEpoch}',
       error: error.toString(),
@@ -26,7 +27,8 @@ class StudioDiagnosticsEngine {
     );
 
     _exceptions.add(event);
-    _logger.error('Diagnostic exception recorded [$context]: $error', error, stackTrace);
+    _logger.error(
+        'Diagnostic exception recorded [$context]: $error', error, stackTrace);
   }
 
   /// Append a log message from the package runtime.

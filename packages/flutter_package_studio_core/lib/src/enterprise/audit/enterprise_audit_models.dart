@@ -54,7 +54,8 @@ enum AuditEventType {
   static AuditEventType fromString(String? val) {
     if (val == null) return AuditEventType.customEvent;
     return AuditEventType.values.firstWhere(
-      (e) => e.name.toLowerCase() == val.toLowerCase() ||
+      (e) =>
+          e.name.toLowerCase() == val.toLowerCase() ||
           e.displayName.toLowerCase() == val.toLowerCase(),
       orElse: () => AuditEventType.customEvent,
     );
@@ -172,7 +173,8 @@ class EnterpriseAuditRecord {
     String? command,
     required AuditEventOutcome outcome,
     String? relevantVersion,
-    AuditSecurityClassification securityClassification = AuditSecurityClassification.internal,
+    AuditSecurityClassification securityClassification =
+        AuditSecurityClassification.internal,
     String? failureInformation,
     String? policyDecision,
     Map<String, dynamic> metadata = const {},
@@ -181,14 +183,18 @@ class EnterpriseAuditRecord {
     String? eventId,
   }) {
     final now = timestamp ?? DateTime.now();
-    final id = eventId ?? 'evt_${now.millisecondsSinceEpoch}_${now.microsecond}';
+    final id =
+        eventId ?? 'evt_${now.millisecondsSinceEpoch}_${now.microsecond}';
 
     // Strict non-negotiable security invariant: Secret and Credential Redaction on all fields
     final safeOperation = SecretRedactor.redact(operation);
     final safePackageOrProject = SecretRedactor.redact(packageOrProject);
     final safeCommand = command != null ? SecretRedactor.redact(command) : null;
-    final safeFailure = failureInformation != null ? SecretRedactor.redact(failureInformation) : null;
-    final safePolicy = policyDecision != null ? SecretRedactor.redact(policyDecision) : null;
+    final safeFailure = failureInformation != null
+        ? SecretRedactor.redact(failureInformation)
+        : null;
+    final safePolicy =
+        policyDecision != null ? SecretRedactor.redact(policyDecision) : null;
 
     // Sanitize metadata
     final safeMetadata = <String, dynamic>{};
@@ -291,7 +297,8 @@ class EnterpriseAuditRecord {
         orElse: () => AuditEventOutcome.success,
       ),
       relevantVersion: json['relevant_version'] as String?,
-      securityClassification: AuditSecurityClassification.fromString(json['security_classification'] as String?),
+      securityClassification: AuditSecurityClassification.fromString(
+          json['security_classification'] as String?),
       failureInformation: json['failure_information'] as String?,
       policyDecision: json['policy_decision'] as String?,
       metadata: (json['metadata'] as Map<String, dynamic>?) ?? const {},

@@ -23,7 +23,8 @@ class EnterpriseIdentityManager {
 
   String get projectRoot => _projectRoot;
   EnterpriseSession? get currentSession => _currentSession;
-  EnterpriseIdentity get currentIdentity => _currentSession?.identity ?? EnterpriseIdentity.anonymous;
+  EnterpriseIdentity get currentIdentity =>
+      _currentSession?.identity ?? EnterpriseIdentity.anonymous;
 
   EnterpriseIdentityManager({
     required String projectRoot,
@@ -36,7 +37,8 @@ class EnterpriseIdentityManager {
   /// Registers an enterprise identity provider.
   void registerProvider(EnterpriseIdentityProvider provider) {
     _providers[provider.providerId] = provider;
-    _logger.info('Registered identity provider: ${provider.providerId} (${provider.displayName})');
+    _logger.info(
+        'Registered identity provider: ${provider.providerId} (${provider.displayName})');
   }
 
   /// Authenticates using a registered provider.
@@ -66,7 +68,8 @@ class EnterpriseIdentityManager {
     if (result.isSuccess && result.session != null) {
       _currentSession = result.session;
       _saveSessionCache(result.session!);
-      _logger.info('Successfully authenticated identity: ${result.session!.identity.displayName} (${result.session!.identity.email})');
+      _logger.info(
+          'Successfully authenticated identity: ${result.session!.identity.displayName} (${result.session!.identity.email})');
     }
 
     return result;
@@ -119,7 +122,8 @@ class EnterpriseIdentityManager {
     return EnterpriseIdentity.anonymous;
   }
 
-  File get _sessionCacheFile => File(p.join(_projectRoot, '.fps', 'session.json'));
+  File get _sessionCacheFile =>
+      File(p.join(_projectRoot, '.fps', 'session.json'));
 
   void _saveSessionCache(EnterpriseSession session) {
     try {

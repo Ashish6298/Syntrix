@@ -1,8 +1,6 @@
 /// Domain models and platform profiles for Phase 10.16: Cross-Platform Environment Center.
 library;
 
-import 'dart:convert';
-
 /// Supported target platforms.
 enum StudioPlatformType {
   android,
@@ -92,7 +90,8 @@ class StudioPlatformProfile {
         orElse: () => StudioPlatformType.windows,
       ),
       supportStatus: PlatformCapabilityStatus.values.firstWhere(
-        (s) => s.id == json['support_status'] || s.name == json['support_status'],
+        (s) =>
+            s.id == json['support_status'] || s.name == json['support_status'],
         orElse: () => PlatformCapabilityStatus.verified,
       ),
       rendererBackend: json['renderer_backend'] as String?,
@@ -136,7 +135,8 @@ class StudioEnvironmentReport {
       reportId: json['report_id'] as String? ?? 'env_default',
       activeHostPlatform: json['active_host_platform'] as String? ?? 'Windows',
       platformProfiles: (json['platform_profiles'] as List<dynamic>?)
-              ?.map((p) => StudioPlatformProfile.fromJson(p as Map<String, dynamic>))
+              ?.map((p) =>
+                  StudioPlatformProfile.fromJson(p as Map<String, dynamic>))
               .toList() ??
           const [],
       inspectedAt: DateTime.parse(json['inspected_at'] as String),

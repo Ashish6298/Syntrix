@@ -62,7 +62,8 @@ dependencies:
     });
 
     test('Generates Security Compliance Report', () async {
-      final securityEngine = EnterpriseSecurityComplianceEngine(projectRoot: tempDir.path);
+      final securityEngine =
+          EnterpriseSecurityComplianceEngine(projectRoot: tempDir.path);
       final reportingEngine = EnterpriseReportingEngine(
         projectRoot: tempDir.path,
         securityEngine: securityEngine,
@@ -72,14 +73,16 @@ dependencies:
         organizationId: 'acme_corp',
       );
 
-      expect(report.reportType, equals(ComplianceReportType.securityCompliance));
+      expect(
+          report.reportType, equals(ComplianceReportType.securityCompliance));
       expect(report.isCompliant, isTrue);
       expect(report.sections, isNotEmpty);
       expect(report.summaryMetrics['compliance_passed'], isTrue);
     });
 
     test('Generates Dependency Compliance Report', () async {
-      final depEngine = EnterpriseDependencyGovernanceEngine(projectRoot: tempDir.path);
+      final depEngine =
+          EnterpriseDependencyGovernanceEngine(projectRoot: tempDir.path);
       final reportingEngine = EnterpriseReportingEngine(
         projectRoot: tempDir.path,
         dependencyEngine: depEngine,
@@ -89,7 +92,8 @@ dependencies:
         organizationId: 'acme_corp',
       );
 
-      expect(report.reportType, equals(ComplianceReportType.dependencyCompliance));
+      expect(
+          report.reportType, equals(ComplianceReportType.dependencyCompliance));
       expect(report.isCompliant, isTrue);
       expect(report.sections.first.headers, contains('Package Name'));
     });
@@ -98,7 +102,8 @@ dependencies:
       final auditEngine = EnterpriseAuditEngine(projectRoot: tempDir.path);
       await auditEngine.recordEvent(
         eventType: AuditEventType.packagePublished,
-        actorIdentity: const EnterpriseIdentity(id: 'rel_mgr', displayName: 'Release Manager'),
+        actorIdentity: const EnterpriseIdentity(
+            id: 'rel_mgr', displayName: 'Release Manager'),
         operation: 'PUBLISH',
         packageOrProject: 'audit_pkg',
         outcome: AuditEventOutcome.success,
@@ -119,8 +124,10 @@ dependencies:
     });
 
     test('Generates Comprehensive Enterprise Governance Report', () async {
-      final securityEngine = EnterpriseSecurityComplianceEngine(projectRoot: tempDir.path);
-      final depEngine = EnterpriseDependencyGovernanceEngine(projectRoot: tempDir.path);
+      final securityEngine =
+          EnterpriseSecurityComplianceEngine(projectRoot: tempDir.path);
+      final depEngine =
+          EnterpriseDependencyGovernanceEngine(projectRoot: tempDir.path);
       final auditEngine = EnterpriseAuditEngine(projectRoot: tempDir.path);
 
       final reportingEngine = EnterpriseReportingEngine(
@@ -134,7 +141,8 @@ dependencies:
         organizationId: 'acme_corp',
       );
 
-      expect(report.reportType, equals(ComplianceReportType.comprehensiveGovernance));
+      expect(report.reportType,
+          equals(ComplianceReportType.comprehensiveGovernance));
       expect(report.isCompliant, isTrue);
       expect(report.sections.length, greaterThanOrEqualTo(2));
       expect(report.summaryMetrics['overall_compliant'], isTrue);
@@ -148,7 +156,8 @@ dependencies:
         organizationId: 'enterprise_holdings',
         reportType: ComplianceReportType.comprehensiveGovernance,
         title: 'Comprehensive Governance Certification',
-        executiveSummary: 'Full certification passed across all enterprise controls.',
+        executiveSummary:
+            'Full certification passed across all enterprise controls.',
         isCompliant: true,
         sections: [
           const ComplianceReportSection(

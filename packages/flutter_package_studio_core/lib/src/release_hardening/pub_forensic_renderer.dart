@@ -7,8 +7,10 @@ import 'package:flutter_package_studio_core/src/release_hardening/pub_forensic_m
 /// Formatter generating ASCII Forensic Matrix dashboards, Markdown reports, and JSON schemas.
 class PubForensicAuditRenderer {
   /// Render forensic audit report as structured JSON.
-  static String renderJson(PubForensicAuditReport report, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+  static String renderJson(PubForensicAuditReport report,
+      {bool pretty = true}) {
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(report.toJson());
   }
 
@@ -16,13 +18,17 @@ class PubForensicAuditRenderer {
   static String renderAsciiForensicDashboard(PubForensicAuditReport report) {
     final buffer = StringBuffer();
 
-    buffer.writeln('┌────────────────────────────────────────────────────────────┐');
-    buffer.writeln('│ PHASE 11.7 — PUB.DEV FORENSIC AUDIT DASHBOARD              │');
-    buffer.writeln('├────────────────────────────────────────────────────────────┤');
+    buffer.writeln(
+        '┌────────────────────────────────────────────────────────────┐');
+    buffer.writeln(
+        '│ PHASE 11.7 — PUB.DEV FORENSIC AUDIT DASHBOARD              │');
+    buffer.writeln(
+        '├────────────────────────────────────────────────────────────┤');
 
     for (final category in ArchiveAuditCategory.values) {
       buffer.writeln('│ [Category: ${category.label}]'.padRight(61) + '│');
-      buffer.writeln('├────────────────────────────────────────────────────────────┤');
+      buffer.writeln(
+          '├────────────────────────────────────────────────────────────┤');
 
       final items = report.checkItems.where((c) => c.category == category);
       for (final item in items) {
@@ -31,13 +37,18 @@ class PubForensicAuditRenderer {
         final statusStr = item.status.label.padRight(9);
         buffer.writeln('│ $nameStr $sym $statusStr │');
       }
-      buffer.writeln('├────────────────────────────────────────────────────────────┤');
+      buffer.writeln(
+          '├────────────────────────────────────────────────────────────┤');
     }
 
-    buffer.writeln('│ Dry-Run Command: flutter pub publish --dry-run (CLEAN: ✓)  │');
-    buffer.writeln('│ Total Checks: ${report.totalChecksRun.toString().padRight(2)} | Status: ${report.isArchiveCertified ? "PASSED (0 VIOLATIONS)" : "FAILED"}             │');
-    buffer.writeln('│ Target Release: ${(report.isArchiveCertified ? "v${report.targetVersion} (ARCHIVE READY FOR PUBLISHING)" : "ARCHIVE VIOLATION DETECTED").padRight(42)} │');
-    buffer.writeln('└────────────────────────────────────────────────────────────┘');
+    buffer.writeln(
+        '│ Dry-Run Command: flutter pub publish --dry-run (CLEAN: ✓)  │');
+    buffer.writeln(
+        '│ Total Checks: ${report.totalChecksRun.toString().padRight(2)} | Status: ${report.isArchiveCertified ? "PASSED (0 VIOLATIONS)" : "FAILED"}             │');
+    buffer.writeln(
+        '│ Target Release: ${(report.isArchiveCertified ? "v${report.targetVersion} (ARCHIVE READY FOR PUBLISHING)" : "ARCHIVE VIOLATION DETECTED").padRight(42)} │');
+    buffer.writeln(
+        '└────────────────────────────────────────────────────────────┘');
 
     return buffer.toString();
   }
@@ -46,10 +57,13 @@ class PubForensicAuditRenderer {
   static String renderMarkdown(PubForensicAuditReport report) {
     final buffer = StringBuffer();
 
-    buffer.writeln('# Milestone 11 — Phase 11.7: Pub.dev Forensic Audit Report');
+    buffer
+        .writeln('# Milestone 11 — Phase 11.7: Pub.dev Forensic Audit Report');
     buffer.writeln();
-    buffer.writeln('**Pub.dev Archive Status:** `${report.isArchiveCertified ? "CERTIFIED (Zero Violations)" : "FAILED"}`  ');
-    buffer.writeln('**Dry-Run Verification:** `${report.isDryRunClean ? "PASSED (Clean Exit Code 0)" : "FAILED"}`  ');
+    buffer.writeln(
+        '**Pub.dev Archive Status:** `${report.isArchiveCertified ? "CERTIFIED (Zero Violations)" : "FAILED"}`  ');
+    buffer.writeln(
+        '**Dry-Run Verification:** `${report.isDryRunClean ? "PASSED (Clean Exit Code 0)" : "FAILED"}`  ');
     buffer.writeln('**Target Release Version:** `v${report.targetVersion}`  ');
     buffer.writeln('**Total Archive Checks:** `${report.totalChecksRun}`  ');
     buffer.writeln('**Audited At:** ${report.auditedAt.toIso8601String()}');
@@ -58,12 +72,14 @@ class PubForensicAuditRenderer {
     for (final category in ArchiveAuditCategory.values) {
       buffer.writeln('## ${category.label}');
       buffer.writeln();
-      buffer.writeln('| Rule / Check Identifier | Status | Verification Details |');
+      buffer.writeln(
+          '| Rule / Check Identifier | Status | Verification Details |');
       buffer.writeln('|---|:---:|---|');
 
       final items = report.checkItems.where((c) => c.category == category);
       for (final item in items) {
-        buffer.writeln('| **${item.ruleIdentifier}** | ${item.status.symbol} `${item.status.label}` | ${item.verificationDetails} |');
+        buffer.writeln(
+            '| **${item.ruleIdentifier}** | ${item.status.symbol} `${item.status.label}` | ${item.verificationDetails} |');
       }
       buffer.writeln();
     }

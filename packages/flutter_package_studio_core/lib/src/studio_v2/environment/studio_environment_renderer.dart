@@ -7,8 +7,10 @@ import 'package:flutter_package_studio_core/src/studio_v2/environment/studio_env
 /// Formatter generating ASCII Environment wireframes, Markdown platform support sheets, and JSON schemas.
 class StudioEnvironmentRenderer {
   /// Render environment report as structured JSON.
-  static String renderJson(StudioEnvironmentReport report, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+  static String renderJson(StudioEnvironmentReport report,
+      {bool pretty = true}) {
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(report.toJson());
   }
 
@@ -43,12 +45,17 @@ class StudioEnvironmentRenderer {
 
     buffer.writeln('## Supported Platforms & Capability Matrix');
     buffer.writeln();
-    buffer.writeln('| Platform | Status | Renderer Backend | Shaders | Diagnostics | Limitations |');
+    buffer.writeln(
+        '| Platform | Status | Renderer Backend | Shaders | Diagnostics | Limitations |');
     buffer.writeln('|---|:---:|---|:---:|:---:|---|');
     for (final p in report.platformProfiles) {
-      final statusBadge = p.supportStatus == PlatformCapabilityStatus.verified ? 'Verified `✓`' : p.supportStatus.name;
-      final limitations = p.knownLimitations.isEmpty ? 'None' : p.knownLimitations.join('; ');
-      buffer.writeln('| **${p.platform.label}** | $statusBadge | `${p.rendererBackend ?? "Auto"}` | ${p.shadersSupported ? "Yes" : "No"} | ${p.diagnosticsSupported ? "Yes" : "No"} | $limitations |');
+      final statusBadge = p.supportStatus == PlatformCapabilityStatus.verified
+          ? 'Verified `✓`'
+          : p.supportStatus.name;
+      final limitations =
+          p.knownLimitations.isEmpty ? 'None' : p.knownLimitations.join('; ');
+      buffer.writeln(
+          '| **${p.platform.label}** | $statusBadge | `${p.rendererBackend ?? "Auto"}` | ${p.shadersSupported ? "Yes" : "No"} | ${p.diagnosticsSupported ? "Yes" : "No"} | $limitations |');
     }
     buffer.writeln();
 

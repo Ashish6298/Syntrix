@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:path/path.dart' as p;
@@ -44,8 +43,11 @@ dev_dependencies:
     // Test 1: Allowed, Restricted, and Blocked Dependency Policy Enforcement
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('1. Dependency Registry Policy: flags approved, restricted, and blocked packages', () async {
-      final engine = EnterpriseDependencyGovernanceEngine(projectRoot: rootPath);
+    test(
+        '1. Dependency Registry Policy: flags approved, restricted, and blocked packages',
+        () async {
+      final engine =
+          EnterpriseDependencyGovernanceEngine(projectRoot: rootPath);
 
       final policy = const EnterpriseDependencyPolicy(
         approvedPackages: ['flutter', 'flutter_test', 'http', 'path'],
@@ -60,12 +62,15 @@ dev_dependencies:
       expect(result.restrictedCount, equals(1));
       expect(result.approvedCount, greaterThanOrEqualTo(3));
 
-      final blockedFinding = result.findings.firstWhere((f) => f.packageName == 'package_y');
+      final blockedFinding =
+          result.findings.firstWhere((f) => f.packageName == 'package_y');
       expect(blockedFinding.status, equals(DependencyGovernanceStatus.blocked));
       expect(blockedFinding.isBlocking, isTrue);
 
-      final restrictedFinding = result.findings.firstWhere((f) => f.packageName == 'package_x');
-      expect(restrictedFinding.status, equals(DependencyGovernanceStatus.restricted));
+      final restrictedFinding =
+          result.findings.firstWhere((f) => f.packageName == 'package_x');
+      expect(restrictedFinding.status,
+          equals(DependencyGovernanceStatus.restricted));
       expect(restrictedFinding.isBlocking, isFalse);
     });
 
@@ -73,8 +78,11 @@ dev_dependencies:
     // Test 2: License Compliance Enforcement (GPL / AGPL vs. Permissive)
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('2. License Restrictions: blocks GPL/AGPL copyleft libraries in enterprise releases', () async {
-      final engine = EnterpriseDependencyGovernanceEngine(projectRoot: rootPath);
+    test(
+        '2. License Restrictions: blocks GPL/AGPL copyleft libraries in enterprise releases',
+        () async {
+      final engine =
+          EnterpriseDependencyGovernanceEngine(projectRoot: rootPath);
 
       final policy = const EnterpriseDependencyPolicy(
         allowedLicenses: ['MIT', 'Apache-2.0', 'BSD-3-Clause'],
@@ -93,8 +101,10 @@ dev_dependencies:
       );
 
       expect(result.licenseViolationCount, equals(1));
-      final gplFinding = result.findings.firstWhere((f) => f.packageName == 'gpl_helper');
-      expect(gplFinding.status, equals(DependencyGovernanceStatus.licenseViolation));
+      final gplFinding =
+          result.findings.firstWhere((f) => f.packageName == 'gpl_helper');
+      expect(gplFinding.status,
+          equals(DependencyGovernanceStatus.licenseViolation));
       expect(gplFinding.isBlocking, isTrue);
     });
 
@@ -102,15 +112,19 @@ dev_dependencies:
     // Test 3: Known Vulnerability / Advisory Detection
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('3. Vulnerability Detection: blocks packages with active security advisories', () async {
-      final engine = EnterpriseDependencyGovernanceEngine(projectRoot: rootPath);
+    test(
+        '3. Vulnerability Detection: blocks packages with active security advisories',
+        () async {
+      final engine =
+          EnterpriseDependencyGovernanceEngine(projectRoot: rootPath);
 
       final result = await engine.auditDependencies(
         knownVulnerablePackages: ['http'], // simulate vulnerable package
       );
 
       expect(result.vulnerableCount, equals(1));
-      final vulnFinding = result.findings.firstWhere((f) => f.packageName == 'http');
+      final vulnFinding =
+          result.findings.firstWhere((f) => f.packageName == 'http');
       expect(vulnFinding.status, equals(DependencyGovernanceStatus.vulnerable));
       expect(vulnFinding.advisoryId, equals('SEC-DEP-HTTP'));
       expect(vulnFinding.isBlocking, isTrue);
@@ -120,7 +134,9 @@ dev_dependencies:
     // Test 4: Path and Git Dependency Leaks
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('4. Release Isolation: blocks path/git dependencies in release candidate pubspec', () async {
+    test(
+        '4. Release Isolation: blocks path/git dependencies in release candidate pubspec',
+        () async {
       // Create pubspec with path and git dependencies
       File(p.join(rootPath, 'pubspec.yaml')).writeAsStringSync('''
 name: leak_pkg
@@ -133,20 +149,30 @@ dependencies:
       url: https://github.com/example/git_tool.git
 ''');
 
-      final engine = EnterpriseDependencyGovernanceEngine(projectRoot: rootPath);
+      final engine =
+          EnterpriseDependencyGovernanceEngine(projectRoot: rootPath);
       final result = await engine.auditDependencies();
 
       expect(result.isBlocked, isTrue);
-      expect(result.findings.any((f) => f.packageName == 'local_core' && f.isBlocking), isTrue);
-      expect(result.findings.any((f) => f.packageName == 'git_tool' && f.isBlocking), isTrue);
+      expect(
+          result.findings
+              .any((f) => f.packageName == 'local_core' && f.isBlocking),
+          isTrue);
+      expect(
+          result.findings
+              .any((f) => f.packageName == 'git_tool' && f.isBlocking),
+          isTrue);
     });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Test 5: Pure Dual-Format Renderer Conformance
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('5. Renderer Conformance: generates deterministic JSON and Markdown dependency governance reports', () async {
-      final engine = EnterpriseDependencyGovernanceEngine(projectRoot: rootPath);
+    test(
+        '5. Renderer Conformance: generates deterministic JSON and Markdown dependency governance reports',
+        () async {
+      final engine =
+          EnterpriseDependencyGovernanceEngine(projectRoot: rootPath);
       final result = await engine.auditDependencies();
       const renderer = EnterpriseDependencyRenderer();
 

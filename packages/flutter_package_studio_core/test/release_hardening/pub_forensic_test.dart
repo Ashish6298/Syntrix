@@ -29,14 +29,19 @@ void main() {
       expect(restored.isArchiveCertified, isTrue);
       expect(restored.isDryRunClean, isTrue);
       expect(restored.totalChecksRun, equals(1));
-      expect(restored.checkItems.first.ruleIdentifier, equals('lib/ Source Directory Included'));
-      expect(restored.checkItems.first.category, equals(ArchiveAuditCategory.requiredContent));
-      expect(restored.checkItems.first.status, equals(ArchiveCheckStatus.compliant));
+      expect(restored.checkItems.first.ruleIdentifier,
+          equals('lib/ Source Directory Included'));
+      expect(restored.checkItems.first.category,
+          equals(ArchiveAuditCategory.requiredContent));
+      expect(restored.checkItems.first.status,
+          equals(ArchiveCheckStatus.compliant));
     });
   });
 
   group('Phase 11.7: Pub.dev Forensic Audit Engine Operations', () {
-    test('Executes dry-run and forensic archive inspections across all 3 audit categories', () {
+    test(
+        'Executes dry-run and forensic archive inspections across all 3 audit categories',
+        () {
       final engine = PubForensicAuditEngine();
       final report = engine.runPubForensicAudit(targetVersion: '1.0.0');
 
@@ -75,12 +80,14 @@ void main() {
   });
 
   group('Phase 11.7: Pub.dev Forensic Audit Renderer', () {
-    test('Renders ASCII Forensic Dashboard, Markdown report, and JSON schema', () {
+    test('Renders ASCII Forensic Dashboard, Markdown report, and JSON schema',
+        () {
       final engine = PubForensicAuditEngine();
       final report = engine.runPubForensicAudit(targetVersion: '1.0.0');
 
       // 1. ASCII Dashboard
-      final ascii = PubForensicAuditRenderer.renderAsciiForensicDashboard(report);
+      final ascii =
+          PubForensicAuditRenderer.renderAsciiForensicDashboard(report);
       expect(ascii, contains('PHASE 11.7 — PUB.DEV FORENSIC AUDIT DASHBOARD'));
       expect(ascii, contains('Required Content & Assets'));
       expect(ascii, contains('Hygiene & Security'));
@@ -89,11 +96,19 @@ void main() {
 
       // 2. Markdown Report
       final markdown = PubForensicAuditRenderer.renderMarkdown(report);
-      expect(markdown, contains('# Milestone 11 — Phase 11.7: Pub.dev Forensic Audit Report'));
-      expect(markdown, contains('**Pub.dev Archive Status:** `CERTIFIED (Zero Violations)`'));
-      expect(markdown, contains('**Dry-Run Verification:** `PASSED (Clean Exit Code 0)`'));
+      expect(
+          markdown,
+          contains(
+              '# Milestone 11 — Phase 11.7: Pub.dev Forensic Audit Report'));
+      expect(
+          markdown,
+          contains(
+              '**Pub.dev Archive Status:** `CERTIFIED (Zero Violations)`'));
+      expect(markdown,
+          contains('**Dry-Run Verification:** `PASSED (Clean Exit Code 0)`'));
       expect(markdown, contains('## Required Content & Assets'));
-      expect(markdown, contains('**Phase 11.8 — Community Release Candidate (RC1)**'));
+      expect(markdown,
+          contains('**Phase 11.8 — Community Release Candidate (RC1)**'));
 
       // 3. JSON
       final json = PubForensicAuditRenderer.renderJson(report);

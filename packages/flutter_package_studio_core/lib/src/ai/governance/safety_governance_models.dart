@@ -62,7 +62,8 @@ class SafetyCheckItem {
     this.remediation,
   });
 
-  factory SafetyCheckItem.fromJson(Map<String, dynamic> json) => SafetyCheckItem(
+  factory SafetyCheckItem.fromJson(Map<String, dynamic> json) =>
+      SafetyCheckItem(
         id: json['id'] as String? ?? 'SEC_UNKNOWN',
         title: json['title'] as String? ?? 'Unknown Check',
         category: SafetyVerificationCategory.values.firstWhere(
@@ -83,7 +84,8 @@ class SafetyCheckItem {
         'category': category.name,
         'status': status.name,
         'description': SecretRedactor.redact(description),
-        if (remediation != null) 'remediation': SecretRedactor.redact(remediation!),
+        if (remediation != null)
+          'remediation': SecretRedactor.redact(remediation!),
       };
 }
 
@@ -138,7 +140,8 @@ class SafetyGovernanceResult {
 
   factory SafetyGovernanceResult.fromJson(Map<String, dynamic> json) {
     final rawChecks = json['checks'] as List<dynamic>? ?? const [];
-    final rawBlockers = json['unresolvedBlockers'] as List<dynamic>? ?? const [];
+    final rawBlockers =
+        json['unresolvedBlockers'] as List<dynamic>? ?? const [];
 
     return SafetyGovernanceResult(
       projectRoot: json['projectRoot'] as String? ?? '.',

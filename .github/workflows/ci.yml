@@ -1,0 +1,41 @@
+﻿name: CI & Quality Gates
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verify:
+    name: Verify, Lint & Test (Dart ${{ matrix.dart-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dart-version: ['3.5.0', 'stable']
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🎯 Setup Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.dart-version }}
+
+      - name: 📦 Install dependencies
+        run: dart pub get
+
+      - name: 📐 Check code formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: 🔍 Static analysis & lint enforcement
+        run: dart analyze --fatal-infos --fatal-warnings
+
+      - name: 🧪 Run all test suites & generate coverage
+        run: dart test --coverage=coverage packages/flutter_package_studio_core packages/flutter_package_studio_cli
+
+      - name: 🛡️ Audit & Security verification dry-run
+        run: |
+          dart packages/flutter_package_studio_cli/bin/fps.dart --audit

@@ -12,6 +12,7 @@ dependencies:
   yaml: ^3.1.2
   meta: ^1.11.0
 
+  crypto: any
 dev_dependencies:
   test: ^1.24.0
   mocktail: ^1.0.3

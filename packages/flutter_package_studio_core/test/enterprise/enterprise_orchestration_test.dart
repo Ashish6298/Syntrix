@@ -3,8 +3,10 @@ import 'package:flutter_package_studio_core/src/enterprise/enterprise.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Phase 9.11: Enterprise Workflow Orchestration Models & Validation', () {
-    test('Standard pipeline factory constructs complete 14-stage definition', () {
+  group('Phase 9.11: Enterprise Workflow Orchestration Models & Validation',
+      () {
+    test('Standard pipeline factory constructs complete 14-stage definition',
+        () {
       const initiator = EnterpriseIdentity(
         id: 'user_rel_mgr',
         displayName: 'Alex Release Manager',
@@ -18,8 +20,10 @@ void main() {
       );
 
       expect(plan.stages.length, equals(14));
-      expect(plan.stages.first.stageType, equals(WorkflowStageType.projectDiscovery));
-      expect(plan.stages.last.stageType, equals(WorkflowStageType.auditLogging));
+      expect(plan.stages.first.stageType,
+          equals(WorkflowStageType.projectDiscovery));
+      expect(
+          plan.stages.last.stageType, equals(WorkflowStageType.auditLogging));
       expect(plan.targetPackageName, equals('enterprise_core_pkg'));
       expect(plan.targetVersion, equals('1.2.0'));
     });
@@ -51,7 +55,8 @@ void main() {
 
       final errors = engine.validatePlan(invalidPlan);
       expect(errors, isNotEmpty);
-      expect(errors.first, contains('depends on non-existent stage "non_existent_stage"'));
+      expect(errors.first,
+          contains('depends on non-existent stage "non_existent_stage"'));
     });
 
     test('Engine detects circular dependencies in workflow plan', () {
@@ -87,10 +92,13 @@ void main() {
 
       final errors = engine.validatePlan(circularPlan);
       expect(errors, isNotEmpty);
-      expect(errors.any((e) => e.contains('Circular dependency detected')), isTrue);
+      expect(errors.any((e) => e.contains('Circular dependency detected')),
+          isTrue);
     });
 
-    test('Serialization and Deserialization of workflow plan and execution result', () {
+    test(
+        'Serialization and Deserialization of workflow plan and execution result',
+        () {
       const initiator = EnterpriseIdentity(
         id: 'user_admin',
         displayName: 'Super Admin',
@@ -108,7 +116,8 @@ void main() {
 
       expect(restored.workflowId, equals(plan.workflowId));
       expect(restored.stages.length, equals(14));
-      expect(restored.stages[2].stageType, equals(WorkflowStageType.aiCodeReview));
+      expect(
+          restored.stages[2].stageType, equals(WorkflowStageType.aiCodeReview));
     });
   });
 
@@ -135,10 +144,13 @@ dependencies:
       }
     });
 
-    test('Executes full 14-stage standard release workflow successfully', () async {
+    test('Executes full 14-stage standard release workflow successfully',
+        () async {
       final auditEngine = EnterpriseAuditEngine(projectRoot: tempDir.path);
-      final securityEngine = EnterpriseSecurityComplianceEngine(projectRoot: tempDir.path);
-      final depEngine = EnterpriseDependencyGovernanceEngine(projectRoot: tempDir.path);
+      final securityEngine =
+          EnterpriseSecurityComplianceEngine(projectRoot: tempDir.path);
+      final depEngine =
+          EnterpriseDependencyGovernanceEngine(projectRoot: tempDir.path);
 
       final engine = EnterpriseWorkflowEngine(
         auditEngine: auditEngine,
@@ -161,7 +173,8 @@ dependencies:
       final result = await engine.executeWorkflow(plan);
 
       expect(result.isSuccess, isTrue);
-      expect(result.status, equals(EnterpriseWorkflowExecutionStatus.completed));
+      expect(
+          result.status, equals(EnterpriseWorkflowExecutionStatus.completed));
       expect(result.totalStages, equals(14));
       expect(result.passedStages, equals(14));
       expect(result.failedStages, equals(0));
@@ -173,7 +186,8 @@ dependencies:
       expect(engine.executionHistory.length, equals(1));
     });
 
-    test('Halts downstream stages when mandatory gate (Security Audit) fails', () async {
+    test('Halts downstream stages when mandatory gate (Security Audit) fails',
+        () async {
       const initiator = EnterpriseIdentity(
         id: 'rel_lead',
         displayName: 'Release Lead',
@@ -211,8 +225,10 @@ dependencies:
         stages: modifiedStages,
       );
 
-      final securityEngine = EnterpriseSecurityComplianceEngine(projectRoot: tempDir.path);
-      final failingEngine = EnterpriseWorkflowEngine(securityEngine: securityEngine);
+      final securityEngine =
+          EnterpriseSecurityComplianceEngine(projectRoot: tempDir.path);
+      final failingEngine =
+          EnterpriseWorkflowEngine(securityEngine: securityEngine);
       final result = await failingEngine.executeWorkflow(securityFailingPlan);
 
       expect(result.isSuccess, isFalse);
@@ -222,8 +238,10 @@ dependencies:
       expect(result.skippedStages, greaterThan(0));
 
       // Publishing & Git Release must be skipped
-      final publishStage = result.stageResults.firstWhere((s) => s.stageType == WorkflowStageType.packagePublish);
-      expect(publishStage.status, equals(EnterpriseWorkflowStageStatus.skipped));
+      final publishStage = result.stageResults
+          .firstWhere((s) => s.stageType == WorkflowStageType.packagePublish);
+      expect(
+          publishStage.status, equals(EnterpriseWorkflowStageStatus.skipped));
     });
 
     test('Halts release when human approval gate is rejected', () async {
@@ -267,15 +285,19 @@ dependencies:
       final result = await engine.executeWorkflow(rejectionPlan);
 
       expect(result.isSuccess, isFalse);
-      expect(result.status, equals(EnterpriseWorkflowExecutionStatus.blockedByGate));
+      expect(result.status,
+          equals(EnterpriseWorkflowExecutionStatus.blockedByGate));
       expect(result.blockedStageId, equals('stg_11_approval'));
 
       // Ensure publishing did not occur
-      final publishResult = result.stageResults.firstWhere((s) => s.stageType == WorkflowStageType.packagePublish);
-      expect(publishResult.status, equals(EnterpriseWorkflowStageStatus.skipped));
+      final publishResult = result.stageResults
+          .firstWhere((s) => s.stageType == WorkflowStageType.packagePublish);
+      expect(
+          publishResult.status, equals(EnterpriseWorkflowStageStatus.skipped));
     });
 
-    test('Cancellation signal immediately stops subsequent stage execution', () async {
+    test('Cancellation signal immediately stops subsequent stage execution',
+        () async {
       const initiator = EnterpriseIdentity(
         id: 'rel_lead',
         displayName: 'Release Lead',
@@ -300,7 +322,8 @@ dependencies:
       );
 
       expect(result.isSuccess, isFalse);
-      expect(result.status, equals(EnterpriseWorkflowExecutionStatus.cancelled));
+      expect(
+          result.status, equals(EnterpriseWorkflowExecutionStatus.cancelled));
       expect(result.skippedStages, greaterThan(0));
     });
 
@@ -313,7 +336,8 @@ dependencies:
       );
 
       int customTries = 0;
-      engine.registerStageHandler(WorkflowStageType.customStage, (stage, plan, prevResults) async {
+      engine.registerStageHandler(WorkflowStageType.customStage,
+          (stage, plan, prevResults) async {
         customTries++;
         if (customTries < 3) {
           return OrchestrationStageResult(
@@ -359,7 +383,8 @@ dependencies:
       final result = await engine.executeWorkflow(customPlan);
 
       expect(result.isSuccess, isTrue);
-      expect(result.stageResults.first.status, equals(EnterpriseWorkflowStageStatus.passed));
+      expect(result.stageResults.first.status,
+          equals(EnterpriseWorkflowStageStatus.passed));
       expect(result.stageResults.first.retryCount, equals(2));
       expect(customTries, equals(3));
     });

@@ -1,8 +1,6 @@
 /// Domain models and abstractions for Phase 9.2: Enterprise Authentication & Identity.
 library;
 
-import 'dart:convert';
-
 /// Type of principal identity performing an operation.
 enum IdentityType {
   user,
@@ -55,7 +53,8 @@ enum EnterpriseRole {
   static EnterpriseRole fromString(String? val) {
     if (val == null) return EnterpriseRole.developer;
     return EnterpriseRole.values.firstWhere(
-      (e) => e.name.toLowerCase() == val.toLowerCase() ||
+      (e) =>
+          e.name.toLowerCase() == val.toLowerCase() ||
           e.displayName.toLowerCase() == val.toLowerCase(),
       orElse: () => EnterpriseRole.custom,
     );
@@ -109,7 +108,8 @@ class EnterpriseIdentity {
   );
 
   /// Helper to check role membership.
-  bool hasRole(EnterpriseRole role) => roles.contains(role) || roles.contains(EnterpriseRole.administrator);
+  bool hasRole(EnterpriseRole role) =>
+      roles.contains(role) || roles.contains(EnterpriseRole.administrator);
 
   /// Helper to check permission existence.
   bool hasDirectPermission(String permission) =>
@@ -171,7 +171,8 @@ class EnterpriseSession {
   });
 
   bool get isExpired => DateTime.now().isAfter(expiresAt);
-  bool get isValid => status == AuthenticationStatus.authenticated && !isExpired;
+  bool get isValid =>
+      status == AuthenticationStatus.authenticated && !isExpired;
 
   Map<String, dynamic> toJson() => {
         'session_id': sessionId,
@@ -187,7 +188,8 @@ class EnterpriseSession {
   factory EnterpriseSession.fromJson(Map<String, dynamic> json) {
     return EnterpriseSession(
       sessionId: json['session_id'] as String? ?? '',
-      identity: EnterpriseIdentity.fromJson(json['identity'] as Map<String, dynamic>),
+      identity:
+          EnterpriseIdentity.fromJson(json['identity'] as Map<String, dynamic>),
       status: AuthenticationStatus.values.firstWhere(
         (s) => s.name == json['status'],
         orElse: () => AuthenticationStatus.unauthenticated,

@@ -7,8 +7,10 @@ import 'package:flutter_package_studio_core/src/studio_v2/ux_hardening/studio_ux
 /// Formatter generating ASCII Accessibility Matrix dashboards, Markdown audit logs, and JSON schemas.
 class StudioUxRenderer {
   /// Render UX audit report as structured JSON.
-  static String renderJson(StudioUxHardeningReport report, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+  static String renderJson(StudioUxHardeningReport report,
+      {bool pretty = true}) {
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(report.toJson());
   }
 
@@ -16,9 +18,12 @@ class StudioUxRenderer {
   static String renderAsciiDashboard(StudioUxHardeningReport report) {
     final buffer = StringBuffer();
 
-    buffer.writeln('┌────────────────────────────────────────────────────────────┐');
-    buffer.writeln('│ Studio UX & Accessibility Hardening Matrix                 │');
-    buffer.writeln('├────────────────────────────────────────────────────────────┤');
+    buffer.writeln(
+        '┌────────────────────────────────────────────────────────────┐');
+    buffer.writeln(
+        '│ Studio UX & Accessibility Hardening Matrix                 │');
+    buffer.writeln(
+        '├────────────────────────────────────────────────────────────┤');
 
     for (final item in report.auditItems) {
       final nameStr = item.dimension.label.padRight(36);
@@ -26,9 +31,12 @@ class StudioUxRenderer {
       buffer.writeln('│ • $nameStr [$sym] Verified │');
     }
 
-    buffer.writeln('├────────────────────────────────────────────────────────────┤');
-    buffer.writeln('│ Overall Compliance: ${(report.overallCompliant ? "PRODUCTION READY (PASS)" : "FAIL").padRight(38)} │');
-    buffer.writeln('└────────────────────────────────────────────────────────────┘');
+    buffer.writeln(
+        '├────────────────────────────────────────────────────────────┤');
+    buffer.writeln(
+        '│ Overall Compliance: ${(report.overallCompliant ? "PRODUCTION READY (PASS)" : "FAIL").padRight(38)} │');
+    buffer.writeln(
+        '└────────────────────────────────────────────────────────────┘');
 
     return buffer.toString();
   }
@@ -39,16 +47,19 @@ class StudioUxRenderer {
 
     buffer.writeln('# Studio UX & Accessibility Hardening Report');
     buffer.writeln();
-    buffer.writeln('**Audit Status:** `${report.overallCompliant ? "PASSED (Production-Grade)" : "FAILED"}`  ');
+    buffer.writeln(
+        '**Audit Status:** `${report.overallCompliant ? "PASSED (Production-Grade)" : "FAILED"}`  ');
     buffer.writeln('**Audited At:** ${report.auditedAt.toIso8601String()}');
     buffer.writeln();
 
     buffer.writeln('## Verification & Hardening Dimension Matrix');
     buffer.writeln();
-    buffer.writeln('| Dimension | Status | Min Contrast | Keyboard | Compliance Verification Details |');
+    buffer.writeln(
+        '| Dimension | Status | Min Contrast | Keyboard | Compliance Verification Details |');
     buffer.writeln('|---|:---:|:---:|:---:|---|');
     for (final i in report.auditItems) {
-      buffer.writeln('| **${i.dimension.label}** | ${i.status.symbol} | `${i.minimumContrastRatio}:1` | ${i.keyboardAccessible ? "Yes" : "No"} | ${i.complianceDetails} |');
+      buffer.writeln(
+          '| **${i.dimension.label}** | ${i.status.symbol} | `${i.minimumContrastRatio}:1` | ${i.keyboardAccessible ? "Yes" : "No"} | ${i.complianceDetails} |');
     }
     buffer.writeln();
 

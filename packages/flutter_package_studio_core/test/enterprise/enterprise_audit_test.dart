@@ -10,7 +10,8 @@ void main() {
     late String rootPath;
 
     setUp(() {
-      tempDir = Directory.systemTemp.createTempSync('fps_enterprise_audit_test_');
+      tempDir =
+          Directory.systemTemp.createTempSync('fps_enterprise_audit_test_');
       rootPath = tempDir.path;
 
       // Scaffold project workspace
@@ -40,7 +41,9 @@ environment:
     // Test 1: Record All 11 Required Enterprise Event Types
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('1. Model & Event Conformance: records and persists all 11 required audit event types', () async {
+    test(
+        '1. Model & Event Conformance: records and persists all 11 required audit event types',
+        () async {
       final engine = EnterpriseAuditEngine(projectRoot: rootPath);
 
       final eventTypes = [
@@ -80,7 +83,9 @@ environment:
     // Test 2: Cryptographic Tamper-Evidence & Hash Chain Integrity
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('2. Tamper-Evidence: verifies cryptographic hash chain and detects tampered records', () async {
+    test(
+        '2. Tamper-Evidence: verifies cryptographic hash chain and detects tampered records',
+        () async {
       final engine = EnterpriseAuditEngine(projectRoot: rootPath);
 
       await engine.recordEvent(
@@ -103,10 +108,12 @@ environment:
       expect(await engine.verifyAuditTrailIntegrity(), isTrue);
 
       // Tamper with audit log file directly
-      final auditFile = File(p.join(rootPath, '.fps', 'audit', 'audit_log.jsonl'));
+      final auditFile =
+          File(p.join(rootPath, '.fps', 'audit', 'audit_log.jsonl'));
       final lines = auditFile.readAsLinesSync();
       // Modify first line operation maliciously
-      final modifiedFirstLine = lines[0].replaceAll('Initial inspection', 'Maliciously Altered Entry');
+      final modifiedFirstLine = lines[0]
+          .replaceAll('Initial inspection', 'Maliciously Altered Entry');
       auditFile.writeAsStringSync('$modifiedFirstLine\n${lines[1]}\n');
 
       // Reloaded engine should fail cryptographic verification
@@ -118,7 +125,9 @@ environment:
     // Test 3: Secret and Credential Redaction Invariant
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('3. Secret Redaction Invariant: never records raw tokens, keys, or passwords', () async {
+    test(
+        '3. Secret Redaction Invariant: never records raw tokens, keys, or passwords',
+        () async {
       final engine = EnterpriseAuditEngine(projectRoot: rootPath);
 
       const secretToken = 'ghp_SECRETTOKEN99999999999999999999';
@@ -148,7 +157,9 @@ environment:
     // Test 4: Querying and Filtering Audit Trail
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('4. Audit Querying: filters records by event type, actor, outcome, and correlation ID', () async {
+    test(
+        '4. Audit Querying: filters records by event type, actor, outcome, and correlation ID',
+        () async {
       final engine = EnterpriseAuditEngine(projectRoot: rootPath);
 
       await engine.recordEvent(
@@ -185,7 +196,9 @@ environment:
     // Test 5: Pure Audit Renderer Conformance
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('5. Renderer Conformance: generates deterministic JSON and Markdown audit reports', () async {
+    test(
+        '5. Renderer Conformance: generates deterministic JSON and Markdown audit reports',
+        () async {
       final engine = EnterpriseAuditEngine(projectRoot: rootPath);
       await engine.recordEvent(
         eventType: AuditEventType.releaseVerified,
@@ -207,7 +220,8 @@ environment:
       expect(md, contains('# Enterprise Audit Trail Report'));
       expect(md, contains('Total Events: 1'));
       expect(md, contains('[Release Verified] `Verify Release 1.0.0`'));
-      expect(md, contains('**Actor**: `Jane Doe` (`usr_rel_99` / `releaseManager`)'));
+      expect(md,
+          contains('**Actor**: `Jane Doe` (`usr_rel_99` / `releaseManager`)'));
     });
   });
 }

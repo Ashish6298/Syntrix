@@ -62,12 +62,14 @@ class StudioProfilerEngine {
       _history.removeAt(0);
     }
 
-    _logger.info('Captured performance snapshot: ${snapshot.snapshotId} ("$label")');
+    _logger.info(
+        'Captured performance snapshot: ${snapshot.snapshotId} ("$label")');
     return snapshot;
   }
 
   /// Compare two performance snapshots.
-  PerformanceDeltaComparison compareSnapshots(PerformanceSnapshot before, PerformanceSnapshot after) {
+  PerformanceDeltaComparison compareSnapshots(
+      PerformanceSnapshot before, PerformanceSnapshot after) {
     return PerformanceDeltaComparison(before: before, after: after);
   }
 

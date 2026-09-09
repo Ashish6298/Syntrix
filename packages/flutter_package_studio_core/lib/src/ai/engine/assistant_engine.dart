@@ -275,17 +275,22 @@ class AssistantEngine {
         final hasSteps = jsonMap.containsKey('steps') ||
             jsonMap.containsKey('implementationSteps');
         final hasPatches = jsonMap.containsKey('patches');
-        final hasObjectiveOrSummary = jsonMap.containsKey('objective') || jsonMap.containsKey('summary');
+        final hasObjectiveOrSummary =
+            jsonMap.containsKey('objective') || jsonMap.containsKey('summary');
 
         if (hasPatches && hasObjectiveOrSummary) {
           // Normalize to PlanningPayload for code modification proposals
-          final obj = (jsonMap['objective'] ?? jsonMap['summary'] ?? 'Code modification proposal').toString();
+          final obj = (jsonMap['objective'] ??
+                  jsonMap['summary'] ??
+                  'Code modification proposal')
+              .toString();
           final rawPatches = (jsonMap['patches'] as List<dynamic>?) ?? const [];
           final steps = rawPatches.map((p) {
             final pMap = p is Map<String, dynamic> ? p : <String, dynamic>{};
             return PlanStep(
               sequence: 1,
-              title: pMap['description']?.toString() ?? 'Patch ${pMap["relativePath"] ?? ""}',
+              title: pMap['description']?.toString() ??
+                  'Patch ${pMap["relativePath"] ?? ""}',
               description: pMap['diff']?.toString() ?? '',
             );
           }).toList();
@@ -300,8 +305,15 @@ class AssistantEngine {
             final obj = jsonMap['summary'].toString();
             final rawSteps = (jsonMap['steps'] as List<dynamic>?) ?? const [];
             final steps = rawSteps.isNotEmpty
-                ? rawSteps.map((s) => PlanStep.fromJson(s as Map<String, dynamic>)).toList()
-                : [PlanStep(sequence: 1, title: 'Engineering Step', description: obj)];
+                ? rawSteps
+                    .map((s) => PlanStep.fromJson(s as Map<String, dynamic>))
+                    .toList()
+                : [
+                    PlanStep(
+                        sequence: 1,
+                        title: 'Engineering Step',
+                        description: obj)
+                  ];
             return PlanningPayload(objective: obj, steps: steps);
           }
           throw AiInvalidResponseException(

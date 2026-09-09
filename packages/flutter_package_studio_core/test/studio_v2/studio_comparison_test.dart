@@ -3,7 +3,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('Phase 10.14: Loader Comparison Laboratory Models', () {
-    test('LoaderComparisonCandidate and LoaderComparisonSession JSON roundtrip', () {
+    test('LoaderComparisonCandidate and LoaderComparisonSession JSON roundtrip',
+        () {
       const candidateA = LoaderComparisonCandidate(
         loaderId: 'galaxy_orbit',
         displayName: 'Galaxy Orbit',
@@ -50,7 +51,8 @@ void main() {
   });
 
   group('Phase 10.14: Studio Comparison Engine Operations', () {
-    test('Updates comparison candidates and generates session comparison data', () {
+    test('Updates comparison candidates and generates session comparison data',
+        () {
       final controller = StudioV2Controller();
       final compEngine = StudioComparisonEngine(controller: controller);
 
@@ -77,7 +79,8 @@ void main() {
         renderPassMs: 1.5,
       ));
 
-      final session = compEngine.createComparisonSession(sessionId: 'session_universe_vs_pulsar');
+      final session = compEngine.createComparisonSession(
+          sessionId: 'session_universe_vs_pulsar');
       expect(session.primary.displayName, equals('Infinite Universe'));
       expect(session.secondary.displayName, equals('Pulsar Wave'));
       expect(session.particleDelta, equals(-200));
@@ -85,7 +88,9 @@ void main() {
   });
 
   group('Phase 10.14: Studio Comparison Renderer', () {
-    test('Renders ASCII Side-by-Side Viewport, Markdown Matrix, and JSON session', () {
+    test(
+        'Renders ASCII Side-by-Side Viewport, Markdown Matrix, and JSON session',
+        () {
       final controller = StudioV2Controller();
       final compEngine = StudioComparisonEngine(controller: controller);
 

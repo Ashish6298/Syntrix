@@ -1,8 +1,6 @@
 /// Domain models and interaction telemetry for Phase 10.15: Advanced Interaction Laboratory.
 library;
 
-import 'dart:convert';
-
 /// Interactive gesture state enumeration.
 enum InteractionGestureState {
   idle,
@@ -106,7 +104,8 @@ class InteractionMonitorState {
     return InteractionMonitorState(
       monitorId: json['monitor_id'] as String? ?? 'mon_default',
       pointerPosition: json['pointer_position'] != null
-          ? InteractionVector2D.fromJson(json['pointer_position'] as Map<String, dynamic>)
+          ? InteractionVector2D.fromJson(
+              json['pointer_position'] as Map<String, dynamic>)
           : const InteractionVector2D(0.0, 0.0),
       gestureState: InteractionGestureState.values.firstWhere(
         (g) => g.id == json['gesture_state'] || g.name == json['gesture_state'],
@@ -115,7 +114,8 @@ class InteractionMonitorState {
       scale: (json['scale'] as num?)?.toDouble() ?? 1.0,
       rotationRadians: (json['rotation_radians'] as num?)?.toDouble() ?? 0.0,
       velocity: json['velocity'] != null
-          ? InteractionVector2D.fromJson(json['velocity'] as Map<String, dynamic>)
+          ? InteractionVector2D.fromJson(
+              json['velocity'] as Map<String, dynamic>)
           : const InteractionVector2D(0.0, 0.0),
       isInteractionActive: json['is_interaction_active'] as bool? ?? false,
       simulatedInertia: (json['simulated_inertia'] as num?)?.toDouble() ?? 0.0,

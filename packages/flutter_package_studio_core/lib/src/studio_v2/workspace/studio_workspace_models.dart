@@ -1,7 +1,6 @@
 /// Domain models and layout descriptors for Phase 10.2: Unified Studio Workspace.
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/studio_v2/studio_v2_models.dart';
 
 /// Workspace zone enumeration defining the 4 primary quadrant areas and toolbars.
@@ -93,7 +92,8 @@ class UnifiedWorkspaceSession {
       activeOutputTab: activeOutputTab ?? this.activeOutputTab,
       isToolbarVisible: isToolbarVisible ?? this.isToolbarVisible,
       isInspectorExpanded: isInspectorExpanded ?? this.isInspectorExpanded,
-      isOutputConsoleExpanded: isOutputConsoleExpanded ?? this.isOutputConsoleExpanded,
+      isOutputConsoleExpanded:
+          isOutputConsoleExpanded ?? this.isOutputConsoleExpanded,
       liveFps: liveFps ?? this.liveFps,
       frameTimeMs: frameTimeMs ?? this.frameTimeMs,
       activeParticleCount: activeParticleCount ?? this.activeParticleCount,
@@ -119,18 +119,23 @@ class UnifiedWorkspaceSession {
   factory UnifiedWorkspaceSession.fromJson(Map<String, dynamic> json) {
     return UnifiedWorkspaceSession(
       sessionId: json['session_id'] as String? ?? 'session_default',
-      activeLoaderId: json['active_loader_id'] as String? ?? 'infinite_universe',
+      activeLoaderId:
+          json['active_loader_id'] as String? ?? 'infinite_universe',
       activeThemeId: json['active_theme_id'] as String? ?? 'deep_space',
       configuration: json['configuration'] != null
-          ? StudioConfigurationDescriptor.fromJson(json['configuration'] as Map<String, dynamic>)
+          ? StudioConfigurationDescriptor.fromJson(
+              json['configuration'] as Map<String, dynamic>)
           : const StudioConfigurationDescriptor(),
       activeOutputTab: WorkspaceOutputTab.values.firstWhere(
-        (t) => t.id == json['active_output_tab'] || t.name == json['active_output_tab'],
+        (t) =>
+            t.id == json['active_output_tab'] ||
+            t.name == json['active_output_tab'],
         orElse: () => WorkspaceOutputTab.configuration,
       ),
       isToolbarVisible: json['is_toolbar_visible'] as bool? ?? true,
       isInspectorExpanded: json['is_inspector_expanded'] as bool? ?? true,
-      isOutputConsoleExpanded: json['is_output_console_expanded'] as bool? ?? true,
+      isOutputConsoleExpanded:
+          json['is_output_console_expanded'] as bool? ?? true,
       liveFps: (json['live_fps'] as num?)?.toDouble() ?? 60.0,
       frameTimeMs: (json['frame_time_ms'] as num?)?.toDouble() ?? 16.6,
       activeParticleCount: json['active_particle_count'] as int? ?? 200,

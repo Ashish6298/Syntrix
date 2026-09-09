@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_package_studio_core/flutter_package_studio_core.dart';
 import 'package:path/path.dart' as p;
@@ -10,7 +9,8 @@ void main() {
     late String rootPath;
 
     setUp(() {
-      tempDir = Directory.systemTemp.createTempSync('fps_safety_governance_test_');
+      tempDir =
+          Directory.systemTemp.createTempSync('fps_safety_governance_test_');
       rootPath = tempDir.path;
 
       // Scaffold workspace
@@ -21,7 +21,8 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 ''');
 
-      final libDir = Directory(p.join(rootPath, 'lib'))..createSync(recursive: true);
+      final libDir = Directory(p.join(rootPath, 'lib'))
+        ..createSync(recursive: true);
       File(p.join(libDir.path, 'main.dart')).writeAsStringSync('''
 void main() {
   print('Safety Verified Workspace');
@@ -29,7 +30,8 @@ void main() {
 ''');
 
       // Sensitive files to verify protection
-      File(p.join(rootPath, '.env')).writeAsStringSync('API_KEY=ghp_SECRET_TOKEN_99999\n');
+      File(p.join(rootPath, '.env'))
+          .writeAsStringSync('API_KEY=ghp_SECRET_TOKEN_99999\n');
     });
 
     tearDown(() {
@@ -42,7 +44,9 @@ void main() {
     // Test 1: Full Safety, Governance & Verification Execution
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('1. Safety Audit: executes all 5 verification pillars and produces PASS decision', () async {
+    test(
+        '1. Safety Audit: executes all 5 verification pillars and produces PASS decision',
+        () async {
       final engine = SafetyGovernanceEngine(projectRoot: rootPath);
       final result = await engine.verifyMilestone8Safety();
 
@@ -60,15 +64,20 @@ void main() {
     // Test 2: Pillar 1 (Security) — Secret Leakage & Credential Masking
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('2. Pillar 1 (Security): SecretRedactor and SensitiveFileFilter prevent credential leaks', () {
-      const prompt = 'Deploying with aws_secret_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY and ghp_test123456';
+    test(
+        '2. Pillar 1 (Security): SecretRedactor and SensitiveFileFilter prevent credential leaks',
+        () {
+      const prompt =
+          'Deploying with aws_secret_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY and ghp_test123456';
       final clean = SecretRedactor.redact(prompt);
-      expect(clean, isNot(contains('wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY')));
+      expect(
+          clean, isNot(contains('wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY')));
       expect(clean, contains('[REDACTED_AWS_SECRET]'));
 
       final filter = SensitiveFileFilter.fromProjectRoot(rootPath);
       expect(filter.evaluateFile(relativePath: '.env').isSafe, isFalse);
-      expect(filter.evaluateFile(relativePath: 'android/key.properties').isSafe, isFalse);
+      expect(filter.evaluateFile(relativePath: 'android/key.properties').isSafe,
+          isFalse);
       expect(filter.evaluateFile(relativePath: 'lib/main.dart').isSafe, isTrue);
     });
 
@@ -76,7 +85,9 @@ void main() {
     // Test 3: Pillar 2 (Reliability) — Provider Outage & Timeout Handling
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('3. Pillar 2 (Reliability): provider failures wrap cleanly in structured response without crash', () async {
+    test(
+        '3. Pillar 2 (Reliability): provider failures wrap cleanly in structured response without crash',
+        () async {
       final failingProvider = MockAiProvider(
         injectedException: Exception('Remote service 503 unavailable'),
       );
@@ -100,7 +111,9 @@ void main() {
     // Test 4: Pillar 3 (Determinism) — Stable Serialization & Idempotent Reports
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('4. Pillar 3 (Determinism): pure renderers output deterministic, identical JSON and Markdown', () async {
+    test(
+        '4. Pillar 3 (Determinism): pure renderers output deterministic, identical JSON and Markdown',
+        () async {
       final engine = SafetyGovernanceEngine(projectRoot: rootPath);
       final audit = await engine.verifyMilestone8Safety();
       const renderer = SafetyGovernanceRenderer();
@@ -120,7 +133,9 @@ void main() {
     // Test 5: Pillar 4 (Safety) — Release Gate Immutability
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('5. Pillar 4 (Safety): AI can never downgrade or override mandatory release failures', () async {
+    test(
+        '5. Pillar 4 (Safety): AI can never downgrade or override mandatory release failures',
+        () async {
       final releaseEngine = ReleaseReadinessAdvisorEngine.withProvider(
         projectRoot: rootPath,
         provider: MockAiProvider(defaultResponse: '{"status": "ready"}'),
@@ -128,7 +143,8 @@ void main() {
 
       // Evaluate with mock failed gate
       final assessment = await releaseEngine.assess(
-        const ReleaseReadinessRequest(scope: ReleaseReadinessScope.wholeProject),
+        const ReleaseReadinessRequest(
+            scope: ReleaseReadinessScope.wholeProject),
         fixtureVerificationStages: [
           const VerificationStage(
             id: 'security_gate',
@@ -148,7 +164,9 @@ void main() {
     // Test 6: Pillar 4 (Safety) — Controlled Code Modification Approval Gate
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('6. Pillar 4 (Safety): code modification requires explicit approval and rejects invalid patches', () async {
+    test(
+        '6. Pillar 4 (Safety): code modification requires explicit approval and rejects invalid patches',
+        () async {
       final modEngine = CodeModificationEngine.withProvider(
         projectRoot: rootPath,
         provider: MockAiProvider(),
@@ -167,7 +185,8 @@ void main() {
             diff: '@@ -1 +1 @@\n-print(1);\n+print(2);',
           ),
         ],
-        safetyPolicy: const CodeModificationSafetyPolicy(requireExplicitApproval: true),
+        safetyPolicy:
+            const CodeModificationSafetyPolicy(requireExplicitApproval: true),
         validation: const PatchValidationPipelineResult(
           patchValid: true,
           testsPassed: true,
@@ -187,7 +206,8 @@ void main() {
         explicitApproval: false,
       );
       expect(resNoApproval.success, isFalse);
-      expect(resNoApproval.message, contains('Explicit execution approval is mandatory'));
+      expect(resNoApproval.message,
+          contains('Explicit execution approval is mandatory'));
 
       // 2. Ineligible proposal -> rejected
       final ineligibleProposal = CodeModificationProposal(
@@ -220,7 +240,9 @@ void main() {
     // Test 7: Pillar 5 (Testing) — Dual Model Serialization & Roundtrip
     // ─────────────────────────────────────────────────────────────────────────
 
-    test('7. Model Conformance: SafetyGovernanceResult serializes and deserializes cleanly', () {
+    test(
+        '7. Model Conformance: SafetyGovernanceResult serializes and deserializes cleanly',
+        () {
       final original = SafetyGovernanceResult(
         projectRoot: '/test/workspace',
         allGatesPassed: true,
@@ -247,7 +269,8 @@ void main() {
       final roundtrip = SafetyGovernanceResult.fromJson(json);
 
       expect(roundtrip.allGatesPassed, equals(original.allGatesPassed));
-      expect(roundtrip.securityVerificationPassed, equals(original.securityVerificationPassed));
+      expect(roundtrip.securityVerificationPassed,
+          equals(original.securityVerificationPassed));
       expect(roundtrip.readyForMilestone9, equals(original.readyForMilestone9));
       expect(roundtrip.checks.length, equals(1));
       expect(roundtrip.checks.first.id, equals('SEC_001'));

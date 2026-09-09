@@ -7,8 +7,10 @@ import 'package:flutter_package_studio_core/src/studio_v2/presets/studio_preset_
 /// Formatter generating ASCII Preset trees, Markdown preset tables, and JSON export schemas.
 class StudioPresetRenderer {
   /// Render preset array as structured JSON.
-  static String renderJson(List<StudioConfigurationPreset> presets, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+  static String renderJson(List<StudioConfigurationPreset> presets,
+      {bool pretty = true}) {
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(presets.map((p) => p.toJson()).toList());
   }
 
@@ -20,11 +22,16 @@ class StudioPresetRenderer {
     buffer.writeln('Preset: ${preset.name} (${preset.presetId})');
     buffer.writeln('├── Loader:      ${preset.targetLoaderId}');
     buffer.writeln('├── Theme:       ${preset.selectedThemeId}');
-    buffer.writeln('├── Animation:   Speed ${cfg.animationSpeed}x, Intensity ${cfg.intensity}, Scale ${cfg.scale}x');
-    buffer.writeln('├── Particles:   Count ${cfg.particleCount}, Size ${cfg.particleSize}, Opacity ${cfg.particleOpacity}');
-    buffer.writeln('├── Physics:     Gravity ${cfg.gravity}, Velocity ${cfg.velocity}');
-    buffer.writeln('├── Rendering:   Shaders ${cfg.shadersEnabled ? "ON" : "OFF"}');
-    buffer.writeln('└── Interaction: Gestures ${cfg.isInteractive ? "ON" : "OFF"}');
+    buffer.writeln(
+        '├── Animation:   Speed ${cfg.animationSpeed}x, Intensity ${cfg.intensity}, Scale ${cfg.scale}x');
+    buffer.writeln(
+        '├── Particles:   Count ${cfg.particleCount}, Size ${cfg.particleSize}, Opacity ${cfg.particleOpacity}');
+    buffer.writeln(
+        '├── Physics:     Gravity ${cfg.gravity}, Velocity ${cfg.velocity}');
+    buffer.writeln(
+        '├── Rendering:   Shaders ${cfg.shadersEnabled ? "ON" : "OFF"}');
+    buffer.writeln(
+        '└── Interaction: Gestures ${cfg.isInteractive ? "ON" : "OFF"}');
 
     return buffer.toString();
   }
@@ -35,13 +42,16 @@ class StudioPresetRenderer {
 
     buffer.writeln('# Studio Configuration Presets');
     buffer.writeln();
-    buffer.writeln('Showing **${presets.length}** saved configuration presets.');
+    buffer
+        .writeln('Showing **${presets.length}** saved configuration presets.');
     buffer.writeln();
 
-    buffer.writeln('| Preset Name | ID | Loader | Theme | Particles | Speed | Type |');
+    buffer.writeln(
+        '| Preset Name | ID | Loader | Theme | Particles | Speed | Type |');
     buffer.writeln('|---|---|---|---|:---:|:---:|:---:|');
     for (final p in presets) {
-      buffer.writeln('| **${p.name}** | `${p.presetId}` | `${p.targetLoaderId}` | `${p.selectedThemeId}` | `${p.configuration.particleCount}` | `${p.configuration.animationSpeed}x` | ${p.isBuiltIn ? "Built-in" : "User"} |');
+      buffer.writeln(
+          '| **${p.name}** | `${p.presetId}` | `${p.targetLoaderId}` | `${p.selectedThemeId}` | `${p.configuration.particleCount}` | `${p.configuration.animationSpeed}x` | ${p.isBuiltIn ? "Built-in" : "User"} |');
     }
     buffer.writeln();
 

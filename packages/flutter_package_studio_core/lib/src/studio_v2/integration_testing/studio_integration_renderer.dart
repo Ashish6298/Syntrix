@@ -7,8 +7,10 @@ import 'package:flutter_package_studio_core/src/studio_v2/integration_testing/st
 /// Formatter generating ASCII Pipeline Matrix wireframes, Markdown reports, and JSON schemas.
 class StudioFinalIntegrationRenderer {
   /// Render final integration report as structured JSON.
-  static String renderJson(StudioFinalIntegrationReport report, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+  static String renderJson(StudioFinalIntegrationReport report,
+      {bool pretty = true}) {
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(report.toJson());
   }
 
@@ -16,9 +18,12 @@ class StudioFinalIntegrationRenderer {
   static String renderAsciiPipelineMatrix(StudioFinalIntegrationReport report) {
     final buffer = StringBuffer();
 
-    buffer.writeln('┌────────────────────────────────────────────────────────┐');
-    buffer.writeln('│ Studio v2 Multi-Subsystem Integration Pipeline         │');
-    buffer.writeln('├────────────────────────────────────────────────────────┤');
+    buffer
+        .writeln('┌────────────────────────────────────────────────────────┐');
+    buffer
+        .writeln('│ Studio v2 Multi-Subsystem Integration Pipeline         │');
+    buffer
+        .writeln('├────────────────────────────────────────────────────────┤');
 
     for (var i = 0; i < report.stageVerifications.length; i++) {
       final stage = report.stageVerifications[i];
@@ -28,14 +33,19 @@ class StudioFinalIntegrationRenderer {
 
       buffer.writeln('│  $labelStr  $testsStr  [$sym] PASSED          │');
       if (i < report.stageVerifications.length - 1) {
-        buffer.writeln('│       ↓                                                │');
+        buffer.writeln(
+            '│       ↓                                                │');
       }
     }
 
-    buffer.writeln('├────────────────────────────────────────────────────────┤');
-    buffer.writeln('│ Total Tests: ${report.totalTestsRun.toString().padRight(4)} | Passed: ${report.totalTestsPassed.toString().padRight(4)} | Failed: ${report.totalTestsFailed.toString().padRight(4)}        │');
-    buffer.writeln('│ Pipeline Status: ${(report.overallSuccess ? "ALL SUBSYSTEMS OPERATIONAL" : "FAILED").padRight(36)} │');
-    buffer.writeln('└────────────────────────────────────────────────────────┘');
+    buffer
+        .writeln('├────────────────────────────────────────────────────────┤');
+    buffer.writeln(
+        '│ Total Tests: ${report.totalTestsRun.toString().padRight(4)} | Passed: ${report.totalTestsPassed.toString().padRight(4)} | Failed: ${report.totalTestsFailed.toString().padRight(4)}        │');
+    buffer.writeln(
+        '│ Pipeline Status: ${(report.overallSuccess ? "ALL SUBSYSTEMS OPERATIONAL" : "FAILED").padRight(36)} │');
+    buffer
+        .writeln('└────────────────────────────────────────────────────────┘');
 
     return buffer.toString();
   }
@@ -46,18 +56,22 @@ class StudioFinalIntegrationRenderer {
 
     buffer.writeln('# Studio v2 Final Integration & Regression Test Report');
     buffer.writeln();
-    buffer.writeln('**Pipeline Status:** `${report.overallSuccess ? "PASSED (100% Verified)" : "FAILED"}`  ');
-    buffer.writeln('**Total Tests Run:** `${report.totalTestsRun}` | **Passed:** `${report.totalTestsPassed}` | **Failed:** `${report.totalTestsFailed}`  ');
+    buffer.writeln(
+        '**Pipeline Status:** `${report.overallSuccess ? "PASSED (100% Verified)" : "FAILED"}`  ');
+    buffer.writeln(
+        '**Total Tests Run:** `${report.totalTestsRun}` | **Passed:** `${report.totalTestsPassed}` | **Failed:** `${report.totalTestsFailed}`  ');
     buffer.writeln('**Completed At:** ${report.completedAt.toIso8601String()}');
     buffer.writeln();
 
     buffer.writeln('## Subsystem Verification Matrix');
     buffer.writeln();
-    buffer.writeln('| Stage | Subsystem | Status | Tests | Time (ms) | Verification Details |');
+    buffer.writeln(
+        '| Stage | Subsystem | Status | Tests | Time (ms) | Verification Details |');
     buffer.writeln('|:---:|---|:---:|:---:|:---:|---|');
     for (var i = 0; i < report.stageVerifications.length; i++) {
       final s = report.stageVerifications[i];
-      buffer.writeln('| ${i + 1} | **${s.stage.label}** | ${s.status.symbol} | `${s.testsExecuted}` | `${s.executionTimeMs.toStringAsFixed(0)} ms` | ${s.verificationDetails} |');
+      buffer.writeln(
+          '| ${i + 1} | **${s.stage.label}** | ${s.status.symbol} | `${s.testsExecuted}` | `${s.executionTimeMs.toStringAsFixed(0)} ms` | ${s.verificationDetails} |');
     }
     buffer.writeln();
 

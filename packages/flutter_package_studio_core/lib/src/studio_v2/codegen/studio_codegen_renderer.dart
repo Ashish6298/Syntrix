@@ -8,7 +8,8 @@ import 'package:flutter_package_studio_core/src/studio_v2/codegen/studio_codegen
 class StudioCodeGenRenderer {
   /// Render CodeGen result as structured JSON.
   static String renderJson(CodeGenResult result, {bool pretty = true}) {
-    final encoder = pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
+    final encoder =
+        pretty ? const JsonEncoder.withIndent('  ') : const JsonEncoder();
     return encoder.convert(result.toJson());
   }
 
@@ -19,7 +20,8 @@ class StudioCodeGenRenderer {
     buffer.writeln('# Code Generation Studio Output');
     buffer.writeln();
     buffer.writeln('**Style:** `${result.options.style.label}`  ');
-    buffer.writeln('**Public API Conformance:** `${result.isValidPublicApi ? "VALIDATED (PASS)" : "CUSTOM / UNKNOWN"}`  ');
+    buffer.writeln(
+        '**Public API Conformance:** `${result.isValidPublicApi ? "VALIDATED (PASS)" : "CUSTOM / UNKNOWN"}`  ');
     buffer.writeln('**Generated At:** ${result.generatedAt.toIso8601String()}');
     buffer.writeln();
 

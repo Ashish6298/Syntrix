@@ -1,8 +1,6 @@
 /// Domain models and format descriptors for Phase 10.13: Export & Import System.
 library;
 
-import 'dart:convert';
-
 /// Supported export targets.
 enum ExportTargetEntity {
   configuration,

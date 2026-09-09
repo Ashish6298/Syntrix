@@ -32,7 +32,8 @@ void main() {
   });
 
   group('Phase 10.15: Studio Interaction Engine Operations', () {
-    test('Handles touch down, drag, scale, and release transitions cleanly', () {
+    test('Handles touch down, drag, scale, and release transitions cleanly',
+        () {
       final controller = StudioV2Controller();
       final interactionEngine = StudioInteractionEngine(controller: controller);
 
@@ -43,37 +44,45 @@ void main() {
 
       // 1. Touch Down
       interactionEngine.handleTouchDown(100.0, 200.0);
-      expect(interactionEngine.state.gestureState, equals(InteractionGestureState.touchDown));
+      expect(interactionEngine.state.gestureState,
+          equals(InteractionGestureState.touchDown));
       expect(interactionEngine.state.isInteractionActive, isTrue);
       expect(interactionEngine.state.pointerPosition.x, equals(100.0));
-      expect(notifiedState?.gestureState, equals(InteractionGestureState.touchDown));
+      expect(notifiedState?.gestureState,
+          equals(InteractionGestureState.touchDown));
 
       // 2. Drag
       interactionEngine.handleDrag(150.0, 260.0, vx: 50.0, vy: 60.0);
-      expect(interactionEngine.state.gestureState, equals(InteractionGestureState.dragging));
+      expect(interactionEngine.state.gestureState,
+          equals(InteractionGestureState.dragging));
       expect(interactionEngine.state.velocity.x, equals(50.0));
 
       // 3. Scale
       interactionEngine.handleScale(2.0, rotation: 1.5708); // 90 deg
-      expect(interactionEngine.state.gestureState, equals(InteractionGestureState.scaling));
+      expect(interactionEngine.state.gestureState,
+          equals(InteractionGestureState.scaling));
       expect(interactionEngine.state.scale, equals(2.0));
       expect(interactionEngine.state.rotationDegrees, closeTo(90.0, 0.1));
 
       // 4. Touch Up
       interactionEngine.handleTouchUp(inertia: 0.9);
-      expect(interactionEngine.state.gestureState, equals(InteractionGestureState.touchUp));
+      expect(interactionEngine.state.gestureState,
+          equals(InteractionGestureState.touchUp));
       expect(interactionEngine.state.isInteractionActive, isFalse);
       expect(interactionEngine.state.simulatedInertia, equals(0.9));
 
       // 5. Reset
       interactionEngine.resetInteraction();
-      expect(interactionEngine.state.gestureState, equals(InteractionGestureState.idle));
+      expect(interactionEngine.state.gestureState,
+          equals(InteractionGestureState.idle));
       expect(interactionEngine.state.scale, equals(1.0));
     });
   });
 
   group('Phase 10.15: Studio Interaction Renderer', () {
-    test('Renders ASCII Interaction Monitor, Markdown Telemetry, and JSON state', () {
+    test(
+        'Renders ASCII Interaction Monitor, Markdown Telemetry, and JSON state',
+        () {
       final controller = StudioV2Controller();
       final interactionEngine = StudioInteractionEngine(controller: controller);
 

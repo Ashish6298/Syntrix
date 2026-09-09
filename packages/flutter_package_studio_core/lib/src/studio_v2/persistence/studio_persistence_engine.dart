@@ -1,7 +1,6 @@
 /// Central Project / Workspace Persistence Engine for Phase 10.12.
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/logging/logger.dart';
 import 'package:flutter_package_studio_core/src/studio_v2/studio_v2_models.dart';
 import 'package:flutter_package_studio_core/src/studio_v2/studio_v2_controller.dart';
@@ -86,7 +85,8 @@ class StudioPersistenceEngine {
       await presetEngine.savePreset(p);
     }
 
-    _logger.info('Successfully restored Studio workspace from project "$projectId"');
+    _logger.info(
+        'Successfully restored Studio workspace from project "$projectId"');
     return true;
   }
 

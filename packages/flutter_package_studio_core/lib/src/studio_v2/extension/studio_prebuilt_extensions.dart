@@ -1,9 +1,7 @@
 /// Concrete prebuilt extensions for Phase 10.18: Studio Extension Architecture.
 library;
 
-import 'dart:convert';
 import 'package:flutter_package_studio_core/src/studio_v2/studio_v2_controller.dart';
-import 'package:flutter_package_studio_core/src/studio_v2/export/studio_export_models.dart';
 import 'package:flutter_package_studio_core/src/studio_v2/validation/studio_validation_models.dart';
 import 'package:flutter_package_studio_core/src/studio_v2/extension/studio_extension_models.dart';
 
@@ -16,7 +14,8 @@ class ShaderStudioTool extends StudioTool {
   @override
   StudioToolCategory get category => StudioToolCategory.shader;
   @override
-  String get description => 'Live compile and link custom Spir-V and GLSL shaders onto canvas.';
+  String get description =>
+      'Live compile and link custom Spir-V and GLSL shaders onto canvas.';
 
   @override
   Future<void> execute(StudioV2Controller controller) async {
@@ -34,7 +33,8 @@ class ShaderStudioExtension extends StudioExtension {
   @override
   String get author => 'Flutter Package Studio Core';
   @override
-  String get description => 'Live GPU shader editing and post-processing filter pipeline.';
+  String get description =>
+      'Live GPU shader editing and post-processing filter pipeline.';
 
   @override
   List<StudioTool> get tools => [ShaderStudioTool()];
@@ -51,7 +51,8 @@ class AIAssistantAction extends StudioAction {
 
   @override
   Future<void> trigger(StudioV2Controller controller) async {
-    controller.updateConfiguration((c) => c.copyWith(particleCount: 300, animationSpeed: 1.5));
+    controller.updateConfiguration(
+        (c) => c.copyWith(particleCount: 300, animationSpeed: 1.5));
   }
 }
 
@@ -65,7 +66,8 @@ class AIAssistantExtension extends StudioExtension {
   @override
   String get author => 'Syntrix AI';
   @override
-  String get description => 'Intelligent parameter optimization and loader generation assistant.';
+  String get description =>
+      'Intelligent parameter optimization and loader generation assistant.';
 
   @override
   List<StudioAction> get actions => [AIAssistantAction()];
@@ -80,7 +82,8 @@ class AnimationTimelineTool extends StudioTool {
   @override
   StudioToolCategory get category => StudioToolCategory.animation;
   @override
-  String get description => 'Scrub and fine-tune cubic bezier curves and keyframe tracks.';
+  String get description =>
+      'Scrub and fine-tune cubic bezier curves and keyframe tracks.';
 
   @override
   Future<void> execute(StudioV2Controller controller) async {}
@@ -96,7 +99,8 @@ class AnimationTimelineExtension extends StudioExtension {
   @override
   String get author => 'MotionFX';
   @override
-  String get description => 'Multi-track animation and physics curve sequencer.';
+  String get description =>
+      'Multi-track animation and physics curve sequencer.';
 
   @override
   List<StudioTool> get tools => [AnimationTimelineTool()];
@@ -146,8 +150,10 @@ class AdvancedProfilerExtension extends StudioExtension {
   @override
   String get author => 'TelemetryLab';
   @override
-  String get description => 'Deep GPU memory profiling, draw call batch inspection, and shader tracing.';
+  String get description =>
+      'Deep GPU memory profiling, draw call batch inspection, and shader tracing.';
 
   @override
-  List<StudioValidatorExtension> get validators => [AdvancedProfilerValidator()];
+  List<StudioValidatorExtension> get validators =>
+      [AdvancedProfilerValidator()];
 }
