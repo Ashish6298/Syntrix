@@ -41,13 +41,17 @@ void main() {
     });
 
     test('getBanner contains SYNTRIX and primary commands', () {
-      final banner = CommandRegistry.getBanner();
-      expect(banner, contains('SYNTRIX'));
-      expect(banner, contains('syntrix --version'));
-      expect(banner, contains('syntrix --help'));
-      expect(banner, contains('syntrix --audit'));
-      expect(banner, contains('syntrix create'));
+      final banner = CommandRegistry.getBanner(enableColor: false);
+      expect(banner, contains('S Y N T R I X'));
+      expect(banner, contains('Enterprise tools & AI studio for Flutter and Dart'));
+      expect(banner, contains('Quick Actions:'));
+      expect(banner, contains('create'));
+      expect(banner, contains('--audit'));
+      expect(banner, contains('template'));
+      expect(banner, contains('plugin'));
+      expect(banner, contains('--help'));
     });
+
 
 
     test('Running syntrix with empty arguments prints banner and exits 0', () async {

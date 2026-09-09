@@ -45,28 +45,66 @@ class CommandRegistry {
     runner.addCommand(command);
   }
 
-  /// Formats and returns the ASCII / stylized terminal SYNTRIX banner.
-  static String getBanner() {
-    return '''
-========================================================================
-   ____  __  __ _   _ _____ ____  ______  __
-  / ___| \\ \\/ /| \\ | |_   _|  _ \\|_  _\\ \\/ /
-  \\___ \\  \\  / |  \\| | | | | |_) | | |  \\  / 
-   ___) | / /  | |\\  | | | |  _ < _| |_ /  \\ 
-  |____/ /_/   |_| \\_| |_| |_| \\_\\_____/_/\\_\\
-  SYNTRIX — Enterprise-Grade Tools & AI Studio for Flutter & Dart
-========================================================================
+  /// Formats and returns the stylized terminal SYNTRIX splash banner matching the approved design.
+  static String getBanner({bool enableColor = true}) {
+    // Exact hex color styling helper (ANSI truecolor \x1B[38;2;R;G;Bm)
+    String hex(String hexCode, String text, {bool bold = false}) {
+      if (!enableColor) return text;
+      final clean = hexCode.replaceAll('#', '');
+      final r = int.parse(clean.substring(0, 2), radix: 16);
+      final g = int.parse(clean.substring(2, 4), radix: 16);
+      final b = int.parse(clean.substring(4, 6), radix: 16);
+      final boldCode = bold ? '\x1B[1m' : '';
+      return '\x1B[38;2;$r;$g;${b}m$boldCode$text\x1B[0m';
+    }
 
-Welcome to Syntrix!
+    final purple = (String t) => hex('#AFA9EC', t);
+    final purpleDim = (String t) => hex('#7F77DD', t, bold: true);
+    final muted = (String t) => hex('#8a8d90', t);
+    final desc = (String t) => hex('#9a9d9f', t);
+    final footer = (String t) => hex('#5f6265', t);
+    final white = (String t) => hex('#f2f1ec', t, bold: true);
 
-Quick Actions:
-  • syntrix --version  Display the installed Syntrix CLI version
-  • syntrix --audit    Run automated audit checks on current package
-  • syntrix create     Create a new production-ready Flutter package
-  • syntrix --help     Explore all commands (audit, create, template, plugin, etc.)
+    // Filled hexagon reads heavier/bigger than outline version, bolded for extra weight
+    final glyph = purpleDim('⬢');
 
-''';
+    String pad(String label, [int width = 10]) {
+      return label + ' ' * (width - label.length > 0 ? width - label.length : 1);
+    }
+
+    final commands = [
+      ['create', 'scaffold a new production-ready package'],
+      ['--audit', 'run automated audit checks'],
+      ['template', 'manage templates'],
+      ['plugin', 'manage plugins'],
+      ['--help', 'explore all commands'],
+    ];
+
+    final buffer = StringBuffer();
+    buffer.writeln();
+    buffer.writeln('                 $glyph  ${white('S Y N T R I X')}');
+    buffer.writeln();
+    buffer.writeln('     ${muted('Enterprise tools & AI studio for Flutter and Dart')}');
+    buffer.writeln('     ${footer('─' * 50)}');
+    buffer.writeln();
+    buffer.writeln('     ${white('Quick Actions:')}');
+    buffer.writeln();
+
+    for (final pair in commands) {
+      final cmd = pair[0];
+      final description = pair[1];
+      buffer.writeln('     ${purple('• ${pad(cmd)}')}${desc(description)}');
+    }
+
+    buffer.writeln();
+    buffer.writeln('     ${footer('─' * 50)}');
+    buffer.writeln(
+        '     ${footer('v$version')}    ${footer('dart 3.5.0')}    ${footer('flutter 3.24.0')}');
+    buffer.writeln();
+
+    return buffer.toString();
   }
+
 
 
 
