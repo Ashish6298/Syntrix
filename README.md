@@ -355,7 +355,7 @@
   Activate Syntrix globally from your workspace or pub.dev:
 
   ```bash
-  dart pub global activate --source path ./packages/flutter_package_studio_cli
+  dart pub global activate syntrix
   ```
 
   Verify installation:
