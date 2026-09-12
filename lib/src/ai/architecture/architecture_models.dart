@@ -184,7 +184,7 @@ class MonorepoStructuralModel {
   /// Discovered packages mapped by identifier.
   final List<String> packageNames;
 
-  /// Inter-package dependency edges (pkgA -> [pkgB, pkgC]).
+  /// Inter-package dependency edges (`pkgA -> [pkgB, pkgC]`).
   final Map<String, List<String>> dependencyGraph;
 
   /// Detected circular dependencies between packages or files.

@@ -43,7 +43,7 @@ class MockAiProvider implements AiProvider {
     this.injectedHealthStatus = AiProviderHealthStatus.available,
   });
 
-  /// Registers a canned response triggered when [request.prompt] contains [promptSubstring].
+  /// Registers a canned response triggered when `request.prompt` contains [promptSubstring].
   void registerCannedResponse(String promptSubstring, String response) {
     _cannedResponses[promptSubstring] = response;
   }

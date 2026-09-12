@@ -179,7 +179,7 @@ class SessionMemoryEngine {
     return (entry: entry, conflicts: conflicts);
   }
 
-  /// Analyzes potential conflicts between a candidate [entry] and existing [allEntries].
+  /// Analyzes potential conflicts between a candidate [candidate] entry and existing [allEntries].
   List<ConflictReport> detectConflicts(
     KnowledgeEntry candidate,
     List<KnowledgeEntry> allEntries,

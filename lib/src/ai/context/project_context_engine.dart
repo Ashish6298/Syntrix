@@ -170,7 +170,7 @@ class ProjectContextEngine {
   ///
   /// If the query mentions a package name, or if only 1 package exists in the project,
   /// it resolves unambiguously. If multiple candidates match or none match in a monorepo,
-  /// it marks [isAmbiguousPackage] as true and provides an explanatory ambiguity note.
+  /// it marks `isAmbiguousPackage` as true and provides an explanatory ambiguity note.
   String? resolvePackageFromQuery({
     required String query,
     required Map<String, DiscoveredPackage> availablePackages,
