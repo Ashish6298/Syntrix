@@ -1,4 +1,4 @@
-﻿name: CI & Quality Gates
+name: CI & Quality Gates
 
 on:
   push:
@@ -38,4 +38,4 @@ jobs:
 
       - name: 🛡️ Audit & Security verification dry-run
         run: |
-          dart bin/fps.dart --audit
+          dart bin/fps.dart audit
