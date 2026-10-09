@@ -1,3 +1,4 @@
+import 'version.dart';
 import 'package:args/command_runner.dart';
 import 'package:syntrix/flutter_package_studio_core.dart';
 import 'package:syntrix/src/base_command.dart';
@@ -5,7 +6,7 @@ import 'package:syntrix/src/base_command.dart';
 /// Registry responsible for discovering, registering, and executing CLI commands.
 class CommandRegistry {
   /// CLI semantic version string.
-  static const String version = '1.0.0';
+  static const String version = packageVersion;
 
   /// The command runner engine.
   final CommandRunner<int> runner;
