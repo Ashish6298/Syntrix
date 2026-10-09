@@ -1,11 +1,11 @@
-﻿# Files not to include in pub.dev package archive
+# Files not to include in pub.dev package archive
 .github/
 packages/
 doc/
 doc/api/
-coverage/
-report/
-reports/
+/coverage/
+/report/
+/reports/
 tool/
 test/
 *.lcov
