@@ -1,6 +1,6 @@
 name: syntrix
 description: Enterprise CLI studio & AI engineering toolkit for Flutter and Dart packages. Plan-first composable blueprints, deterministic 5-profile audits, living docs, and pre-publish gates.
-version: 1.1.0
+version: 1.2.0
 homepage: https://github.com/Ashish6298/Syntrix
 repository: https://github.com/Ashish6298/Syntrix
 issue_tracker: https://github.com/Ashish6298/Syntrix/issues

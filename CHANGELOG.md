@@ -1,3 +1,11 @@
+## 1.2.0
+
+* Fixed missing testing coverage and test reporting modules in template commands.
+* Resolved dartdoc directory lookup errors and restored full API documentation generation.
+* Validated downgrade dependency constraint resolution and static analyzer zero-issue compliance.
+* Restored 100% platform support (iOS, Android, Web, Windows, macOS, Linux).
+* Successfully built and validated binary executables (`syntrix` and `fps`).
+
 ## 1.1.0
 
 * Added runnable example package at `example/main.dart` demonstrating DependencyContainer, BuiltinCatalogProvider, and ReleaseVerificationPipeline.
